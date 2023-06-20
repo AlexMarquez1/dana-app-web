@@ -5,8 +5,8 @@ import 'package:app_isae_desarrollo/src/models/Agrupaciones.dart';
 import 'package:app_isae_desarrollo/src/models/Campos.dart';
 import 'package:app_isae_desarrollo/src/models/Catalogo.dart';
 import 'package:app_isae_desarrollo/src/models/FirmaDocumento.dart';
+import 'package:app_isae_desarrollo/src/models/Inventario.dart';
 import 'package:app_isae_desarrollo/src/models/Proyecto.dart';
-import 'package:app_isae_desarrollo/src/models/Registro.dart';
 import 'package:app_isae_desarrollo/src/models/ValoresCampos.dart';
 import 'package:app_isae_desarrollo/src/page/widgets/Dialogos.dart';
 import 'package:app_isae_desarrollo/src/page/widgets/PantallaCarga.dart';
@@ -21,10 +21,10 @@ import 'package:universal_html/html.dart' as html;
 
 class RegistrosDataTable extends DataTableSource {
   final _formKeyRegistro = GlobalKey<FormState>();
-  List<Registro> _listaRegistro;
+  List<Inventario> _listaRegistro;
   BuildContext context;
   List<Agrupaciones> _listaAgrupacionesObtenidas = [];
-  Registro _registroSeleccionado;
+  Inventario _registroSeleccionado;
 
   Map<String, Catalogo> _catalogos = new Map<String, Catalogo>();
   Map<String, bool> _comprobarFirma = new Map<String, bool>();
@@ -32,7 +32,7 @@ class RegistrosDataTable extends DataTableSource {
   Map<String, GlobalKey<SignatureState>> _keyFirma =
       new Map<String, GlobalKey<SignatureState>>();
 
-  RegistrosDataTable({@required List<Registro> listaRegistro, this.context})
+  RegistrosDataTable({@required List<Inventario> listaRegistro, this.context})
       : _listaRegistro = listaRegistro,
         assert(listaRegistro != null);
 
@@ -47,7 +47,7 @@ class RegistrosDataTable extends DataTableSource {
         _listaAgrupacionesObtenidas = await obtenerDatosCamposRegistro(
             ApiDefinition.ipServer,
             registro.proyecto.idproyecto,
-            registro.idRegistro);
+            registro.idinventario);
         _catalogos = await obtenerCatalogosProyecto(
             ApiDefinition.ipServer, registro.proyecto);
         TextEditingController valor = TextEditingController();
@@ -135,7 +135,7 @@ class RegistrosDataTable extends DataTableSource {
         DataCell(Text(registro.proyecto.proyecto)),
         DataCell(Text(registro.folio)),
         DataCell(Text(registro.estatus)),
-        DataCell(Text(registro.fechaCreacion)),
+        DataCell(Text(registro.fechacreacion)),
         DataCell(IconButton(
           onPressed: () async {
             if (registro.estatus != 'CERRADO') {
@@ -146,9 +146,9 @@ class RegistrosDataTable extends DataTableSource {
                 _listaAgrupacionesObtenidas = await obtenerDatosCamposRegistro(
                     ApiDefinition.ipServer,
                     registro.proyecto.idproyecto,
-                    registro.idRegistro);
+                    registro.idinventario);
                 Uint8List bytes = await obtenerPdf(ApiDefinition.ipServer,
-                    _listaAgrupacionesObtenidas, registro.idRegistro);
+                    _listaAgrupacionesObtenidas, registro.idinventario);
 
                 final blob = html.Blob([bytes], 'application/pdf');
                 final url = html.Url.createObjectUrlFromBlob(blob);
@@ -159,7 +159,7 @@ class RegistrosDataTable extends DataTableSource {
               });
             } else {
               String urlDocumento = await obtenerUrlDocumento(
-                  ApiDefinition.ipServer, registro.idRegistro);
+                  ApiDefinition.ipServer, registro.idinventario);
 
               html.window.open(urlDocumento, 'new tab');
             }
@@ -226,7 +226,7 @@ class RegistrosDataTable extends DataTableSource {
                                   valor: item.valorController.text,
                                   idcampoproyecto: item.idCampo,
                                   idinventario:
-                                      _registroSeleccionado.idRegistro,
+                                      _registroSeleccionado.idinventario,
                                 ));
                               }
                             }

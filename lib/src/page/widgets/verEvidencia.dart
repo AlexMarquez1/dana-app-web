@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:app_isae_desarrollo/src/models/Registro.dart';
 import 'package:app_isae_desarrollo/src/page/widgets/DetallesImagen.dart';
 import 'package:app_isae_desarrollo/src/page/widgets/PantallaCarga.dart';
 import 'package:archive/archive.dart' as webarc;
@@ -19,7 +18,7 @@ import 'dart:html' as html;
 import 'package:http/http.dart' as http;
 
 class VerEvidencia extends StatelessWidget {
-  Registro inventario;
+  Inventario inventario;
   VerEvidencia({Key key, @required this.inventario}) : super(key: key);
 
   List<FirmaDocumento> listaFirmas;
@@ -35,27 +34,27 @@ class VerEvidencia extends StatelessWidget {
           List<FirmaDocumento> listaFirmas = await obtenerFirmaProyecto(
               ApiDefinition.ipServer,
               inventario.proyecto.idproyecto,
-              inventario.idRegistro);
+              inventario.idinventario);
 
           List<FotoEvidencia> listaFotos = await obtenerFotosProyecto(
               ApiDefinition.ipServer,
               inventario.proyecto.idproyecto,
-              inventario.idRegistro);
+              inventario.idinventario);
 
           List<FotoEvidencia> listaEvidencias =
               await obtenerCheckBoxEvidenciaProyecto(
                   ApiDefinition.ipServer,
                   inventario.proyecto,
                   Inventario(
-                    idinventario: inventario.idRegistro,
+                    idinventario: inventario.idinventario,
                     estatus: inventario.estatus,
-                    fechacreacion: inventario.fechaCreacion,
+                    fechacreacion: inventario.fechacreacion,
                     folio: inventario.folio,
                     proyecto: inventario.proyecto,
                   ));
 
           String urlDocumento = await obtenerUrlDocumento(
-              ApiDefinition.ipServer, inventario.idRegistro);
+              ApiDefinition.ipServer, inventario.idinventario);
 
           PantallaDeCarga.loadingI(context, false);
 

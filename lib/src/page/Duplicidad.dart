@@ -1,7 +1,6 @@
 import 'package:app_isae_desarrollo/src/models/Inventario.dart';
 import 'package:app_isae_desarrollo/src/models/Perfil.dart';
 import 'package:app_isae_desarrollo/src/models/Proyecto.dart';
-import 'package:app_isae_desarrollo/src/models/Registro.dart';
 import 'package:app_isae_desarrollo/src/models/Usuario.dart';
 import 'package:app_isae_desarrollo/src/page/widgets/DatosInventario.dart';
 import 'package:app_isae_desarrollo/src/page/widgets/Dialogos.dart';
@@ -442,7 +441,8 @@ class Duplicados extends StatelessWidget {
                   formKeyRegistro: _formKeyRegistro,
                   usuarioSeleccionado: Usuario(0, '', '', '', '', '', '',
                       Perfil(perfil: '', idperfil: '0'), '', 0),
-                  registroSeleccionado: Registro(idRegistro: idInventario),
+                  inventarioSeleccionado:
+                      Inventario(idinventario: idInventario),
                   registroProvider: _registroProvider),
               Container(
                 child: SingleChildScrollView(

@@ -18,7 +18,6 @@ import 'package:app_isae_desarrollo/src/models/Notificaciones.dart';
 import 'package:app_isae_desarrollo/src/models/Pendiente.dart';
 import 'package:app_isae_desarrollo/src/models/Perfil.dart';
 import 'package:app_isae_desarrollo/src/models/Proyecto.dart';
-import 'package:app_isae_desarrollo/src/models/Registro.dart';
 import 'package:app_isae_desarrollo/src/models/Usuario.dart';
 import 'package:app_isae_desarrollo/src/models/ValoresCampo.dart';
 import 'package:app_isae_desarrollo/src/models/ValoresCampos.dart';
@@ -281,8 +280,8 @@ Future<List<Proyecto>> obtenerProyectosAsignados(
   return lista;
 }
 
-Future<List<Registro>> obtenerRegistros(String api, int idProyecto) async {
-  List<Registro> lista = [];
+Future<List<Inventario>> obtenerRegistros(String api, int idProyecto) async {
+  List<Inventario> lista = [];
   String url = api + '/obtener/registros/$idProyecto';
 
   var response =
@@ -294,26 +293,15 @@ Future<List<Registro>> obtenerRegistros(String api, int idProyecto) async {
   } else {
     var jsonList = json.decode(utf8.decode(response.bodyBytes)) as List;
     for (int i = 0; i < jsonList.length; i++) {
-      lista.add(Registro(
-        idRegistro: jsonList.elementAt(i)['idRegistro'],
-        folio: jsonList.elementAt(i)['folio'],
-        fechaCreacion: jsonList.elementAt(i)['fechaCreacion'],
-        estatus: jsonList.elementAt(i)['estatus'],
-        proyecto: Proyecto(
-          idproyecto: jsonList.elementAt(i)['proyecto']['idProyecto'],
-          proyecto: jsonList.elementAt(i)['proyecto']['proyecto'],
-          descripcion: jsonList.elementAt(i)['proyecto']['descripcion'],
-          fechacreacion: jsonList.elementAt(i)['proyecto']['fechaCreacion'],
-        ),
-      ));
+      lista.add(Inventario.fromJson(jsonList.elementAt(i)));
     }
   }
   return lista;
 }
 
-Future<List<Registro>> obtenerRegistrosBusqueda(
+Future<List<Inventario>> obtenerRegistrosBusqueda(
     String api, int idProyecto, String busqueda) async {
-  List<Registro> lista = [];
+  List<Inventario> lista = [];
   String url = api + '/obtener/registros/busqueda/$idProyecto/$busqueda';
 
   var response =
@@ -325,25 +313,15 @@ Future<List<Registro>> obtenerRegistrosBusqueda(
   } else {
     var jsonList = json.decode(utf8.decode(response.bodyBytes)) as List;
     for (int i = 0; i < jsonList.length; i++) {
-      lista.add(Registro(
-        idRegistro: jsonList.elementAt(i)['idRegistro'],
-        folio: jsonList.elementAt(i)['folio'],
-        fechaCreacion: jsonList.elementAt(i)['fechaCreacion'],
-        proyecto: Proyecto(
-          idproyecto: jsonList.elementAt(i)['proyecto']['idProyecto'],
-          proyecto: jsonList.elementAt(i)['proyecto']['proyecto'],
-          descripcion: jsonList.elementAt(i)['proyecto']['descripcion'],
-          fechacreacion: jsonList.elementAt(i)['proyecto']['fechaCreacion'],
-        ),
-      ));
+      lista.add(Inventario.fromJson(jsonList.elementAt(i)));
     }
   }
   return lista;
 }
 
-Future<List<Registro>> obtenerRegistrosUsuarioProyecto(
+Future<List<Inventario>> obtenerRegistrosUsuarioProyecto(
     String api, Usuario usuario, Proyecto proyecto) async {
-  List<Registro> lista = [];
+  List<Inventario> lista = [];
   String url = api +
       '/obtener/registros/asignados/usuario/proyecto/${usuario.idUsuario}/${proyecto.idproyecto}';
 
@@ -356,19 +334,7 @@ Future<List<Registro>> obtenerRegistrosUsuarioProyecto(
   } else {
     var jsonList = json.decode(utf8.decode(response.bodyBytes)) as List;
     for (int i = 0; i < jsonList.length; i++) {
-      lista.add(Registro(
-        idRegistro: jsonList.elementAt(i)['idRegistro'],
-        folio: jsonList.elementAt(i)['folio'],
-        fechaCreacion: jsonList.elementAt(i)['fechaCreacion'],
-        proyecto: Proyecto(
-          idproyecto: jsonList.elementAt(i)['proyecto']['idproyecto'],
-          proyecto: jsonList.elementAt(i)['proyecto']['proyecto'],
-          descripcion: jsonList.elementAt(i)['proyecto']['tipoproyecto']
-              ['descripcion'],
-          fechacreacion: jsonList.elementAt(i)['proyecto']['fechacreacion'],
-        ),
-        estatus: jsonList.elementAt(i)['estatus'],
-      ));
+      lista.add(Inventario.fromJson(jsonList.elementAt(i)));
     }
   }
   return lista;
@@ -453,7 +419,7 @@ Future<List<String>> asignarRegistro(
 }
 
 Future<List<int>> generarDocumentoRegistros(
-    String api, List<Registro> listaRegistro) async {
+    String api, List<Inventario> listaRegistro) async {
   List<int> lista = [];
   Map datos = {'listaRegistro': listaRegistro};
   var body = json.encode(datos['listaRegistro']);
@@ -473,7 +439,7 @@ Future<List<int>> generarDocumentoRegistros(
 }
 
 Future<List<int>> generarDocumentoRegistrosProyecto(
-    String api, List<Registro> listaRegistro, int idProyecto) async {
+    String api, List<Inventario> listaRegistro, int idProyecto) async {
   List<int> lista = [];
   Map datos = {'listaRegistro': listaRegistro};
   var body = json.encode(datos['listaRegistro']);
@@ -562,7 +528,7 @@ Future<List<Usuario>> obtenerUsuarios(String api) async {
 Future<List<Usuario>> obtenerUsuario(String api, Usuario usuario) async {
   List<Usuario> lista = [];
   //https://www.danae.com.mx:8443/web-0.0.1-SNAPSHOT/obtener/usuario
-  String url = api + '/obtener/usuario'; 
+  String url = api + '/obtener/usuario';
   var body = json.encode(usuario.toJson());
 
   var response = await http.post(url,
@@ -1048,9 +1014,9 @@ Future<List<String>> crearCatalogoRelacionado(
   return lista;
 }
 
-Future<List<Registro>> obtenerValoresCampos(String api, int idProyecto,
+Future<List<Inventario>> obtenerValoresCampos(String api, int idProyecto,
     String campo, String busqueda, int idusuario) async {
-  List<Registro> lista = [];
+  List<Inventario> lista = [];
   String url = api + '/obtener/valores/campos/busqueda';
   Map<String, String> datos = {
     'campo': campo,
@@ -1068,15 +1034,19 @@ Future<List<Registro>> obtenerValoresCampos(String api, int idProyecto,
   } else {
     var jsonList = json.decode(utf8.decode(response.bodyBytes)) as List;
     for (int i = 0; i < jsonList.length; i++) {
-      lista.add(Registro.fromJson(jsonList.elementAt(i)));
+      lista.add(Inventario.fromJson(jsonList.elementAt(i)));
     }
   }
   return lista;
 }
 
-Future<List<Registro>> obtenerValoresCamposUsuarios(String api, int idProyecto,
-    String campo, String busqueda, List<Usuario> usuarios) async {
-  List<Registro> lista = [];
+Future<List<Inventario>> obtenerValoresCamposUsuarios(
+    String api,
+    int idProyecto,
+    String campo,
+    String busqueda,
+    List<Usuario> usuarios) async {
+  List<Inventario> lista = [];
   String url = api + '/obtener/valores/campos/busqueda';
   Map<String, dynamic> datos = {
     'campo': campo,
@@ -1094,7 +1064,7 @@ Future<List<Registro>> obtenerValoresCamposUsuarios(String api, int idProyecto,
   } else {
     var jsonList = json.decode(utf8.decode(response.bodyBytes)) as List;
     for (int i = 0; i < jsonList.length; i++) {
-      lista.add(Registro.fromJson(jsonList.elementAt(i)));
+      lista.add(Inventario.fromJson(jsonList.elementAt(i)));
     }
   }
   return lista;
@@ -1382,7 +1352,7 @@ Future<String> volverAGenerarDocumentosSeleccionados(
 }
 
 Future<List<String>> crearInventarioPlantilla(
-    String api, List<Registro> registros, int idProyecto) async {
+    String api, List<Inventario> registros, int idProyecto) async {
   List<String> lista = [];
   String url = api + '/registrar/registro/plantilla/$idProyecto';
 

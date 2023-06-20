@@ -13,7 +13,6 @@ import 'package:app_isae_desarrollo/src/models/Firma.dart';
 import 'package:app_isae_desarrollo/src/models/FirmaDocumento.dart';
 import 'package:app_isae_desarrollo/src/models/Inventario.dart';
 import 'package:app_isae_desarrollo/src/models/Proyecto.dart';
-import 'package:app_isae_desarrollo/src/models/Registro.dart';
 import 'package:app_isae_desarrollo/src/models/TotalDatos.dart';
 import 'package:app_isae_desarrollo/src/models/ValoresCampo.dart';
 import 'package:app_isae_desarrollo/src/page/widgets/Dialogos.dart';

@@ -12,7 +12,6 @@ import '../../models/CamposProyecto.dart';
 import '../../models/Evidencia.dart';
 import '../../models/Firma.dart';
 import '../../models/Proyecto.dart';
-import '../../models/Registro.dart';
 import '../../models/Usuario.dart';
 import '../../models/ValoresCampos.dart';
 import '../../providers/registroProvider.dart';
@@ -25,7 +24,7 @@ class EditarRegistro extends StatelessWidget {
   Proyecto proyecto;
   GlobalKey<FormState> formKeyRegistro;
   Usuario usuarioSeleccionado;
-  Registro registroSeleccionado;
+  Inventario inventarioSeleccionado;
   RegistroProvider registroProvider;
   ScrollController _scrollController = ScrollController();
   StateSetter actualizar;
@@ -34,7 +33,7 @@ class EditarRegistro extends StatelessWidget {
     @required this.proyecto,
     @required this.formKeyRegistro,
     @required this.usuarioSeleccionado,
-    @required this.registroSeleccionado,
+    @required this.inventarioSeleccionado,
     @required this.registroProvider,
     @required this.actualizar,
   }) : super();
@@ -65,7 +64,7 @@ class EditarRegistro extends StatelessWidget {
     //Aldair 123
     //Mariana 128
     //PemexBorrado 151
-    if (registroSeleccionado.proyecto.idproyecto == 151) {
+    if (inventarioSeleccionado.proyecto.idproyecto == 151) {
       print(registroProvider.listaAgrupaciones
           .elementAt(1)
           .campos
@@ -122,7 +121,7 @@ class EditarRegistro extends StatelessWidget {
                           valores.add(ValoresCampos(
                             valor: item.valorController.text,
                             idcampoproyecto: item.idCampo,
-                            idinventario: registroSeleccionado.idRegistro,
+                            idinventario: inventarioSeleccionado.idinventario,
                           ));
 
                           if (item.tipoCampo == 'CATALOGO-INPUT') {
@@ -150,23 +149,25 @@ class EditarRegistro extends StatelessWidget {
                       await actualizarValoresCampos(
                           ApiDefinition.ipServer, valores);
                       Inventario nuevoInventario = Inventario(
-                        idinventario: registroSeleccionado.idRegistro,
+                        idinventario: inventarioSeleccionado.idinventario,
                         folio: valores.elementAt(0).valor,
-                        proyecto: registroSeleccionado.proyecto,
-                        estatus: registroSeleccionado.estatus,
-                        fechacreacion: registroSeleccionado.fechaCreacion,
+                        proyecto: inventarioSeleccionado.proyecto,
+                        estatus: inventarioSeleccionado.estatus,
+                        fechacreacion: inventarioSeleccionado.fechacreacion,
                       );
                       await actualizarFolioRegsitro(
                           ApiDefinition.ipServer, nuevoInventario);
-                      await _guardarFirmas(registroSeleccionado);
+                      await _guardarFirmas(inventarioSeleccionado);
                       await eliminarEvidencia(ApiDefinition.ipServer,
-                          registroSeleccionado.idRegistro);
-                      await _guardarEvidencias(registroSeleccionado.idRegistro);
-                      await _guardarEvidencia(registroSeleccionado.idRegistro);
+                          inventarioSeleccionado.idinventario);
+                      await _guardarEvidencias(
+                          inventarioSeleccionado.idinventario);
+                      await _guardarEvidencia(
+                          inventarioSeleccionado.idinventario);
                       actualizar(() {});
                       //Genera al documento tras una actualizacion de datos
                       await volverAGenerarDocumento(ApiDefinition.ipServer,
-                          registroSeleccionado.idRegistro);
+                          inventarioSeleccionado.idinventario);
                       Future.delayed(Duration(seconds: 5), () {
                         PantallaDeCarga.loadingI(context, false);
                         Navigator.pop(context);
@@ -276,7 +277,7 @@ class EditarRegistro extends StatelessWidget {
     );
   }
 
-  _guardarFirmas(Registro registro) async {
+  _guardarFirmas(Inventario registro) async {
     for (String firma in registroProvider.firmas.keys) {
       if (registroProvider.comprobarFirmas[firma]) {
         List<int> firmaInt = [];
@@ -288,7 +289,7 @@ class EditarRegistro extends StatelessWidget {
         Firma datosFirma = Firma(
           firma: firmaInt,
           idCampo: _obtenerIdCampo(firma),
-          idInventario: registro.idRegistro,
+          idInventario: registro.idinventario,
           nombreFirma: firma,
         );
         await actualizarFirmas(ApiDefinition.ipServer, datosFirma);

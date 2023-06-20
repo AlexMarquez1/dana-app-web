@@ -1,7 +1,7 @@
 // ignore_for_file: file_names
 import 'dart:convert';
 
-import 'package:app_isae_desarrollo/src/models/Registro.dart';
+import 'package:app_isae_desarrollo/src/models/Inventario.dart';
 
 Pendiente pendienteFromJson(String str) => Pendiente.fromJson(json.decode(str));
 
@@ -17,14 +17,14 @@ class Pendiente {
   });
 
   int idpendiente;
-  Registro inventario;
+  Inventario inventario;
   String motivo;
   String descripcion;
   String agrupacion;
 
   factory Pendiente.fromJson(Map<String, dynamic> json) => Pendiente(
         idpendiente: json["idpendiente"],
-        inventario: Registro.fromJson(json["inventario"]),
+        inventario: Inventario.fromJson(json["inventario"]),
         motivo: json["motivo"],
         descripcion: json["descripcion"],
         agrupacion: json["agrupacion"],

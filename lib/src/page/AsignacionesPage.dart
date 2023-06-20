@@ -1,9 +1,9 @@
 import 'dart:math';
 
 import 'package:app_isae_desarrollo/src/models/Estatus.dart';
+import 'package:app_isae_desarrollo/src/models/Inventario.dart';
 import 'package:app_isae_desarrollo/src/models/Perfil.dart';
 import 'package:app_isae_desarrollo/src/models/Proyecto.dart';
-import 'package:app_isae_desarrollo/src/models/Registro.dart';
 import 'package:app_isae_desarrollo/src/models/TotalDatos.dart';
 import 'package:app_isae_desarrollo/src/models/Usuario.dart';
 import 'package:app_isae_desarrollo/src/page/widgets/Dialogos.dart';
@@ -39,8 +39,8 @@ class _AsignacionesPageState extends State<AsignacionesPage> {
   List<Proyecto> _listaProyectos = [];
   List<String> _listaCampos = [];
   List<String> _listaBusqueda = [];
-  List<Registro> _listaRegistros = [];
-  List<Registro> _listaRegistrosAsignados = [];
+  List<Inventario> _listaRegistros = [];
+  List<Inventario> _listaRegistrosAsignados = [];
 
   Usuario _usuarioSeleccionado;
   Usuario _usuarioSeleccionadoAsignar;
@@ -129,7 +129,7 @@ class _AsignacionesPageState extends State<AsignacionesPage> {
                               cells: [
                                 DataCell(Text(_proyectoSeleccionado.proyecto)),
                                 DataCell(Text(registro.folio)),
-                                DataCell(Text(registro.fechaCreacion)),
+                                DataCell(Text(registro.fechacreacion)),
                                 DataCell(Text(registro.estatus)),
                                 DataCell(IconButton(
                                     onPressed: () {
@@ -141,14 +141,15 @@ class _AsignacionesPageState extends State<AsignacionesPage> {
                                             ApiDefinition.ipServer,
                                             _usuarioSeleccionadoAsignar
                                                 .idUsuario,
-                                            registro.idRegistro);
+                                            registro.idinventario);
                                         _listaProyectosSinAsignar = [];
                                         _listaRegistros =
                                             await obtenerRegistros(
                                                 ApiDefinition.ipServer,
                                                 _proyectoSeleccionado
                                                     .idproyecto);
-                                        for (Registro item in _listaRegistros) {
+                                        for (Inventario item
+                                            in _listaRegistros) {
                                           _seleccionRegistro[item.folio] =
                                               false;
                                         }
@@ -331,7 +332,7 @@ class _AsignacionesPageState extends State<AsignacionesPage> {
                           cells: [
                             DataCell(Text(registro.proyecto.proyecto)),
                             DataCell(Text(registro.folio)),
-                            DataCell(Text(registro.fechaCreacion)),
+                            DataCell(Text(registro.fechacreacion)),
                             DataCell(Text(registro.estatus != null
                                 ? registro.estatus
                                 : 'nada')),
@@ -554,7 +555,7 @@ class _AsignacionesPageState extends State<AsignacionesPage> {
                           _listaRegistros = await obtenerRegistros(
                               ApiDefinition.ipServer,
                               _proyectoSeleccionado.idproyecto);
-                          for (Registro item in _listaRegistros) {
+                          for (Inventario item in _listaRegistros) {
                             _seleccionRegistro[item.folio] = false;
                           }
                           await _consultarRegistros();
@@ -571,11 +572,11 @@ class _AsignacionesPageState extends State<AsignacionesPage> {
                   PantallaDeCarga.loadingI(context, true);
                   List<String> registrosSeleccionados = [];
                   List<String> registrosId = [];
-                  List<Registro> registrosAsignados = [];
-                  for (Registro item in _listaRegistros) {
+                  List<Inventario> registrosAsignados = [];
+                  for (Inventario item in _listaRegistros) {
                     if (_seleccionRegistro[item.folio]) {
                       registrosSeleccionados.add(item.folio);
-                      registrosId.add(item.idRegistro.toString());
+                      registrosId.add(item.idinventario.toString());
                       registrosAsignados.add(item);
                     }
                   }
@@ -632,7 +633,7 @@ class _AsignacionesPageState extends State<AsignacionesPage> {
                   _listaProyectosSinAsignar = [];
                   _listaRegistros = await obtenerRegistros(
                       ApiDefinition.ipServer, _proyectoSeleccionado.idproyecto);
-                  for (Registro item in _listaRegistros) {
+                  for (Inventario item in _listaRegistros) {
                     _seleccionRegistro[item.folio] = false;
                   }
                   await _consultarRegistros();
@@ -788,7 +789,7 @@ class _AsignacionesPageState extends State<AsignacionesPage> {
           PantallaDeCarga.loadingI(context, true);
           _listaRegistros = await obtenerRegistros(
               ApiDefinition.ipServer, _proyectoSeleccionado.idproyecto);
-          for (Registro item in _listaRegistros) {
+          for (Inventario item in _listaRegistros) {
             _seleccionRegistro[item.folio] = false;
           }
           await _consultarRegistros();
@@ -814,9 +815,9 @@ class _AsignacionesPageState extends State<AsignacionesPage> {
     );
   }
 
-  List<Registro> _eliminarAsignados(
-      List<String> asignados, List<Registro> registros) {
-    List<Registro> listaRegistrosSinAsignar = [];
+  List<Inventario> _eliminarAsignados(
+      List<String> asignados, List<Inventario> registros) {
+    List<Inventario> listaRegistrosSinAsignar = [];
     _listaRegistrosAsignados = [];
     if (asignados.isEmpty) {
       listaRegistrosSinAsignar = registros;
@@ -844,9 +845,9 @@ class _AsignacionesPageState extends State<AsignacionesPage> {
     return listaRegistrosSinAsignar;
   }
 
-  List<Registro> _eliminarAsignadosBusqueda(
-      List<String> asignados, List<Registro> registros) {
-    List<Registro> listaRegistrosSinAsignar = [];
+  List<Inventario> _eliminarAsignadosBusqueda(
+      List<String> asignados, List<Inventario> registros) {
+    List<Inventario> listaRegistrosSinAsignar = [];
     if (asignados.isEmpty) {
       listaRegistrosSinAsignar = registros;
       print('No hay registros asignados');

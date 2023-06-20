@@ -20,7 +20,6 @@ import 'package:app_isae_desarrollo/src/models/Inventario.dart';
 import 'package:app_isae_desarrollo/src/models/Pendiente.dart';
 import 'package:app_isae_desarrollo/src/models/Perfil.dart';
 import 'package:app_isae_desarrollo/src/models/Proyecto.dart';
-import 'package:app_isae_desarrollo/src/models/Registro.dart';
 import 'package:app_isae_desarrollo/src/models/Usuario.dart';
 import 'package:app_isae_desarrollo/src/page/widgets/Dialogos.dart';
 import 'package:app_isae_desarrollo/src/page/widgets/DrawerWidget.dart';
@@ -50,8 +49,8 @@ class RegistroPage extends StatelessWidget {
   ScrollController _scrollRegistros = ScrollController();
   ScrollController _scrollEditarRegistro = ScrollController();
 
-  List<Registro> _listaRegistros = [];
-  List<Registro> _listaRegistrosCompleta = [];
+  List<Inventario> _listaRegistros = [];
+  List<Inventario> _listaRegistrosCompleta = [];
   List<Proyecto> _listaProyectos = [];
   List<Usuario> _listaUsuarios = [];
   // List<Agrupaciones> _listaAgrupacionesObtenidas = [];
@@ -104,7 +103,7 @@ class RegistroPage extends StatelessWidget {
   Proyecto _proyectoSeleccionado;
   Usuario _usuarioSeleccionado;
   List<Usuario> _usuariosSeleccionados = [];
-  Registro _registroSeleccionado;
+  Inventario _registroSeleccionado;
   String _busquedaSeleccionada;
   bool _mostrarBusqueda = false;
   int _totalSeleccionado = 0;
@@ -487,10 +486,10 @@ class RegistroPage extends StatelessWidget {
                                       ),
                                       ElevatedButton(
                                         onPressed: () async {
-                                          List<Registro> registroAux = [];
+                                          List<Inventario> registroAux = [];
                                           switch (_busquedaSeleccionada) {
                                             case 'FOLIO':
-                                              for (Registro registro
+                                              for (Inventario registro
                                                   in _listaRegistrosCompleta) {
                                                 if (registro.folio
                                                     .toUpperCase()
@@ -502,7 +501,7 @@ class RegistroPage extends StatelessWidget {
                                               }
                                               break;
                                             case 'PROYECTO':
-                                              for (Registro registro
+                                              for (Inventario registro
                                                   in _listaRegistrosCompleta) {
                                                 if (registro
                                                         .proyecto.proyecto ==
@@ -513,7 +512,7 @@ class RegistroPage extends StatelessWidget {
                                               }
                                               break;
                                             case 'ESTATUS':
-                                              for (Registro registro
+                                              for (Inventario registro
                                                   in _listaRegistrosCompleta) {
                                                 if (registro.estatus ==
                                                     _controllerBusqueda.text
@@ -544,10 +543,10 @@ class RegistroPage extends StatelessWidget {
                                           }
 
                                           // _registroSeleccion = <int, bool>{};
-                                          for (Registro registro
+                                          for (Inventario registro
                                               in _listaRegistros) {
                                             _registroSeleccion[
-                                                registro.idRegistro] = false;
+                                                registro.idinventario] = false;
                                           }
                                           _registroProvider.mostrarMasOpciones =
                                               false;
@@ -636,7 +635,7 @@ class RegistroPage extends StatelessWidget {
                   List<int> listaIdInventario = [];
 
                   _listaRegistros.forEach((element) {
-                    listaIdInventario.add(element.idRegistro);
+                    listaIdInventario.add(element.idinventario);
                   });
                   print(listaIdInventario);
                   List<FotoEvidencia> listaEvidencias = await obtenerEvidencias(
@@ -854,11 +853,12 @@ class RegistroPage extends StatelessWidget {
               leading: _listaRegistros.elementAt(ind).estatus == 'CERRADO'
                   ? Checkbox(
                       value: _registroSeleccion[
-                          _listaRegistros.elementAt(ind).idRegistro],
+                          _listaRegistros.elementAt(ind).idinventario],
                       onChanged: (bool valor) {
                         print('Valor: $valor');
-                        _registroSeleccion[
-                            _listaRegistros.elementAt(ind).idRegistro] = valor;
+                        _registroSeleccion[_listaRegistros
+                            .elementAt(ind)
+                            .idinventario] = valor;
                         bool unaSeleccion = false;
                         for (bool item in _registroSeleccion.values) {
                           if (item) {
@@ -891,7 +891,7 @@ class RegistroPage extends StatelessWidget {
                 PantallaDeCarga.loadingI(context, true);
                 _relacionUsuarioInventario.forEach((key, value) {
                   for (int item in value) {
-                    if (_registroSeleccionado.idRegistro == item) {
+                    if (_registroSeleccionado.idinventario == item) {
                       _usuarioSeleccionado = Usuario(key, '', '', '', '', '',
                           '', Perfil(idperfil: '0', perfil: ''), '', 0);
                       break;
@@ -902,7 +902,8 @@ class RegistroPage extends StatelessWidget {
                     'Usuario seleccionado: ${_usuarioSeleccionado.idUsuario}');
                 await _registroProvider.obtenerRegistro(
                     Inventario(
-                        idinventario: _listaRegistros.elementAt(ind).idRegistro,
+                        idinventario:
+                            _listaRegistros.elementAt(ind).idinventario,
                         proyecto: _listaRegistros.elementAt(ind).proyecto),
                     _usuarioSeleccionado.idUsuario);
                 PantallaDeCarga.loadingI(context, false);
@@ -956,7 +957,7 @@ class RegistroPage extends StatelessWidget {
                       height: 50.0,
                       child: Center(
                         child: Text(
-                          _listaRegistros.elementAt(ind).fechaCreacion,
+                          _listaRegistros.elementAt(ind).fechacreacion,
                           style: TextStyle(overflow: TextOverflow.ellipsis),
                           maxLines: 2,
                         ),
@@ -968,7 +969,7 @@ class RegistroPage extends StatelessWidget {
                             'CERRADO') {
                           String documento = await obtenerUrlDocumento(
                               ApiDefinition.ipServer,
-                              _listaRegistros.elementAt(ind).idRegistro);
+                              _listaRegistros.elementAt(ind).idinventario);
 
                           if (documento.isNotEmpty) {
                             html.window.open(documento, 'new tab');
@@ -987,11 +988,11 @@ class RegistroPage extends StatelessWidget {
                                           .idproyecto,
                                       _listaRegistros
                                           .elementAt(ind)
-                                          .idRegistro);
+                                          .idinventario);
                               Uint8List bytes = await obtenerPdf(
                                   ApiDefinition.ipServer,
                                   _registroProvider.listaAgrupaciones,
-                                  _listaRegistros.elementAt(ind).idRegistro);
+                                  _listaRegistros.elementAt(ind).idinventario);
 
                               final blob =
                                   html.Blob([bytes], 'application/pdf');
@@ -1006,7 +1007,7 @@ class RegistroPage extends StatelessWidget {
                         } else {
                           String urlDocumento = await obtenerUrlDocumento(
                               ApiDefinition.ipServer,
-                              _listaRegistros.elementAt(ind).idRegistro);
+                              _listaRegistros.elementAt(ind).idinventario);
 
                           html.window.open(urlDocumento, 'new tab');
                         }
@@ -1017,7 +1018,7 @@ class RegistroPage extends StatelessWidget {
                       onPressed: () async {
                         PantallaDeCarga.loadingI(context, true);
                         await volverAGenerarDocumento(ApiDefinition.ipServer,
-                            _listaRegistros.elementAt(ind).idRegistro);
+                            _listaRegistros.elementAt(ind).idinventario);
                         PantallaDeCarga.loadingI(context, false);
                       },
                       icon: Icon(Icons.replay_outlined),
@@ -1041,7 +1042,7 @@ class RegistroPage extends StatelessWidget {
                                       .elementAt(ind)
                                       .proyecto
                                       .idproyecto,
-                                  _listaRegistros.elementAt(ind).idRegistro);
+                                  _listaRegistros.elementAt(ind).idinventario);
                           _camposSeleccionados['Todos'] = false;
                           for (int i = 0;
                               i < _registroProvider.listaAgrupaciones.length;
@@ -1077,7 +1078,7 @@ class RegistroPage extends StatelessWidget {
                           _listaCamposAsignados = await obtenerCamposEdicion(
                               ApiDefinition.ipServer,
                               _usuarioSeleccionado.idUsuario,
-                              _listaRegistros.elementAt(ind).idRegistro);
+                              _listaRegistros.elementAt(ind).idinventario);
 
                           if (_listaCamposAsignados.isNotEmpty) {
                             for (EdicionAsignada edicion
@@ -1132,9 +1133,9 @@ class RegistroPage extends StatelessWidget {
                     onChanged: (bool valor) {
                       print('Valor: $valor');
                       _registroSeleccion[0] = valor;
-                      for (Registro registro in _listaRegistros) {
+                      for (Inventario registro in _listaRegistros) {
                         if (registro.estatus == 'CERRADO') {
-                          _registroSeleccion[registro.idRegistro] = valor;
+                          _registroSeleccion[registro.idinventario] = valor;
                         }
                       }
 
@@ -1450,12 +1451,12 @@ class RegistroPage extends StatelessWidget {
     );
   }
 
-  Future<Pendiente> _obtenerPendiente(Registro inventario) async {
+  Future<Pendiente> _obtenerPendiente(Inventario inventario) async {
     return await obtenerPendienteActual(
-        ApiDefinition.ipServer, inventario.idRegistro);
+        ApiDefinition.ipServer, inventario.idinventario);
   }
 
-  void _sort<T>(Comparable<T> Function(Registro r) getField, bool ascendente,
+  void _sort<T>(Comparable<T> Function(Inventario r) getField, bool ascendente,
       StateSetter actualizar) {
     _listaRegistros.sort((a, b) {
       final aValue = getField(a);
@@ -1499,8 +1500,8 @@ class RegistroPage extends StatelessWidget {
   }
 
   void _registrosSeleccionadosEnCero() {
-    for (Registro registro in _listaRegistros) {
-      _registroSeleccion[registro.idRegistro] = false;
+    for (Inventario registro in _listaRegistros) {
+      _registroSeleccion[registro.idinventario] = false;
     }
     if (_registroProvider.mostrarMasOpciones) {
       _registroProvider.mostrarMasOpciones = false;
@@ -1565,11 +1566,12 @@ class RegistroPage extends StatelessWidget {
             _relacionUsuarioInventario = {};
             for (Usuario usuario in _usuariosSeleccionados) {
               //TODO: almacenar los id inventario de los usuarios
-              List<Registro> respuesta = await obtenerRegistrosUsuarioProyecto(
-                  ApiDefinition.ipServer, usuario, _proyectoSeleccionado);
+              List<Inventario> respuesta =
+                  await obtenerRegistrosUsuarioProyecto(
+                      ApiDefinition.ipServer, usuario, _proyectoSeleccionado);
               List<int> inventarios = [];
               respuesta.forEach((element) {
-                inventarios.add(element.idRegistro);
+                inventarios.add(element.idinventario);
               });
               _relacionUsuarioInventario
                   .addAll({usuario.idUsuario: inventarios});
@@ -1637,8 +1639,8 @@ class RegistroPage extends StatelessWidget {
                     _mostrarBusqueda = true;
                   }
                   _busquedaSeleccionada = null;
-                  for (Registro registro in _listaRegistros) {
-                    _registroSeleccion[registro.idRegistro] = false;
+                  for (Inventario registro in _listaRegistros) {
+                    _registroSeleccion[registro.idinventario] = false;
                   }
                   PantallaDeCarga.loadingI(context, false);
                   actualizar(() {});
@@ -1683,11 +1685,11 @@ class RegistroPage extends StatelessWidget {
             _listaBusqueda.add('PENDIENTE');
             _listaBusqueda.add('CERRADO');
           } else if (valor == 'FOLIO') {
-            for (Registro registro in _listaRegistrosCompleta) {
+            for (Inventario registro in _listaRegistrosCompleta) {
               _listaBusqueda.add(registro.folio);
             }
           } else if (valor == 'PROYECTO') {
-            for (Registro registro in _listaRegistrosCompleta) {
+            for (Inventario registro in _listaRegistrosCompleta) {
               if (!_listaBusqueda.contains(registro.proyecto.proyecto)) {
                 _listaBusqueda.add(registro.proyecto.proyecto);
               }
@@ -1758,7 +1760,7 @@ class RegistroPage extends StatelessWidget {
                 proyecto: proyecto,
                 formKeyRegistro: _formKeyRegistro,
                 usuarioSeleccionado: _usuarioSeleccionado,
-                registroSeleccionado: _registroSeleccionado,
+                inventarioSeleccionado: _registroSeleccionado,
                 registroProvider: _registroProvider,
                 actualizar: actualizar,
               )
@@ -1999,10 +2001,10 @@ class RegistroPage extends StatelessWidget {
                                       ),
                                       inventario: Inventario(
                                         idinventario:
-                                            _registroSeleccionado.idRegistro,
+                                            _registroSeleccionado.idinventario,
                                         estatus: _registroSeleccionado.estatus,
                                         fechacreacion:
-                                            _registroSeleccionado.fechaCreacion,
+                                            _registroSeleccionado.fechacreacion,
                                         folio: _registroSeleccionado.folio,
                                         proyecto:
                                             _registroSeleccionado.proyecto,
@@ -2062,7 +2064,7 @@ class RegistroPage extends StatelessWidget {
         ApiDefinition.ipServer, _usuarioSeleccionado, _proyectoSeleccionado);
   }
 
-  _guardarFirmas(Registro registro) async {
+  _guardarFirmas(Inventario registro) async {
     for (String firma in _registroProvider.firmas.keys) {
       if (_registroProvider.comprobarFirmas[firma]) {
         List<int> firmaInt = [];
@@ -2074,7 +2076,7 @@ class RegistroPage extends StatelessWidget {
         Firma datosFirma = Firma(
           firma: firmaInt,
           idCampo: _obtenerIdCampo(firma),
-          idInventario: registro.idRegistro,
+          idInventario: registro.idinventario,
           nombreFirma: firma,
         );
         await actualizarFirmas(ApiDefinition.ipServer, datosFirma);

@@ -2,7 +2,7 @@
 
 import 'dart:convert';
 
-import 'package:app_isae_desarrollo/src/models/Registro.dart';
+import 'package:app_isae_desarrollo/src/models/Inventario.dart';
 
 Estatus estatusFromJson(String str) => Estatus.fromJson(json.decode(str));
 
@@ -21,27 +21,21 @@ class Estatus {
   String agrupacion;
   String motivo;
   String descripcion;
-  Registro inventario;
+  Inventario inventario;
 
   factory Estatus.fromJson(Map<String, dynamic> json) => Estatus(
         estatus: json["estatus"],
         agrupacion: json["agrupacion"],
         motivo: json["motivo"],
         descripcion: json["descripcion"],
-        inventario: Registro.fromJson(json["inventario"]),
+        inventario: Inventario.fromJson(json["inventario"]),
       );
 
   Map<String, dynamic> toJson() => {
         "estatus": estatus,
         "agrupacion": agrupacion,
         "motivo": motivo,
-        "inventario": {
-          'idinventario': inventario.idRegistro,
-          // 'fechacreacion': inventario.fechaCreacion,
-          'folio': inventario.folio,
-          'estatus': inventario.estatus,
-          'proyecto': inventario.proyecto.toJson(),
-        },
+        "inventario": inventario.toJson(),
         "descripcion": descripcion,
       };
 }
