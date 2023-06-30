@@ -73,6 +73,6 @@ class Campos {
         "restriccion": restriccion,
         "alerta": alerta,
         "longitud": longitud,
-        "valor": valor,
+        "valor": valorController.text,
       };
 }

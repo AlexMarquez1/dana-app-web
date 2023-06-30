@@ -1612,56 +1612,66 @@ class RegistroPage extends StatelessWidget {
           future: obtenerProyectosAsignados(
               ApiDefinition.ipServer, VariablesGlobales.usuario),
           builder: (BuildContext context, AsyncSnapshot snapshot) {
-            if (_listaProyectos.isEmpty) {
-              if (snapshot.hasData) {
+            if (snapshot.hasData) {
+              if (_listaProyectos.isEmpty) {
                 _listaProyectos = snapshot.data;
               }
+              return _dropProyectos(context, actualizar, _listaProyectos);
+            } else {
+              return Container(
+                width: 300.0,
+                child: LinearProgressIndicator(),
+              );
             }
-            return Container(
-              width: 300.0,
-              child: DropdownButtonFormField(
-                isExpanded: true,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  hintText: 'Proyectos',
-                ),
-                value: _proyectoSeleccionado,
-                onChanged: (valor) async {
-                  _proyectoSeleccionado = valor;
-                  PantallaDeCarga.loadingI(context, true);
-                  _listaRegistros = await obtenerRegistrosUsuarioProyecto(
-                      ApiDefinition.ipServer,
-                      VariablesGlobales.usuario,
-                      _proyectoSeleccionado);
-                  _listaRegistrosCompleta = _listaRegistros;
-                  _controllerBusqueda.text = '';
-                  if (_listaRegistros.isNotEmpty) {
-                    _mostrarBusqueda = true;
-                  }
-                  _busquedaSeleccionada = null;
-                  for (Inventario registro in _listaRegistros) {
-                    _registroSeleccion[registro.idinventario] = false;
-                  }
-                  PantallaDeCarga.loadingI(context, false);
-                  actualizar(() {});
-                },
-                items: _listaProyectos.map((item) {
-                  return DropdownMenuItem(
-                    value: item,
-                    child: Text(item.proyecto),
-                  );
-                }).toList(),
-                validator: (Proyecto value) {
-                  if (value == null) {
-                    return 'Selecciona un proyecto';
-                  } else {
-                    return null;
-                  }
-                },
-              ),
-            );
           });
     }
+  }
+
+  Widget _dropProyectos(
+      BuildContext context, StateSetter actualizar, List<Proyecto> lista) {
+    return Container(
+      width: 300.0,
+      child: DropdownButtonFormField(
+        isExpanded: true,
+        decoration: InputDecoration(
+          border: OutlineInputBorder(),
+          hintText: 'Proyectos',
+        ),
+        value: _proyectoSeleccionado,
+        onChanged: (valor) async {
+          _proyectoSeleccionado = valor;
+          PantallaDeCarga.loadingI(context, true);
+          _listaRegistros = await obtenerRegistrosUsuarioProyecto(
+              ApiDefinition.ipServer,
+              VariablesGlobales.usuario,
+              _proyectoSeleccionado);
+          _listaRegistrosCompleta = _listaRegistros;
+          _controllerBusqueda.text = '';
+          if (_listaRegistros.isNotEmpty) {
+            _mostrarBusqueda = true;
+          }
+          _busquedaSeleccionada = null;
+          for (Inventario registro in _listaRegistros) {
+            _registroSeleccion[registro.idinventario] = false;
+          }
+          PantallaDeCarga.loadingI(context, false);
+          actualizar(() {});
+        },
+        items: _listaProyectos.map((item) {
+          return DropdownMenuItem(
+            value: item,
+            child: Text(item.proyecto),
+          );
+        }).toList(),
+        validator: (Proyecto value) {
+          if (value == null) {
+            return 'Selecciona un proyecto';
+          } else {
+            return null;
+          }
+        },
+      ),
+    );
   }
 
   Widget _listarOpcionesBusqueda(BuildContext context, StateSetter actualizar) {

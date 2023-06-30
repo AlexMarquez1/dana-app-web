@@ -8,17 +8,19 @@ String usuarioToJson(Usuario data) => json.encode(data.toJson());
 
 class Usuario {
   Usuario(
-      this._idUsuario,
-      this._nombre,
-      this._usuario,
-      this._correo,
-      this._telefono,
-      this._ubicacion,
-      this._jefeInmediato,
-      this._perfil,
-      this._password,
-      this._passTemp,
-      {this.token});
+    this._idUsuario,
+    this._nombre,
+    this._usuario,
+    this._correo,
+    this._telefono,
+    this._ubicacion,
+    this._jefeInmediato,
+    this._perfil,
+    this._password,
+    this._passTemp, {
+    this.token,
+    this.status,
+  });
 
   int _idUsuario;
   String _nombre;
@@ -31,6 +33,7 @@ class Usuario {
   String _password;
   int _passTemp;
   String token;
+  String status;
 
   int get idUsuario {
     return _idUsuario;
@@ -123,6 +126,7 @@ class Usuario {
         json["perfile"] == null ? null : Perfil.fromJson(json["perfile"]),
         json["pass"].toString(),
         json["passtemp"] ?? '',
+        status: json["status"] ?? '',
         token: json["token"] ?? '',
       );
 
@@ -137,6 +141,7 @@ class Usuario {
         "perfile": perfil.toJson(),
         "pass": _password,
         "passtemp": _passTemp,
+        "status": status,
         "token": token,
       };
 }

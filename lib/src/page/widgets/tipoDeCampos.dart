@@ -1264,8 +1264,9 @@ class TipoDeCampos extends StatelessWidget {
                   );
                   if (picked != null) {
                     String hora =
-                        "${picked.hour.toString().padLeft(2, '0')}:${picked.minute.toString().padLeft(2, '0')}";
+                        "${picked.hour.toString().padLeft(2, '0')}:${picked.minute.toString().padLeft(2, '0').replaceAll(' ', '')}";
 
+                    print('Hora Seleccionada: $hora');
                     _registroProvider.actualizarCampoHorao(
                         _registroProvider.listaAgrupaciones
                             .elementAt(indAgrupacion)

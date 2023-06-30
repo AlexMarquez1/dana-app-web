@@ -367,7 +367,12 @@ class _LoginPageState extends State<LoginPage> {
         setState(() {});
       } else {
         VariablesGlobales.usuario = usuario.first;
-        Navigator.pushNamed(context, '/inicio');
+        if (usuario.first.status == 'ACTIVO' &&
+            usuario.first.perfil.idperfil != '6') {
+          Navigator.pushNamed(context, '/inicio');
+        } else {
+          Dialogos.error(context, 'Usuario o contraseña incorrectos');
+        }
       }
     }
   }

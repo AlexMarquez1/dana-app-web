@@ -13,6 +13,7 @@ import 'package:app_isae_desarrollo/src/models/Firma.dart';
 import 'package:app_isae_desarrollo/src/models/FirmaDocumento.dart';
 import 'package:app_isae_desarrollo/src/models/FotoBytes.dart';
 import 'package:app_isae_desarrollo/src/models/FotoEvidencia.dart';
+import 'package:app_isae_desarrollo/src/models/HistorialCambios.dart';
 import 'package:app_isae_desarrollo/src/models/Inventario.dart';
 import 'package:app_isae_desarrollo/src/models/Notificaciones.dart';
 import 'package:app_isae_desarrollo/src/models/Pendiente.dart';
@@ -540,19 +541,19 @@ Future<List<Usuario>> obtenerUsuario(String api, Usuario usuario) async {
     var jsonList = json.decode(utf8.decode(response.bodyBytes)) as List;
     for (int i = 0; i < jsonList.length; i++) {
       lista.add(Usuario(
-        jsonList.elementAt(i)['idusuario'],
-        jsonList.elementAt(i)['nombre'],
-        jsonList.elementAt(i)['usuario'],
-        jsonList.elementAt(i)['correo'],
-        jsonList.elementAt(i)['telefono'].toString(),
-        jsonList.elementAt(i)['ubicacion'],
-        jsonList.elementAt(i)['jefeinmediato'],
-        Perfil(
-            idperfil: jsonList.elementAt(i)['perfile']['idperfil'].toString(),
-            perfil: jsonList.elementAt(i)['perfile']['perfil']),
-        jsonList.elementAt(i)['pass'].toString(),
-        jsonList.elementAt(i)['passtemp'],
-      ));
+          jsonList.elementAt(i)['idusuario'],
+          jsonList.elementAt(i)['nombre'],
+          jsonList.elementAt(i)['usuario'],
+          jsonList.elementAt(i)['correo'],
+          jsonList.elementAt(i)['telefono'].toString(),
+          jsonList.elementAt(i)['ubicacion'],
+          jsonList.elementAt(i)['jefeinmediato'],
+          Perfil(
+              idperfil: jsonList.elementAt(i)['perfile']['idperfil'].toString(),
+              perfil: jsonList.elementAt(i)['perfile']['perfil']),
+          jsonList.elementAt(i)['pass'].toString(),
+          jsonList.elementAt(i)['passtemp'],
+          status: jsonList.elementAt(i)['status']));
     }
   }
   return lista;
@@ -721,6 +722,28 @@ Future<List<FotoEvidencia>> obtenerFotosProyecto(
     var jsonList = json.decode(response.body) as List;
     for (int i = 0; i < jsonList.length; i++) {
       lista.add(FotoEvidencia.fromJson(jsonList[i]));
+    }
+  }
+  return lista;
+}
+
+Future<List<HistorialCambios>> obtenerHistorialPorInventario(
+    String api, Inventario inventario) async {
+  List<HistorialCambios> lista = [];
+  String url = api + '/obtener/historial/registro';
+
+  var body = json.encode(inventario.toJson());
+  var uri = Uri.parse(url);
+  var response = await http.post(uri,
+      headers: {"Content-Type": "application/json"}, body: body);
+  print('Respuesta: ${response.statusCode}');
+  if (response.statusCode < 200 || response.statusCode > 400 || json == null) {
+    print('Error en la consulta');
+  } else {
+    var jsonList = json.decode(response.body) as List;
+    for (int i = 0; i < jsonList.length; i++) {
+      print(jsonList[i]);
+      lista.add(HistorialCambios.fromJson(jsonList[i]));
     }
   }
   return lista;
@@ -1493,6 +1516,27 @@ Future<List<String>> actualizarValoresCampos(
   var body = json.encode(datos['valores']);
 
   var response = await http.post(url,
+      headers: {"Content-Type": "application/json"}, body: body);
+  print('Respuesta: ${response.statusCode}');
+  if (response.statusCode < 200 || response.statusCode >= 400 || json == null) {
+    print('Error en la consulta');
+  } else {
+    var jsonList = json.decode(utf8.decode(response.bodyBytes)) as List;
+    for (int i = 0; i < jsonList.length; i++) {
+      lista.add(jsonList.elementAt(i));
+    }
+  }
+  return lista;
+}
+
+Future<List<String>> actualizarValores(
+    String api, Map<String, dynamic> datos) async {
+  List<String> lista = [];
+  String url = api + '/inventario/actualizar/valores';
+
+  var body = json.encode(datos);
+  var uri = Uri.parse(url);
+  var response = await http.post(uri,
       headers: {"Content-Type": "application/json"}, body: body);
   print('Respuesta: ${response.statusCode}');
   if (response.statusCode < 200 || response.statusCode >= 400 || json == null) {

@@ -633,12 +633,13 @@ class RegistroProvider extends ChangeNotifier {
     if (listaHoras.isNotEmpty) {
       for (int i = 0; i < listaHoras.length; i++) {
         if (valores.isNotEmpty && valores.elementAt(i).length > 2) {
-          print('Hora: ${valores.elementAt(i)}');
-          if (valores.elementAt(i).length == 5) {
+          List<String> textoSeparado =
+              valores.elementAt(i).replaceAll(' ', '').split(':');
+          print('Hora: $textoSeparado');
+          if (textoSeparado.length == 2) {
             horas[listaHoras.elementAt(i)] = TimeOfDay(
-                hour: int.parse(valores.elementAt(i).split(':')[0]),
-                minute: int.parse(
-                    valores.elementAt(i).split(':')[1].substring(1, 2)));
+                hour: int.parse(textoSeparado[0].replaceAll(' ', '')),
+                minute: int.parse(textoSeparado[1].replaceAll(' ', '')));
           } else {
             horas[listaHoras.elementAt(i)] = TimeOfDay.now();
           }

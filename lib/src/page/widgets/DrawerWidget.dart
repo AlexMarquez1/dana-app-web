@@ -100,7 +100,7 @@ class DrawerPrincipal extends StatelessWidget {
           _opciones(context, Icons.notification_add_rounded, 'notificaciones'),
         );
         break;
-      case 'Usuario':
+      case 'Documentador':
         lista.add(
           _opciones(context, Icons.inventory, 'proyectos'),
         );

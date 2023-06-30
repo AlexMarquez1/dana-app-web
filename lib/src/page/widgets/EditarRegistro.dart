@@ -1,10 +1,13 @@
 import 'dart:typed_data';
 
+import 'package:app_isae_desarrollo/src/models/HistorialCambios.dart';
 import 'package:app_isae_desarrollo/src/models/Inventario.dart';
 import 'package:app_isae_desarrollo/src/page/widgets/Dialogos.dart';
 import 'package:app_isae_desarrollo/src/page/widgets/PantallaCarga.dart';
+import 'package:app_isae_desarrollo/src/page/widgets/TablaHistorico.dart';
 import 'package:app_isae_desarrollo/src/page/widgets/tipoDeCampos.dart';
 import 'package:flutter/material.dart';
+import 'package:loading_animations/loading_animations.dart';
 
 import '../../models/Agrupaciones.dart';
 import '../../models/Campos.dart';
@@ -144,26 +147,49 @@ class EditarRegistro extends StatelessWidget {
                     Dialogos.advertencia(
                         context, 'Seguro que quieres guardar los cambios?',
                         () async {
+                      Map<String, dynamic> mandarDatos = {};
+                      mandarDatos['ind'] = 0;
+                      mandarDatos['inventario'] = inventarioSeleccionado;
+                      mandarDatos['usuario'] = VariablesGlobales.usuario;
+
+                      mandarDatos['listaAgrupaciones'] =
+                          registroProvider.listaAgrupaciones;
+
+                      mandarDatos['firmas'] =
+                          _guardarFirmas(inventarioSeleccionado);
+
+                      mandarDatos['fotos'] = _guardarEvidencia(
+                          inventarioSeleccionado.idinventario);
+
+                      mandarDatos['estatus'] = inventarioSeleccionado.estatus;
+
+                      mandarDatos['evidencias'] = _guardarEvidencias(
+                          inventarioSeleccionado.idinventario);
+
                       PantallaDeCarga.loadingI(context, true);
 
-                      await actualizarValoresCampos(
-                          ApiDefinition.ipServer, valores);
-                      Inventario nuevoInventario = Inventario(
-                        idinventario: inventarioSeleccionado.idinventario,
-                        folio: valores.elementAt(0).valor,
-                        proyecto: inventarioSeleccionado.proyecto,
-                        estatus: inventarioSeleccionado.estatus,
-                        fechacreacion: inventarioSeleccionado.fechacreacion,
-                      );
-                      await actualizarFolioRegsitro(
-                          ApiDefinition.ipServer, nuevoInventario);
-                      await _guardarFirmas(inventarioSeleccionado);
-                      await eliminarEvidencia(ApiDefinition.ipServer,
-                          inventarioSeleccionado.idinventario);
-                      await _guardarEvidencias(
-                          inventarioSeleccionado.idinventario);
-                      await _guardarEvidencia(
-                          inventarioSeleccionado.idinventario);
+                      await actualizarValores(
+                          ApiDefinition.ipServer, mandarDatos);
+
+                      // await actualizarValoresCampos(
+                      //     ApiDefinition.ipServer, valores);
+                      // Inventario nuevoInventario = Inventario(
+                      //   idinventario: inventarioSeleccionado.idinventario,
+                      //   folio: valores.elementAt(0).valor,
+                      //   proyecto: inventarioSeleccionado.proyecto,
+                      //   estatus: inventarioSeleccionado.estatus,
+                      //   fechacreacion: inventarioSeleccionado.fechacreacion,
+                      // );
+                      // await actualizarFolioRegsitro(
+                      //     ApiDefinition.ipServer, nuevoInventario);
+
+                      //TODO: Comprobar si es necesario eliminar las evidencias
+                      // await eliminarEvidencia(ApiDefinition.ipServer,
+                      //     inventarioSeleccionado.idinventario);
+                      // await _guardarEvidencias(
+                      //     inventarioSeleccionado.idinventario);
+                      // await _guardarEvidencia(
+                      //     inventarioSeleccionado.idinventario);
                       actualizar(() {});
                       //Genera al documento tras una actualizacion de datos
                       await volverAGenerarDocumento(ApiDefinition.ipServer,
@@ -193,8 +219,178 @@ class EditarRegistro extends StatelessWidget {
                 },
                 child: Text('Cancelar'),
               )),
+          Expanded(child: Container()),
+          Container(
+              padding: EdgeInsets.only(top: 10.0, right: 10.0),
+              alignment: Alignment.centerRight,
+              child: Tooltip(
+                message: 'Historial de cambios',
+                child: ElevatedButton(
+                  onPressed: () async {
+                    await showGeneralDialog(
+                      barrierLabel: "Label",
+                      barrierDismissible: true,
+                      barrierColor: Colors.black.withOpacity(0),
+                      transitionDuration: Duration(milliseconds: 700),
+                      context: context,
+                      pageBuilder: (context, anim1, anim2) {
+                        return SimpleDialog(
+                          shape: RoundedRectangleBorder(
+                              side: BorderSide(color: Colors.white, width: 3),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(15))),
+                          alignment: Alignment.bottomRight,
+                          title: Container(
+                            height: 50.0,
+                            alignment: Alignment.centerRight,
+                            child: Row(
+                              children: [
+                                Expanded(child: Container()),
+                                IconButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                    icon: Icon(Icons.close))
+                              ],
+                            ),
+                          ),
+                          contentPadding: EdgeInsets.all(10.0),
+                          children: [
+                            Container(
+                              width: 800.0,
+                              height: 700.0,
+                              color: Colors.grey[200],
+                              child: FutureBuilder(
+                                future: obtenerHistorialPorInventario(
+                                    ApiDefinition.ipServer,
+                                    inventarioSeleccionado),
+                                builder: (BuildContext context,
+                                    AsyncSnapshot snapshot) {
+                                  if (snapshot.hasData) {
+                                    int currentSortColumn = 0;
+                                    bool isAscending = true;
+                                    List<HistorialCambios> historial;
+                                    historial = snapshot.data;
+                                    return StatefulBuilder(
+                                        builder: (context, ordenar) {
+                                      return Container(
+                                        child: SingleChildScrollView(
+                                          child: _construyendoTabla(
+                                              context,
+                                              historial,
+                                              ordenar,
+                                              currentSortColumn,
+                                              isAscending),
+                                        ),
+                                      );
+                                    });
+                                  } else {
+                                    return LoadingBouncingGrid.circle();
+                                  }
+                                },
+                              ),
+                            ),
+                          ],
+                        );
+                      },
+                      transitionBuilder: (context, anim1, anim2, child) {
+                        return SlideTransition(
+                          position:
+                              Tween(begin: Offset(1, 0), end: Offset(0, 0))
+                                  .animate(anim1),
+                          child: child,
+                        );
+                      },
+                    );
+                  },
+                  child: Icon(Icons.history),
+                ),
+              )),
         ],
       ),
+    );
+  }
+
+  Widget _construyendoTabla(
+      BuildContext context,
+      List<HistorialCambios> historial,
+      StateSetter ordenar,
+      int currentSortColumn,
+      bool isAscending) {
+    return PaginatedDataTable(
+      sortColumnIndex: currentSortColumn,
+      sortAscending: isAscending,
+      source: TablaHistorico(
+        historial,
+        (String valor) async {
+          await showDialog(
+              barrierDismissible: true,
+              context: context,
+              builder: (context) {
+                return SimpleDialog(
+                  shape: RoundedRectangleBorder(
+                      side: BorderSide(color: Colors.white, width: 3),
+                      borderRadius: BorderRadius.all(Radius.circular(15))),
+                  title: Container(
+                    height: 40.0,
+                    width: 30.0,
+                    child: Row(children: [
+                      Expanded(child: Container()),
+                      IconButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          icon: Icon(Icons.close))
+                    ]),
+                  ),
+                  children: <Widget>[
+                    Center(
+                        child: Container(
+                            //color: Colors.grey[300],
+                            width: MediaQuery.of(context).size.width * 0.5,
+                            height: 500.0,
+                            child: LimitedBox(
+                                maxHeight: 200.0,
+                                child: FadeInImage.assetNetwork(
+                                    placeholder: 'assets/img/loadingImage.gif',
+                                    image: valor)))),
+                  ],
+                );
+              });
+        },
+      ),
+      columns: [
+        DataColumn(label: Text('Campo')),
+        DataColumn(label: Text('Usuario')),
+        DataColumn(label: Text('Anterior')),
+        DataColumn(label: Text('Nuevo')),
+        DataColumn(
+          label: Text('Fecha'),
+          onSort: (columnIndex, ascending) {
+            ordenar(() {
+              currentSortColumn = columnIndex;
+              if (isAscending == true) {
+                isAscending = false;
+                // sort the product list in Ascending, order by Price
+                historial.sort((historialA, historialB) =>
+                    historialB.fechacambio.compareTo(historialA.fechacambio));
+              } else {
+                isAscending = true;
+                // sort the product list in Descending, order by Price
+                historial.sort((historialA, historialB) =>
+                    historialA.fechacambio.compareTo(historialB.fechacambio));
+              }
+            });
+          },
+        ),
+        DataColumn(label: Text('Hora')),
+        DataColumn(label: Text('Restablecer')),
+      ],
+      header: Center(
+        child: Text('Historial de cambios'),
+      ),
+      columnSpacing: 100.0,
+      horizontalMargin: 60.0,
     );
   }
 
@@ -277,7 +473,8 @@ class EditarRegistro extends StatelessWidget {
     );
   }
 
-  _guardarFirmas(Inventario registro) async {
+  List<Firma> _guardarFirmas(Inventario registro) {
+    List<Firma> lista = [];
     for (String firma in registroProvider.firmas.keys) {
       if (registroProvider.comprobarFirmas[firma]) {
         List<int> firmaInt = [];
@@ -287,17 +484,21 @@ class EditarRegistro extends StatelessWidget {
         firmaInt = byte.cast<int>();
 
         Firma datosFirma = Firma(
-          firma: firmaInt,
-          idCampo: _obtenerIdCampo(firma),
-          idInventario: registro.idinventario,
+          idFirma: 0,
           nombreFirma: firma,
+          firma: firmaInt,
+          idInventario: registro.idinventario,
+          idCampo: _obtenerIdCampo(firma),
         );
-        await actualizarFirmas(ApiDefinition.ipServer, datosFirma);
+        lista.add(datosFirma);
+        // await actualizarFirmas(ApiDefinition.ipServer, datosFirma);
       }
     }
+    return lista;
   }
 
-  Future<void> _guardarEvidencias(int idRegistro) async {
+  List<Evidencia> _guardarEvidencias(int idRegistro) {
+    List<Evidencia> lista = [];
     if (registroProvider.evidenciaCheckList.isNotEmpty) {
       registroProvider.evidenciaCheckList.forEach((key, value) {
         value.forEach((nombre, valor) async {
@@ -311,14 +512,17 @@ class EditarRegistro extends StatelessWidget {
             nombreEvidencia: nombre,
           );
 
-          await actualizarEvidencia(ApiDefinition.ipServer, fotoEvidencia,
-              VariablesGlobales.usuario.idUsuario);
+          // await actualizarEvidencia(ApiDefinition.ipServer, fotoEvidencia,
+          //     VariablesGlobales.usuario.idUsuario);
+          lista.add(fotoEvidencia);
         });
       });
     }
+    return lista;
   }
 
-  _guardarEvidencia(int idRegistro) async {
+  List<Evidencia> _guardarEvidencia(int idRegistro) {
+    List<Evidencia> lista = [];
     for (String evidencia in registroProvider.evidencia.keys) {
       if (registroProvider.comprobarFotos[evidencia]) {
         List<int> evidenciaInt = [];
@@ -326,15 +530,18 @@ class EditarRegistro extends StatelessWidget {
         evidenciaInt = byte.cast<int>();
 
         Evidencia datosFirma = Evidencia(
+          idEvidencia: 0,
           evidencia: evidenciaInt,
           idCampo: _obtenerIdCampo(evidencia),
           idInventario: idRegistro,
           nombreEvidencia: evidencia,
         );
-        await actualizarEvidencia(
-            ApiDefinition.ipServer, datosFirma, usuarioSeleccionado.idUsuario);
+        lista.add(datosFirma);
+        // await actualizarEvidencia(
+        //     ApiDefinition.ipServer, datosFirma, usuarioSeleccionado.idUsuario);
       }
     }
+    return lista;
   }
 
   Widget _buildTitle(String titulo) {

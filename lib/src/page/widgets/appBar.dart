@@ -1,4 +1,5 @@
 import 'package:app_isae_desarrollo/src/providers/registroProvider.dart';
+import 'package:app_isae_desarrollo/src/utils/VariablesGlobales.dart';
 import 'package:flutter/material.dart';
 
 PreferredSizeWidget appBarPrincipal(
@@ -7,19 +8,34 @@ PreferredSizeWidget appBarPrincipal(
   return AppBar(
     elevation: 50,
     backgroundColor: Color.fromRGBO(36, 90, 149, 1),
-    leading: IconButton(
-        onPressed: () {
-          if (registroProvider != null) {
-            registroProvider.mostrarMasOpciones = false;
-          }
-          Navigator.of(context).pushNamedAndRemoveUntil(
-              '/inicio', (Route<dynamic> route) => false);
-        },
-        icon: Icon(Icons.home)),
-    title: Center(
-      child: Image(
-        image: AssetImage('assets/img/AppIcon.png'),
-        width: 50.0,
+    leading: Row(
+      children: [
+        IconButton(
+            onPressed: () {
+              if (registroProvider != null) {
+                registroProvider.mostrarMasOpciones = false;
+              }
+              Navigator.of(context).pushNamedAndRemoveUntil(
+                  '/inicio', (Route<dynamic> route) => false);
+            },
+            icon: Icon(Icons.home)),
+      ],
+    ),
+    title: Container(
+      width: double.infinity,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            VariablesGlobales.usuario.perfil.perfil ?? '',
+            style: TextStyle(color: Colors.white),
+          ),
+          Image(
+            image: AssetImage('assets/img/AppIcon.png'),
+            width: 50.0,
+          ),
+          Container(),
+        ],
       ),
     ),
     actions: [

@@ -115,6 +115,21 @@ class _InicioPageState extends State<InicioPage> {
         //   Container(),
         // ]));
         break;
+      case 'Documentador':
+        componentes.add(TableRow(children: [
+          // BotonInicio(icono: Icons.inventory, etiqueta: 'proyectos'),
+          BotonInicio(icono: Icons.inventory, etiqueta: 'proyectos'),
+          BotonInicio(icono: Icons.folder, etiqueta: 'registros'),
+          Container(),
+        ]));
+        // componentes.add(TableRow(children: [
+        //   BotonInicio(icono: Icons.person_pin, etiqueta: 'asistencia'),
+        //   BotonInicio(
+        //       icono: Icons.notification_add_rounded,
+        //       etiqueta: 'notificaciones'),
+        //   Container(),
+        // ]));
+        break;
       case 'Cliente':
         break;
       case 'Tecnico':
