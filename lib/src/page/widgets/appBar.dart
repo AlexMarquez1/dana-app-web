@@ -29,7 +29,7 @@ PreferredSizeWidget appBarPrincipal(
               '/inicio', (Route<dynamic> route) => false);
         },
         onLongPress: () async {
-          await _cambiarCliente(context);
+          // await _cambiarCliente(context);
         },
         child: Container(
           width: 200.0,
@@ -94,12 +94,15 @@ Widget _clientes(BuildContext context) {
   return PopupMenuButton<Cliente>(
     color: Colors.white,
     offset: Offset(0, 100),
-    tooltip: '${_registroProvider.usuario.vistacliente.cliente}',
+    tooltip:
+        '${_registroProvider.usuario.vistacliente == null ? _registroProvider.listaClientes.elementAt(0).cliente : _registroProvider.usuario.vistacliente.cliente}',
     shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.all(
       Radius.circular(20.0),
     )),
-    initialValue: _registroProvider.usuario.vistacliente,
+    initialValue: _registroProvider.usuario.vistacliente == null
+        ? _registroProvider.listaClientes.elementAt(0)
+        : _registroProvider.usuario.vistacliente,
     itemBuilder: (context) => <PopupMenuItem<Cliente>>[
       for (Cliente cliente in _registroProvider.listaClientes)
         PopupMenuItem<Cliente>(
@@ -107,7 +110,9 @@ Widget _clientes(BuildContext context) {
           child: _designCliente(cliente),
         ),
     ],
-    child: _designCliente(_registroProvider.usuario.vistacliente),
+    child: _designCliente(_registroProvider.usuario.vistacliente == null
+        ? _registroProvider.listaClientes.elementAt(0)
+        : _registroProvider.usuario.vistacliente),
     onSelected: (Cliente value) {
       Usuario usuario = _registroProvider.usuario;
       usuario.vistacliente = value;
