@@ -1,14 +1,18 @@
 import 'package:animate_do/animate_do.dart';
 import 'package:animated_widgets/widgets/rotation_animated.dart';
 import 'package:animated_widgets/widgets/shake_animated_widget.dart';
+import 'package:app_isae_desarrollo/src/models/Cliente.dart';
+import 'package:app_isae_desarrollo/src/models/ClienteAplicacion.dart';
 import 'package:app_isae_desarrollo/src/models/Perfil.dart';
 import 'package:app_isae_desarrollo/src/models/Usuario.dart';
 import 'package:app_isae_desarrollo/src/page/widgets/Dialogos.dart';
 import 'package:app_isae_desarrollo/src/page/widgets/PantallaCarga.dart';
+import 'package:app_isae_desarrollo/src/providers/registroProvider.dart';
 import 'package:app_isae_desarrollo/src/services/APIWebService/ApiDefinitions.dart';
 import 'package:app_isae_desarrollo/src/services/APIWebService/Consultas.dart';
 import 'package:app_isae_desarrollo/src/utils/VariablesGlobales.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -32,10 +36,25 @@ class _LoginPageState extends State<LoginPage> {
   AnimationController _animateController;
 
   Usuario _usuario = Usuario(
-      0, '', '', '', '', '', '', Perfil(idperfil: '', perfil: ''), '', 0);
+      idUsuario: 0,
+      nombre: 'SIN RESULTADOS',
+      usuario: 'SIN RESULTADOS',
+      correo: '_correo',
+      telefono: '_telefono',
+      ubicacion: '_ubicacion',
+      jefeInmediato: '_jefeInmediato',
+      perfil: Perfil(),
+      password: '_password',
+      passTemp: 0,
+      status: '',
+      clienteAplicacion: ClienteAplicacion(),
+      vistacliente: Cliente());
+
+  RegistroProvider _registroProvider;
 
   @override
   Widget build(BuildContext context) {
+    _registroProvider = Provider.of<RegistroProvider>(context, listen: true);
     return Scaffold(
       backgroundColor: Colors.white,
       body: _tarjeta(),
@@ -357,8 +376,8 @@ class _LoginPageState extends State<LoginPage> {
     _usuario.password = _passController.text;
     List<Usuario> usuario =
         await obtenerUsuario(ApiDefinition.ipServer, _usuario);
-    PantallaDeCarga.loadingI(context, false);
     if (usuario.isEmpty) {
+      PantallaDeCarga.loadingI(context, false);
       Dialogos.error(context, 'Usuario o contraseña incorrectos');
     } else {
       if (usuario.elementAt(0).passTemp == 1) {
@@ -366,11 +385,18 @@ class _LoginPageState extends State<LoginPage> {
         _animateController.forward();
         setState(() {});
       } else {
+        List<Cliente> listaClientes = await obtenerClientesPorUsuario(
+            ApiDefinition.ipServer,
+            usuario.elementAt(0).clienteAplicacion.idcliente);
+        _registroProvider.listaClientes = listaClientes;
+        _registroProvider.usuario = usuario.first;
         VariablesGlobales.usuario = usuario.first;
+        PantallaDeCarga.loadingI(context, false);
         if (usuario.first.status == 'ACTIVO' &&
             usuario.first.perfil.idperfil != '6') {
           Navigator.pushNamed(context, '/inicio');
         } else {
+          PantallaDeCarga.loadingI(context, false);
           Dialogos.error(context, 'Usuario o contraseña incorrectos');
         }
       }

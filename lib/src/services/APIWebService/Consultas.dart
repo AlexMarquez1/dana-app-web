@@ -5,6 +5,7 @@ import 'package:app_isae_desarrollo/src/models/Agrupaciones.dart';
 import 'package:app_isae_desarrollo/src/models/Asistencia.dart';
 import 'package:app_isae_desarrollo/src/models/Catalogo.dart';
 import 'package:app_isae_desarrollo/src/models/CatalogoRelacionado.dart';
+import 'package:app_isae_desarrollo/src/models/Cliente.dart';
 import 'package:app_isae_desarrollo/src/models/DatosAValidar.dart';
 import 'package:app_isae_desarrollo/src/models/EdicionAsignada.dart';
 import 'package:app_isae_desarrollo/src/models/Estatus.dart';
@@ -32,11 +33,7 @@ Future<String> crearProyecto(String api, List<Agrupaciones> lista,
   String respuesta = 'Error';
 
   String url = api + '/crear/proyecto/$nombreProyecto/$tipoProyecto';
-  Map datos = {
-    'lista': lista,
-  };
-
-  var body = json.encode(datos['lista']);
+  var body = json.encode(lista);
 
   var response = await http.post(url,
       headers: {"Content-Type": "application/json"}, body: body);
@@ -341,6 +338,27 @@ Future<List<Inventario>> obtenerRegistrosUsuarioProyecto(
   return lista;
 }
 
+Future<List<Inventario>> getRegistrosPorProyecto(
+    String api, Proyecto proyecto) async {
+  List<Inventario> lista = [];
+  String url = api + '/obtener/registros/proyecto';
+
+  var response = await http.post(url,
+      headers: {"Content-Type": "application/json"},
+      body: json.encode(proyecto));
+  print('Respuesta: ${response.statusCode}');
+
+  if (response.statusCode < 200 || response.statusCode > 400 || json == null) {
+    print('Error en la consulta');
+  } else {
+    var jsonList = json.decode(utf8.decode(response.bodyBytes)) as List;
+    for (int i = 0; i < jsonList.length; i++) {
+      lista.add(Inventario.fromJson(jsonList.elementAt(i)));
+    }
+  }
+  return lista;
+}
+
 Future<List<String>> obtenerRegistrosAsignados(
     String api, int idusuario) async {
   List<String> lista = [];
@@ -506,20 +524,7 @@ Future<List<Usuario>> obtenerUsuarios(String api) async {
   } else {
     var jsonList = json.decode(utf8.decode(response.bodyBytes)) as List;
     for (int i = 0; i < jsonList.length; i++) {
-      lista.add(Usuario(
-        jsonList.elementAt(i)['idusuario'],
-        jsonList.elementAt(i)['nombre'],
-        jsonList.elementAt(i)['usuario'],
-        jsonList.elementAt(i)['correo'],
-        jsonList.elementAt(i)['telefono'].toString(),
-        jsonList.elementAt(i)['ubicacion'],
-        jsonList.elementAt(i)['jefeinmediato'],
-        Perfil(
-            idperfil: jsonList.elementAt(i)['perfile']['idperfil'].toString(),
-            perfil: jsonList.elementAt(i)['perfile']['perfil']),
-        jsonList.elementAt(i)['pass'].toString(),
-        jsonList.elementAt(i)['passtemp'],
-      ));
+      lista.add(Usuario.fromJson(jsonList[i]));
     }
   }
 
@@ -540,20 +545,7 @@ Future<List<Usuario>> obtenerUsuario(String api, Usuario usuario) async {
   } else {
     var jsonList = json.decode(utf8.decode(response.bodyBytes)) as List;
     for (int i = 0; i < jsonList.length; i++) {
-      lista.add(Usuario(
-          jsonList.elementAt(i)['idusuario'],
-          jsonList.elementAt(i)['nombre'],
-          jsonList.elementAt(i)['usuario'],
-          jsonList.elementAt(i)['correo'],
-          jsonList.elementAt(i)['telefono'].toString(),
-          jsonList.elementAt(i)['ubicacion'],
-          jsonList.elementAt(i)['jefeinmediato'],
-          Perfil(
-              idperfil: jsonList.elementAt(i)['perfile']['idperfil'].toString(),
-              perfil: jsonList.elementAt(i)['perfile']['perfil']),
-          jsonList.elementAt(i)['pass'].toString(),
-          jsonList.elementAt(i)['passtemp'],
-          status: jsonList.elementAt(i)['status']));
+      lista.add(Usuario.fromJson(jsonList[i]));
     }
   }
   return lista;
@@ -742,7 +734,6 @@ Future<List<HistorialCambios>> obtenerHistorialPorInventario(
   } else {
     var jsonList = json.decode(response.body) as List;
     for (int i = 0; i < jsonList.length; i++) {
-      print(jsonList[i]);
       lista.add(HistorialCambios.fromJson(jsonList[i]));
     }
   }
@@ -2048,6 +2039,79 @@ Future<List<Inventario>> obtenerRegistrosDashboard(
     var jsonList = json.decode(utf8.decode(response.bodyBytes)) as List;
     for (int i = 0; i < jsonList.length; i++) {
       lista.add(Inventario.fromJson(jsonList.elementAt(i)));
+    }
+  }
+
+  return lista;
+}
+
+Future<List<Cliente>> obtenerClientesPorUsuario(
+    String api, int idclienteaplicacion) async {
+  List<Cliente> lista = [];
+
+  String url = api + '/obtener/clientes/usuario/$idclienteaplicacion';
+
+  var response = await http.get(
+    url,
+    headers: {"Content-Type": "application/json"},
+  );
+  print('Respuesta: ${response.statusCode}');
+
+  if (response.statusCode < 200 || response.statusCode > 400 || json == null) {
+    print('Error en la consulta');
+  } else {
+    var jsonList = json.decode(utf8.decode(response.bodyBytes)) as List;
+    for (int i = 0; i < jsonList.length; i++) {
+      lista.add(Cliente.fromJson(jsonList.elementAt(i)));
+    }
+  }
+
+  return lista;
+}
+
+Future<List<Proyecto>> obtenerProyecrtosPorCliente(
+    String api, Cliente clienteSeleccionado) async {
+  List<Proyecto> lista = [];
+
+  String url = api + '/obtener/proyectos/cliente';
+
+  var response = await http.post(
+    url,
+    headers: {"Content-Type": "application/json"},
+    body: json.encode(clienteSeleccionado),
+  );
+  print('Respuesta: ${response.statusCode}');
+
+  if (response.statusCode < 200 || response.statusCode > 400 || json == null) {
+    print('Error en la consulta');
+  } else {
+    var jsonList = json.decode(utf8.decode(response.bodyBytes)) as List;
+    for (int i = 0; i < jsonList.length; i++) {
+      lista.add(Proyecto.fromJson(jsonList.elementAt(i)));
+    }
+  }
+
+  return lista;
+}
+
+Future<List<String>> nuevoCliente(String api, Cliente cliente) async {
+  List<String> lista = [];
+
+  String url = api + '/nuevo/cliente';
+
+  var response = await http.post(
+    url,
+    headers: {"Content-Type": "application/json"},
+    body: json.encode(cliente),
+  );
+  print('Respuesta: ${response.statusCode}');
+
+  if (response.statusCode < 200 || response.statusCode > 400 || json == null) {
+    print('Error en la consulta');
+  } else {
+    var jsonList = json.decode(utf8.decode(response.bodyBytes)) as List;
+    for (int i = 0; i < jsonList.length; i++) {
+      lista.add(jsonList.elementAt(i));
     }
   }
 

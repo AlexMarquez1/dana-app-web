@@ -723,8 +723,7 @@ class ProyectosPage extends StatelessWidget {
                       width: 20.0,
                     ),
                     VariablesGlobales.usuario.perfil.idperfil == '1' ||
-                            VariablesGlobales.usuario.perfil.idperfil == '2' ||
-                            VariablesGlobales.usuario.perfil.idperfil == '3'
+                            VariablesGlobales.usuario.perfil.idperfil == '2'
                         ? Row(
                             children: [
                               Text('SELECCIONA USUARIO:'),
@@ -1019,61 +1018,59 @@ class ProyectosPage extends StatelessWidget {
                   child: Row(
                     children: [
                       Container(
-                          padding: EdgeInsets.only(top: 10.0, right: 10.0),
-                          alignment: Alignment.centerRight,
-                          child: ElevatedButton(
-                            onPressed: () async {
-                              String respuestaDuplicados =
-                                  await _validarDuplicidad(proyecto);
-                              print(
-                                  'Respuesta duplicados: $respuestaDuplicados');
-                              if (respuestaDuplicados == 'SIN DUPLICADOS') {
-                                if (_usuarioSeleccionado != null) {
-                                  if (_formKeyRegistro.currentState
-                                      .validate()) {
+                        padding: EdgeInsets.only(top: 10.0, right: 10.0),
+                        alignment: Alignment.centerRight,
+                        child: ElevatedButton(
+                          onPressed: () async {
+                            String respuestaDuplicados =
+                                await _validarDuplicidad(proyecto);
+                            print('Respuesta duplicados: $respuestaDuplicados');
+                            if (respuestaDuplicados == 'SIN DUPLICADOS') {
+                              if (_usuarioSeleccionado != null) {
+                                if (_formKeyRegistro.currentState.validate()) {
+                                  _formKeyRegistro.currentState.save();
+                                  print('Todos los campos tienen informacion');
+                                  _mensaje(
+                                      context,
+                                      '¿Estas seguro de crear un registro?',
+                                      proyecto,
+                                      _usuarioSeleccionado);
+                                } else {
+                                  print(
+                                      'Id Campo Folio: ${_registroProvider.listaAgrupaciones.elementAt(0).campos.elementAt(0).idCampo} ');
+                                  if (_registroProvider.listaAgrupaciones
+                                      .elementAt(0)
+                                      .campos
+                                      .elementAt(0)
+                                      .valorController
+                                      .text
+                                      .isNotEmpty) {
+                                    print('Folio con informacion');
                                     _formKeyRegistro.currentState.save();
-                                    print(
-                                        'Todos los campos tienen informacion');
                                     _mensaje(
                                         context,
-                                        '¿Estas seguro de crear un registro?',
+                                        '¿Estas seguro de crear un registro con uno o mas campos vacios?',
                                         proyecto,
                                         _usuarioSeleccionado);
                                   } else {
-                                    print(
-                                        'Id Campo Folio: ${_registroProvider.listaAgrupaciones.elementAt(0).campos.elementAt(0).idCampo} ');
-                                    if (_registroProvider.listaAgrupaciones
-                                        .elementAt(0)
-                                        .campos
-                                        .elementAt(0)
-                                        .valorController
-                                        .text
-                                        .isNotEmpty) {
-                                      print('Folio con informacion');
-                                      _formKeyRegistro.currentState.save();
-                                      _mensaje(
-                                          context,
-                                          '¿Estas seguro de crear un registro con uno o mas campos vacios?',
-                                          proyecto,
-                                          _usuarioSeleccionado);
-                                    } else {
-                                      Dialogos.error(context,
-                                          'Existen uno o mas campos sin informacion, revisalo y vuelve a intentar');
-                                    }
+                                    Dialogos.error(context,
+                                        'Existen uno o mas campos sin informacion, revisalo y vuelve a intentar');
                                   }
-                                } else {
-                                  Dialogos.mensaje(context,
-                                      'Selecciona usuario para asignar');
                                 }
                               } else {
                                 Dialogos.mensaje(
-                                  context,
-                                  "Se encuentran algunos valores ${respuestaDuplicados.replaceAll('[', '\n [')}",
-                                );
+                                    context, 'Selecciona usuario para asignar');
                               }
-                            },
-                            child: Text('Aceptar'),
-                          )),
+                            } else {
+                              Dialogos.mensaje(
+                                context,
+                                "Se encuentran algunos valores ${respuestaDuplicados.replaceAll('[', '\n [')}",
+                              );
+                            }
+                          },
+                          child: Text('Aceptar'),
+                        ),
+                      ),
                       Container(
                           padding: EdgeInsets.only(top: 10.0, right: 10.0),
                           alignment: Alignment.centerRight,
@@ -1146,6 +1143,7 @@ class ProyectosPage extends StatelessWidget {
       },
       usuariosSeleccionado: [],
       tipoBusqueda: 'SIMPLE',
+      limiteSeleccion: 0,
     );
     // return Container(
     //   width: 250.0,

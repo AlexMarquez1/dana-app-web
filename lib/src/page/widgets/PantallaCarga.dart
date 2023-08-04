@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:loading_animations/loading_animations.dart';
 
@@ -10,7 +12,9 @@ class PantallaDeCarga {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (BuildContext context) => _FullScreenLoader(),
+      builder: (BuildContext context) => BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 6, sigmaY: 6),
+          child: _FullScreenLoader()),
     );
   }
 

@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:app_isae_desarrollo/src/models/Cliente.dart';
+import 'package:app_isae_desarrollo/src/models/Usuario.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_signature_pad/flutter_signature_pad.dart';
 import 'package:http/http.dart' as http;
@@ -37,6 +39,27 @@ class RegistroProvider extends ChangeNotifier {
       new Map<String, GlobalKey<SignatureState>>();
 
   bool _mostrarMasOpciones = false;
+
+  Usuario _usuario;
+  List<Cliente> _listaClientes;
+
+  Usuario get usuario {
+    return _usuario;
+  }
+
+  set usuario(Usuario usuario) {
+    _usuario = usuario;
+    notifyListeners();
+  }
+
+  List<Cliente> get listaClientes {
+    return _listaClientes;
+  }
+
+  set listaClientes(List<Cliente> listaClientes) {
+    _listaClientes = listaClientes;
+    notifyListeners();
+  }
 
   Inventario get inventario {
     return _inventario;
@@ -350,7 +373,6 @@ class RegistroProvider extends ChangeNotifier {
     List<FirmaDocumento> respuestaFirmas = [];
     var jsonListRespuestaFirmas = respuesta['respuestaFirmas'] as List<dynamic>;
     for (int i = 0; i < jsonListRespuestaFirmas.length; i++) {
-      print(jsonListRespuestaFirmas.elementAt(i));
       respuestaFirmas
           .add(FirmaDocumento.fromJson(jsonListRespuestaFirmas.elementAt(i)));
     }
@@ -514,10 +536,12 @@ class RegistroProvider extends ChangeNotifier {
   void _acomodarDatos() {
     _camposAValidar = [];
     String nombreCampo = '';
+    String valor = '';
     for (int i = 0; i < _listaAgrupaciones.length; i++) {
       for (int j = 0; j < _listaAgrupaciones.elementAt(i).campos.length; j++) {
         nombreCampo =
             _listaAgrupaciones.elementAt(i).campos.elementAt(j).nombreCampo;
+        valor = listaAgrupaciones.elementAt(i).campos.elementAt(j).valor;
         if (_listaAgrupaciones
                 .elementAt(i)
                 .campos
@@ -536,6 +560,13 @@ class RegistroProvider extends ChangeNotifier {
           String hora =
               '${camposHora[nombreCampo].hour.toString().padLeft(2, '0')}: ${camposHora[nombreCampo].minute.toString().padLeft(2, '0')}';
           actualizarValor(i, j, hora);
+        }
+        if (_checkBox.containsKey(nombreCampo)) {
+          if (valor == 'TRUE') {
+            _checkBox[nombreCampo] = true;
+          } else {
+            _checkBox[nombreCampo] = false;
+          }
         }
       }
     }

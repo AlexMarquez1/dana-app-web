@@ -1,29 +1,45 @@
+import 'package:app_isae_desarrollo/src/models/Proyecto.dart';
+import 'package:app_isae_desarrollo/src/page/widgets/PantallaCarga.dart';
+import 'package:app_isae_desarrollo/src/providers/registroProvider.dart';
+import 'package:app_isae_desarrollo/src/services/APIWebService/ApiDefinitions.dart';
+import 'package:app_isae_desarrollo/src/services/APIWebService/Consultas.dart';
 import 'package:app_isae_desarrollo/src/utils/VariablesGlobales.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class DrawerPrincipal extends StatelessWidget {
   DrawerPrincipal({Key key}) : super(key: key);
   final ScrollController scrollController = ScrollController();
+  RegistroProvider _registroProvider;
 
   @override
   Widget build(BuildContext context) {
+    _registroProvider = Provider.of<RegistroProvider>(context, listen: true);
     return Drawer(
       child: ListView(
         controller: scrollController,
         padding: EdgeInsets.zero,
         children: [
           Container(
-            alignment: AlignmentDirectional.topStart,
             color: Color.fromRGBO(36, 90, 149, 1),
-            height: 55.0,
-            child: IconButton(
-              icon: Icon(
-                Icons.close,
-                color: Colors.white,
-              ),
-              onPressed: () {
-                Navigator.pop(context);
-              },
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                  alignment: AlignmentDirectional.center,
+                  height: 100.0,
+                  child: IconButton(
+                    icon: Icon(
+                      Icons.close,
+                      color: Colors.white,
+                    ),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                ),
+              ],
             ),
           ),
           for (Widget widget in _listaOpciones(context)) widget,
@@ -88,17 +104,17 @@ class DrawerPrincipal extends StatelessWidget {
           _opciones(context, Icons.inventory, 'proyectos'),
         );
         lista.add(
-          _opciones(context, Icons.folder_shared, 'asignaciones'),
-        );
-        lista.add(
           _opciones(context, Icons.folder, 'registros'),
         );
         lista.add(
-          _opciones(context, Icons.person_pin, 'asistencia'),
+          _opciones(context, Icons.folder_shared, 'asignaciones'),
         );
-        lista.add(
-          _opciones(context, Icons.notification_add_rounded, 'notificaciones'),
-        );
+        // lista.add(
+        //   _opciones(context, Icons.person_pin, 'asistencia'),
+        // );
+        // lista.add(
+        //   _opciones(context, Icons.notification_add_rounded, 'notificaciones'),
+        // );
         break;
       case 'Documentador':
         lista.add(
@@ -106,6 +122,14 @@ class DrawerPrincipal extends StatelessWidget {
         );
         lista.add(
           _opciones(context, Icons.folder, 'registros'),
+        );
+        break;
+      case 'RH':
+        lista.add(
+          _opciones(context, Icons.person_add, 'usuarios'),
+        );
+        lista.add(
+          _opciones(context, Icons.folder_shared, 'asignaciones'),
         );
         break;
       case 'Cliente':
@@ -122,11 +146,11 @@ class DrawerPrincipal extends StatelessWidget {
       child: ListTile(
         leading: Icon(icono),
         title: Text(etiqueta.toUpperCase()),
-        onTap: () {
+        onTap: () async {
           switch (etiqueta) {
             case 'proyectos':
               Navigator.pop(context);
-              Navigator.of(context).pushNamed('/$etiqueta');
+              Navigator.of(context).pushNamed('/clientes');
               break;
             case 'usuarios':
               Navigator.pop(context);
@@ -141,8 +165,26 @@ class DrawerPrincipal extends StatelessWidget {
               Navigator.of(context).pushNamed('/$etiqueta');
               break;
             case 'registros':
-              Navigator.pop(context);
-              Navigator.of(context).pushNamed('/$etiqueta');
+              // PantallaDeCarga.loadingI(context, true);
+              // print(
+              //     'Cliente: ${VariablesGlobales.usuario.clienteAplicacion.cliente}');
+              // List<Cliente> listaClientes = await obtenerClientesPorUsuario(
+              //     ApiDefinition.ipServer,
+              //     VariablesGlobales.usuario.clienteAplicacion.idcliente);
+
+              // PantallaDeCarga.loadingI(context, false);
+
+              // Navigator.of(context).pushNamed('/clientes',
+              //     arguments: _registroProvider.listaClientes);
+              PantallaDeCarga.loadingI(context, true);
+              List<Proyecto> listaProyectosPorCliente =
+                  await obtenerProyecrtosPorCliente(ApiDefinition.ipServer,
+                      _registroProvider.usuario.vistacliente);
+              print(
+                  'Cantidad de proyectos: ${listaProyectosPorCliente.length}');
+              PantallaDeCarga.loadingI(context, false);
+              Navigator.pushNamed(context, '/registros',
+                  arguments: listaProyectosPorCliente);
               break;
             case 'asistencia':
               Navigator.pop(context);

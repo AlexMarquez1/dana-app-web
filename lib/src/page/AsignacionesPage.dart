@@ -8,7 +8,9 @@ import 'package:app_isae_desarrollo/src/models/TotalDatos.dart';
 import 'package:app_isae_desarrollo/src/models/Usuario.dart';
 import 'package:app_isae_desarrollo/src/page/widgets/Dialogos.dart';
 import 'package:app_isae_desarrollo/src/page/widgets/DrawerWidget.dart';
+import 'package:app_isae_desarrollo/src/page/widgets/ListaUsuarios.dart';
 import 'package:app_isae_desarrollo/src/page/widgets/PantallaCarga.dart';
+import 'package:app_isae_desarrollo/src/page/widgets/TablaRegistrosAsignados.dart';
 import 'package:app_isae_desarrollo/src/page/widgets/appBar.dart';
 import 'package:app_isae_desarrollo/src/services/APIWebService/ApiDefinitions.dart';
 import 'package:app_isae_desarrollo/src/services/APIWebService/Consultas.dart';
@@ -28,6 +30,8 @@ class _AsignacionesPageState extends State<AsignacionesPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final _formKeyProyecto = GlobalKey<FormState>();
   final _formKeyRegistro = GlobalKey<FormState>();
+  final GlobalKey<PaginatedDataTableState> _dataTable =
+      GlobalKey<PaginatedDataTableState>();
 
   //Lista para asignar proyecto
   List<Usuario> _listaUsuarios = [];
@@ -53,6 +57,10 @@ class _AsignacionesPageState extends State<AsignacionesPage> {
   Map<String, bool> _seleccionRegistro = new Map<String, bool>();
 
   TextEditingController _busquedaController = new TextEditingController();
+  TextEditingController _controllerBuscarUsuarioProyecto =
+      TextEditingController();
+  TextEditingController _controllerBuscarUsuarioRegistro =
+      TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -100,123 +108,102 @@ class _AsignacionesPageState extends State<AsignacionesPage> {
               SizedBox(
                 height: 20.0,
               ),
-              Text(
-                'Registros Asignados',
-                style: TextStyle(fontSize: 30.0),
-              ),
-              SizedBox(
-                height: 20.0,
-              ),
-              Container(
-                margin: EdgeInsets.all(20.0),
-                child: DataTable(
-                  showCheckboxColumn: false,
-                  columns: [
-                    DataColumn(label: Text('Proyecto'.toUpperCase())),
-                    DataColumn(label: Text('Folio'.toUpperCase())),
-                    DataColumn(label: Text('Fecha Crecion'.toUpperCase())),
-                    DataColumn(label: Text('Estatus'.toUpperCase())),
-                    DataColumn(label: Text('Eliminar'.toUpperCase())),
-                  ],
-                  rows: _listaRegistrosAsignados == null
-                      ? []
-                      : _listaRegistrosAsignados
-                          .map(
-                            (registro) => DataRow(
-                              onSelectChanged: (seleccion) {
-                                if (seleccion) {}
-                              },
-                              cells: [
-                                DataCell(Text(_proyectoSeleccionado.proyecto)),
-                                DataCell(Text(registro.folio)),
-                                DataCell(Text(registro.fechacreacion)),
-                                DataCell(Text(registro.estatus)),
-                                DataCell(IconButton(
-                                    onPressed: () {
-                                      Dialogos.advertencia(context,
-                                          'Estas seguro de eliminar la asignacion del registro: ${registro.folio} \nal usuario: ${_usuarioSeleccionadoAsignar.usuario}',
-                                          () async {
-                                        PantallaDeCarga.loadingI(context, true);
-                                        await eliminarAsignacionRegistro(
-                                            ApiDefinition.ipServer,
-                                            _usuarioSeleccionadoAsignar
-                                                .idUsuario,
-                                            registro.idinventario);
-                                        _listaProyectosSinAsignar = [];
-                                        _listaRegistros =
-                                            await obtenerRegistros(
-                                                ApiDefinition.ipServer,
-                                                _proyectoSeleccionado
-                                                    .idproyecto);
-                                        for (Inventario item
-                                            in _listaRegistros) {
-                                          _seleccionRegistro[item.folio] =
-                                              false;
-                                        }
-                                        await _consultarRegistros();
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Theme(
+                  data: Theme.of(context).copyWith(
+                    cardColor: Colors.grey[300],
+                  ),
+                  child: Container(
+                      width: constraints.maxWidth,
+                      height: 700.0,
+                      // margin: EdgeInsets.all(20.0),
+                      child: PaginatedDataTable(
+                        // rowsPerPage: 10,
 
-                                        if (registro.estatus == 'ASIGNADO') {
-                                          Database db = database();
-                                          DatabaseReference ref =
-                                              db.ref('TotalDatos');
+                        source: TablaRegistroAsignado(
+                            _listaRegistrosAsignados, () {}, true,
+                            clickEliminar: (Inventario registro) {
+                          Dialogos.advertencia(context,
+                              'Estas seguro de eliminar la asignacion del registro: ${registro.folio} \nal usuario: ${_usuarioSeleccionadoAsignar.usuario}',
+                              () async {
+                            PantallaDeCarga.loadingI(context, true);
+                            await eliminarAsignacionRegistro(
+                                ApiDefinition.ipServer,
+                                _usuarioSeleccionadoAsignar.idUsuario,
+                                registro.idinventario);
+                            _listaProyectosSinAsignar = [];
+                            _listaRegistros = await obtenerRegistros(
+                                ApiDefinition.ipServer,
+                                _proyectoSeleccionado.idproyecto);
+                            for (Inventario item in _listaRegistros) {
+                              _seleccionRegistro[item.folio] = false;
+                            }
+                            await _consultarRegistros();
 
-                                          await ref
-                                              .child(_proyectoSeleccionado
-                                                  .proyecto)
-                                              .set({
-                                            'NUEVO': Random().nextInt(100),
-                                            'ASIGNADO': Random().nextInt(100),
-                                            'PENDIENTE': Random().nextInt(100),
-                                            'EN PROCESO': Random().nextInt(100),
-                                            'CERRADO': Random().nextInt(100),
-                                          });
+                            if (registro.estatus == 'ASIGNADO') {
+                              Database db = database();
+                              DatabaseReference ref = db.ref('TotalDatos');
 
-                                          // DatabaseSnapshot snap =
-                                          //     await FirebaseDatabaseWeb.instance
-                                          //         .reference()
-                                          //         .child('TotalDatos')
-                                          //         .child(_proyectoSeleccionado
-                                          //             .proyecto)
-                                          //         .once();
-                                          // TotalDatos datos =
-                                          //     TotalDatos.fromJson(snap.value);
+                              await ref
+                                  .child(_proyectoSeleccionado.proyecto)
+                                  .set({
+                                'NUEVO': Random().nextInt(100),
+                                'ASIGNADO': Random().nextInt(100),
+                                'PENDIENTE': Random().nextInt(100),
+                                'EN PROCESO': Random().nextInt(100),
+                                'CERRADO': Random().nextInt(100),
+                              });
 
-                                          // datos.totalAsignados =
-                                          //     datos.totalAsignados - 1;
-                                          // datos.totalNuevos =
-                                          //     datos.totalNuevos + 1;
+                              // DatabaseSnapshot snap =
+                              //     await FirebaseDatabaseWeb.instance
+                              //         .reference()
+                              //         .child('TotalDatos')
+                              //         .child(_proyectoSeleccionado
+                              //             .proyecto)
+                              //         .once();
+                              // TotalDatos datos =
+                              //     TotalDatos.fromJson(snap.value);
 
-                                          // FirebaseDatabaseWeb.instance
-                                          //     .reference()
-                                          //     .child('TotalDatos')
-                                          //     .child(_proyectoSeleccionado
-                                          //         .proyecto)
-                                          //     .update(datos.toJson());
+                              // datos.totalAsignados =
+                              //     datos.totalAsignados - 1;
+                              // datos.totalNuevos =
+                              //     datos.totalNuevos + 1;
 
-                                          Estatus estatus = Estatus(
-                                              estatus: 'NUEVO',
-                                              inventario: registro);
+                              // FirebaseDatabaseWeb.instance
+                              //     .reference()
+                              //     .child('TotalDatos')
+                              //     .child(_proyectoSeleccionado
+                              //         .proyecto)
+                              //     .update(datos.toJson());
 
-                                          await cambiarEstatus(
-                                              ApiDefinition.ipServer, estatus);
-                                        }
+                              Estatus estatus = Estatus(
+                                  estatus: 'NUEVO', inventario: registro);
 
-                                        setState(() {});
-                                        PantallaDeCarga.loadingI(
-                                            context, false);
-                                        Navigator.pop(context);
-                                      });
-                                    },
-                                    icon: Icon(
-                                      Icons.delete_sweep,
-                                      color: Colors.red,
-                                    ))),
-                              ],
-                            ),
-                          )
-                          .toList(),
+                              await cambiarEstatus(
+                                  ApiDefinition.ipServer, estatus);
+                            }
+
+                            setState(() {});
+                            PantallaDeCarga.loadingI(context, false);
+                            Navigator.pop(context);
+                          });
+                        }),
+                        columns: [
+                          DataColumn(label: Text('Folio'.toUpperCase())),
+                          DataColumn(
+                              label: Text('Fecha Crecion'.toUpperCase())),
+                          DataColumn(label: Text('Estatus'.toUpperCase())),
+                          DataColumn(label: Text('Eliminar'.toUpperCase())),
+                        ],
+                        header: Center(
+                          child: Text('Registros Asignados'),
+                        ),
+                        // columnSpacing: 100.0,
+                        // horizontalMargin: 60.0,
+                      )),
                 ),
-              ),
+              )
             ],
           ),
         );
@@ -305,42 +292,94 @@ class _AsignacionesPageState extends State<AsignacionesPage> {
       builder: (BuildContext context, BoxConstraints constraints) {
         return SingleChildScrollView(
           scrollDirection: Axis.horizontal,
-          child: Container(
-            margin: EdgeInsets.all(20.0),
-            child: DataTable(
-              showCheckboxColumn: true,
-              columns: [
-                DataColumn(label: Text('Proyecto'.toUpperCase())),
-                DataColumn(label: Text('Folio'.toUpperCase())),
-                DataColumn(label: Text('Fecha Crecion'.toUpperCase())),
-                DataColumn(label: Text('Estatus'.toUpperCase())),
-              ],
-              rows: _listaRegistros == null
-                  ? []
-                  : _listaRegistros
-                      .map(
-                        (registro) => DataRow(
-                          selected: _seleccionRegistro[registro.folio],
-                          onSelectChanged: (seleccion) {
-                            if (seleccion) {
-                              _seleccionRegistro[registro.folio] = seleccion;
-                            } else {
-                              _seleccionRegistro[registro.folio] = seleccion;
-                            }
-                            setState(() {});
-                          },
-                          cells: [
-                            DataCell(Text(registro.proyecto.proyecto)),
-                            DataCell(Text(registro.folio)),
-                            DataCell(Text(registro.fechacreacion)),
-                            DataCell(Text(registro.estatus != null
-                                ? registro.estatus
-                                : 'nada')),
-                          ],
-                        ),
-                      )
-                      .toList(),
+          child: Theme(
+            data: Theme.of(context).copyWith(
+              cardColor: Colors.grey[300],
             ),
+            child: Container(
+                width: constraints.maxWidth,
+                height: 700.0,
+                // margin: EdgeInsets.all(20.0),
+                child: PaginatedDataTable(
+                  key: _dataTable,
+                  // rowsPerPage: 10,
+
+                  source: TablaRegistroAsignado(
+                      _listaRegistros,
+                      //  _listaRegistros
+                      //     .map(
+                      //       (registro) => DataRow(
+                      //         selected: _seleccionRegistro[registro.folio],
+                      //         onSelectChanged: (seleccion) {
+                      //           if (seleccion) {
+                      //             _seleccionRegistro[registro.folio] =
+                      //                 seleccion;
+                      //           } else {
+                      //             _seleccionRegistro[registro.folio] =
+                      //                 seleccion;
+                      //           }
+                      //           setState(() {});
+                      //         },
+                      //         cells: [
+                      //           DataCell(Text(registro.proyecto.proyecto)),
+                      //           DataCell(Text(registro.folio)),
+                      //           DataCell(Text(registro.fechacreacion)),
+                      //           DataCell(Text(registro.estatus != null
+                      //               ? registro.estatus
+                      //               : 'nada')),
+                      //         ],
+                      //       ),
+                      //     )
+                      //     .toList(),
+                      () {},
+                      false,
+                      seleccionRegistro: _seleccionRegistro),
+                  columns: [
+                    DataColumn(label: Text('Folio'.toUpperCase())),
+                    DataColumn(label: Text('Fecha Crecion'.toUpperCase())),
+                    DataColumn(label: Text('Estatus'.toUpperCase())),
+                  ],
+                  header: Center(
+                    child: Text('Registros sin asignar'),
+                  ),
+                  // columnSpacing: 100.0,
+                  // horizontalMargin: 60.0,
+                )
+                // DataTable(
+                //   showCheckboxColumn: true,
+                //   columns: [
+                //     DataColumn(label: Text('Proyecto'.toUpperCase())),
+                //     DataColumn(label: Text('Folio'.toUpperCase())),
+                //     DataColumn(label: Text('Fecha Crecion'.toUpperCase())),
+                //     DataColumn(label: Text('Estatus'.toUpperCase())),
+                //   ],
+                //   rows: _listaRegistros == null
+                //       ? []
+                //       : _listaRegistros
+                //           .map(
+                //             (registro) => DataRow(
+                //               selected: _seleccionRegistro[registro.folio],
+                //               onSelectChanged: (seleccion) {
+                //                 if (seleccion) {
+                //                   _seleccionRegistro[registro.folio] = seleccion;
+                //                 } else {
+                //                   _seleccionRegistro[registro.folio] = seleccion;
+                //                 }
+                //                 setState(() {});
+                //               },
+                //               cells: [
+                //                 DataCell(Text(registro.proyecto.proyecto)),
+                //                 DataCell(Text(registro.folio)),
+                //                 DataCell(Text(registro.fechacreacion)),
+                //                 DataCell(Text(registro.estatus != null
+                //                     ? registro.estatus
+                //                     : 'nada')),
+                //               ],
+                //             ),
+                //           )
+                //           .toList(),
+                // ),
+                ),
           ),
         );
       },
@@ -533,6 +572,7 @@ class _AsignacionesPageState extends State<AsignacionesPage> {
                                             _proyectoSeleccionado.idproyecto,
                                             _busquedaController.text);
                                     await _consultarRegistrosBusqueda();
+                                    _dataTable.currentState.pageTo(0);
                                     setState(() {});
                                     PantallaDeCarga.loadingI(context, false);
                                   }
@@ -710,33 +750,21 @@ class _AsignacionesPageState extends State<AsignacionesPage> {
   }
 
   Widget _listarUsuarios() {
-    return Container(
-      width: 300.0,
-      child: DropdownButtonFormField(
-        isExpanded: true,
-        decoration: InputDecoration(
-          border: OutlineInputBorder(),
-          hintText: 'Usuarios',
-        ),
-        value: _usuarioSeleccionado,
-        onChanged: (valor) async {
-          _proyectoSeleccionadoAsignar = null;
-          _cargarProyectosSinAsignar(valor);
-        },
-        items: _listaUsuarios.map((item) {
-          return DropdownMenuItem(
-            value: item,
-            child: Text(item.usuario),
-          );
-        }).toList(),
-        validator: (Usuario value) {
-          if (value == null) {
-            return 'Selecciona un usuario';
-          } else {
-            return null;
-          }
-        },
-      ),
+    return ListaUsuarios(
+      controllerUsuarios: _controllerBuscarUsuarioProyecto,
+      listaUsuarios: _listaUsuarios,
+      usuarioSeleccionado: _usuarioSeleccionado,
+      actualizar: setState,
+      usuarioSeleccionadoAccion: (BuildContext context,
+          Usuario usuarioSeleccionado, StateSetter actualizar) {
+        _controllerBuscarUsuarioProyecto.text = usuarioSeleccionado.usuario;
+        _proyectoSeleccionadoAsignar = null;
+        _cargarProyectosSinAsignar(usuarioSeleccionado);
+      },
+      tipoBusqueda: 'SIMPLE',
+      usuariosSeleccionado: [],
+      limiteSeleccion: 0,
+      widthComponente: 300.0,
     );
   }
 
@@ -924,44 +952,33 @@ class _AsignacionesPageState extends State<AsignacionesPage> {
   }
 
   Widget _listarUsuariosAsignar() {
-    return Container(
-      width: 300.0,
-      child: DropdownButtonFormField(
-        isExpanded: true,
-        decoration: InputDecoration(
-          border: OutlineInputBorder(),
-          hintText: 'Usuarios',
-        ),
-        value: _usuarioSeleccionadoAsignar,
-        onChanged: (valor) async {
-          _usuarioSeleccionadoAsignar = valor;
-          _proyectoSeleccionado = null;
-          _listaRegistrosAsignados = null;
-          _listaRegistros = null;
-          _listaCampos = [];
-          _campoSeleccionado = null;
-          _busquedaController.text = '';
-          _habilitarBusqueda = false;
-          PantallaDeCarga.loadingI(context, true);
-          _listaProyectos =
-              await obtenerProyectosAsignados(ApiDefinition.ipServer, valor);
-          PantallaDeCarga.loadingI(context, false);
-          setState(() {});
-        },
-        items: _listaUsuarioAsignar.map((item) {
-          return DropdownMenuItem(
-            value: item,
-            child: Text(item.usuario),
-          );
-        }).toList(),
-        validator: (Usuario value) {
-          if (value == null) {
-            return 'Selecciona un usuario';
-          } else {
-            return null;
-          }
-        },
-      ),
+    //TODO:Limitar el state para que no se sature la pagina
+    return ListaUsuarios(
+      controllerUsuarios: _controllerBuscarUsuarioRegistro,
+      listaUsuarios: _listaUsuarios,
+      usuarioSeleccionado: _usuarioSeleccionado,
+      actualizar: setState,
+      usuarioSeleccionadoAccion: (BuildContext context,
+          Usuario usuarioSeleccionado, StateSetter actualizar) async {
+        _controllerBuscarUsuarioRegistro.text = usuarioSeleccionado.usuario;
+        _usuarioSeleccionadoAsignar = usuarioSeleccionado;
+        _proyectoSeleccionado = null;
+        _listaRegistrosAsignados = [];
+        _listaRegistros = [];
+        _listaCampos = [];
+        _campoSeleccionado = null;
+        _busquedaController.text = '';
+        _habilitarBusqueda = false;
+        PantallaDeCarga.loadingI(context, true);
+        _listaProyectos = await obtenerProyectosAsignados(
+            ApiDefinition.ipServer, usuarioSeleccionado);
+        PantallaDeCarga.loadingI(context, false);
+        setState(() {});
+      },
+      tipoBusqueda: 'SIMPLE',
+      usuariosSeleccionado: [],
+      limiteSeleccion: 0,
+      widthComponente: 300.0,
     );
   }
 

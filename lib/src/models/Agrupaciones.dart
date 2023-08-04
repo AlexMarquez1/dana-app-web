@@ -28,9 +28,9 @@ class Agrupaciones {
       ));
     }
     agrupacion = Agrupaciones(
-      agrupacion: json["agrupacion"],
+      agrupacion: json["agrupacion"] ?? '',
       campos: listaCampos,
-      idInventario: json['idInventario'],
+      idInventario: json['idInventario'] ?? '',
     );
     return agrupacion;
   }

@@ -1,3 +1,5 @@
+import 'package:app_isae_desarrollo/src/models/Cliente.dart';
+import 'package:app_isae_desarrollo/src/models/ClienteAplicacion.dart';
 import 'package:app_isae_desarrollo/src/models/Perfil.dart';
 import 'package:app_isae_desarrollo/src/models/Usuario.dart';
 import 'package:app_isae_desarrollo/src/page/widgets/Dialogos.dart';
@@ -7,6 +9,7 @@ import 'package:app_isae_desarrollo/src/page/widgets/TablaUsuarios.dart';
 import 'package:app_isae_desarrollo/src/page/widgets/appBar.dart';
 import 'package:app_isae_desarrollo/src/services/APIWebService/ApiDefinitions.dart';
 import 'package:app_isae_desarrollo/src/services/APIWebService/Consultas.dart';
+import 'package:app_isae_desarrollo/src/utils/VariablesGlobales.dart';
 import 'package:flutter/material.dart';
 
 class UsuariosPage extends StatefulWidget {
@@ -43,15 +46,44 @@ class _UsuariosPageState extends State<UsuariosPage> {
   List<Perfil> _listaPerfiles = [Perfil(idperfil: '0', perfil: 'Perfiles')];
 
   List<Usuario> _listaUsuarios = [
-    Usuario(0, '', 'Jefes', '', '', '', '', Perfil(), '', 0)
+    Usuario(
+      idUsuario: 0,
+      nombre: '',
+      usuario: 'Jefes',
+      correo: '_correo',
+      telefono: '_telefono',
+      ubicacion: '_ubicacion',
+      jefeInmediato: '_jefeInmediato',
+      perfil: Perfil(),
+      password: '_password',
+      passTemp: 0,
+      clienteAplicacion: ClienteAplicacion(),
+      status: '',
+      token: '',
+      vistacliente: Cliente(),
+    )
   ];
 
   List<Usuario> _tablaUsuarios = [];
 
   Perfil _perfilSeleccionado = Perfil(idperfil: '0', perfil: 'Perfiles');
 
-  Usuario _usuarioSeleccionado =
-      Usuario(0, '', 'Jefes', '', '', '', '', Perfil(), '', 0);
+  Usuario _usuarioSeleccionado = Usuario(
+    idUsuario: 0,
+    nombre: '',
+    usuario: 'Jefes',
+    correo: '_correo',
+    telefono: '_telefono',
+    ubicacion: '_ubicacion',
+    jefeInmediato: '_jefeInmediato',
+    perfil: Perfil(),
+    password: '_password',
+    passTemp: 0,
+    clienteAplicacion: ClienteAplicacion(),
+    status: '',
+    token: '',
+    vistacliente: Cliente(),
+  );
 
   bool _ocultarPass = true;
 
@@ -490,21 +522,33 @@ class _UsuariosPageState extends State<UsuariosPage> {
                                                         'Perfil seleccionado: ${_perfilSeleccionado.perfil}');
                                                     print(
                                                         'IdPerfil seleccionado: ${_perfilSeleccionado.idperfil}');
-                                                    Usuario usuario =
-                                                        new Usuario(
-                                                            us.idUsuario,
+
+                                                    Usuario usuario = new Usuario(
+                                                        idUsuario: us.idUsuario,
+                                                        nombre:
                                                             _nombreEditar.text,
-                                                            us.usuario,
+                                                        usuario: us.usuario,
+                                                        correo:
                                                             _correoEditar.text,
+                                                        telefono:
                                                             _telefonoEditar
                                                                 .text,
+                                                        ubicacion:
                                                             _ubicacion.text,
+                                                        jefeInmediato:
                                                             _usuarioSeleccionado
                                                                 .usuario,
+                                                        perfil:
                                                             _perfilSeleccionado,
+                                                        password:
                                                             _password.text,
-                                                            us.passTemp,
-                                                            token: '');
+                                                        passTemp: us.passTemp,
+                                                        token: '',
+                                                        clienteAplicacion: us
+                                                            .clienteAplicacion,
+                                                        status: us.status,
+                                                        vistacliente:
+                                                            us.vistacliente);
                                                     PantallaDeCarga.loadingI(
                                                         context, true);
 
@@ -545,81 +589,81 @@ class _UsuariosPageState extends State<UsuariosPage> {
                       SizedBox(
                         width: 30.0,
                       ),
-                      ElevatedButton(
-                        style: ButtonStyle(
-                          backgroundColor:
-                              MaterialStateProperty.all<Color>(Colors.red),
-                        ),
-                        onPressed: () {
-                          showDialog(
-                              context: context,
-                              builder: (context) {
-                                return SimpleDialog(
-                                  shape: RoundedRectangleBorder(
-                                      side: BorderSide(
-                                          color: Colors.white, width: 3),
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(15))),
-                                  title: Row(
-                                    children: [
-                                      Icon(Icons.warning),
-                                      SizedBox(
-                                        width: 10.0,
-                                      ),
-                                      Container(child: Text("Mensaje")),
-                                    ],
-                                  ),
-                                  children: <Widget>[
-                                    Center(
-                                      child: Container(
-                                          margin: EdgeInsets.all(30.0),
-                                          child: Text(
-                                              'Estas seguro de eliminar a: ${_nombreEditar.text}'
-                                                  .toUpperCase())),
-                                    ),
-                                    Container(
-                                      margin: EdgeInsets.only(left: 20.0),
-                                      child: Row(
-                                        children: [
-                                          Container(
-                                              padding: EdgeInsets.only(
-                                                  top: 10.0, right: 10.0),
-                                              alignment: Alignment.centerRight,
-                                              child: ElevatedButton(
-                                                onPressed: () async {
-                                                  PantallaDeCarga.loadingI(
-                                                      context, true);
-                                                  await eliminarUsuario(
-                                                      ApiDefinition.ipServer,
-                                                      us);
-                                                  Navigator.pop(context);
-                                                  Navigator.pop(context);
-                                                  PantallaDeCarga.loadingI(
-                                                      context, false);
-                                                  _tablaUsuarios = [];
-                                                  setState(() {});
-                                                },
-                                                child: Text('Aceptar'),
-                                              )),
-                                          Container(
-                                              padding: EdgeInsets.only(
-                                                  top: 10.0, right: 10.0),
-                                              alignment: Alignment.centerRight,
-                                              child: ElevatedButton(
-                                                onPressed: () {
-                                                  Navigator.of(context).pop();
-                                                },
-                                                child: Text('Cancelar'),
-                                              )),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                );
-                              });
-                        },
-                        child: Text('Eliminar usuario'),
-                      ),
+                      // ElevatedButton(
+                      //   style: ButtonStyle(
+                      //     backgroundColor:
+                      //         MaterialStateProperty.all<Color>(Colors.red),
+                      //   ),
+                      //   onPressed: () {
+                      //     showDialog(
+                      //         context: context,
+                      //         builder: (context) {
+                      //           return SimpleDialog(
+                      //             shape: RoundedRectangleBorder(
+                      //                 side: BorderSide(
+                      //                     color: Colors.white, width: 3),
+                      //                 borderRadius: BorderRadius.all(
+                      //                     Radius.circular(15))),
+                      //             title: Row(
+                      //               children: [
+                      //                 Icon(Icons.warning),
+                      //                 SizedBox(
+                      //                   width: 10.0,
+                      //                 ),
+                      //                 Container(child: Text("Mensaje")),
+                      //               ],
+                      //             ),
+                      //             children: <Widget>[
+                      //               Center(
+                      //                 child: Container(
+                      //                     margin: EdgeInsets.all(30.0),
+                      //                     child: Text(
+                      //                         'Estas seguro de eliminar a: ${_nombreEditar.text}'
+                      //                             .toUpperCase())),
+                      //               ),
+                      //               Container(
+                      //                 margin: EdgeInsets.only(left: 20.0),
+                      //                 child: Row(
+                      //                   children: [
+                      //                     Container(
+                      //                         padding: EdgeInsets.only(
+                      //                             top: 10.0, right: 10.0),
+                      //                         alignment: Alignment.centerRight,
+                      //                         child: ElevatedButton(
+                      //                           onPressed: () async {
+                      //                             PantallaDeCarga.loadingI(
+                      //                                 context, true);
+                      //                             await eliminarUsuario(
+                      //                                 ApiDefinition.ipServer,
+                      //                                 us);
+                      //                             Navigator.pop(context);
+                      //                             Navigator.pop(context);
+                      //                             PantallaDeCarga.loadingI(
+                      //                                 context, false);
+                      //                             _tablaUsuarios = [];
+                      //                             setState(() {});
+                      //                           },
+                      //                           child: Text('Aceptar'),
+                      //                         )),
+                      //                     Container(
+                      //                         padding: EdgeInsets.only(
+                      //                             top: 10.0, right: 10.0),
+                      //                         alignment: Alignment.centerRight,
+                      //                         child: ElevatedButton(
+                      //                           onPressed: () {
+                      //                             Navigator.of(context).pop();
+                      //                           },
+                      //                           child: Text('Cancelar'),
+                      //                         )),
+                      //                   ],
+                      //                 ),
+                      //               ),
+                      //             ],
+                      //           );
+                      //         });
+                      //   },
+                      //   child: Text('Eliminar usuario'),
+                      // ),
                     ],
                   ),
                 ),
@@ -801,16 +845,22 @@ class _UsuariosPageState extends State<UsuariosPage> {
                       // );
                       print('Guardar usuario');
                       Usuario usuario = new Usuario(
-                          0,
-                          _nombre.text,
-                          _correo.text.split('@')[0],
-                          _correo.text,
-                          _telefono.text,
-                          _ubicacion.text,
-                          _usuarioSeleccionado.usuario,
-                          _perfilSeleccionado,
-                          '12345',
-                          1);
+                        idUsuario: 0,
+                        nombre: _nombre.text,
+                        usuario: _correo.text.split('@')[0],
+                        correo: _correo.text,
+                        telefono: _telefono.text,
+                        ubicacion: _ubicacion.text,
+                        jefeInmediato: _usuarioSeleccionado.usuario,
+                        perfil: _perfilSeleccionado,
+                        password: '12345',
+                        passTemp: 1,
+                        token: '',
+                        clienteAplicacion:
+                            VariablesGlobales.usuario.clienteAplicacion,
+                        status: 'ACTIVO',
+                        vistacliente: Cliente(idcliente: 0),
+                      );
                       PantallaDeCarga.loadingI(context, true);
                       await crearUsuario(ApiDefinition.ipServer, usuario);
                       PantallaDeCarga.loadingI(context, false);
@@ -839,8 +889,22 @@ class _UsuariosPageState extends State<UsuariosPage> {
     _correo.text = '';
     _telefono.text = '';
     _ubicacion.text = '';
-    _usuarioSeleccionado =
-        Usuario(0, '', 'Jefes', '', '', '', '', Perfil(), '', 0);
+    _usuarioSeleccionado = Usuario(
+      idUsuario: 0,
+      nombre: '',
+      usuario: 'Jefes',
+      correo: '_correo',
+      telefono: '_telefono',
+      ubicacion: '_ubicacion',
+      jefeInmediato: '_jefeInmediato',
+      perfil: Perfil(),
+      password: '_password',
+      passTemp: 0,
+      status: '',
+      token: '',
+      clienteAplicacion: ClienteAplicacion(),
+      vistacliente: Cliente(),
+    );
     _perfilSeleccionado = Perfil(idperfil: '0', perfil: 'Perfiles');
   }
 

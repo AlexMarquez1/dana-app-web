@@ -1,4 +1,12 @@
+import 'package:app_isae_desarrollo/src/models/Cliente.dart';
+import 'package:app_isae_desarrollo/src/models/Proyecto.dart';
+import 'package:app_isae_desarrollo/src/page/widgets/PantallaCarga.dart';
+import 'package:app_isae_desarrollo/src/providers/registroProvider.dart';
+import 'package:app_isae_desarrollo/src/services/APIWebService/ApiDefinitions.dart';
+import 'package:app_isae_desarrollo/src/services/APIWebService/Consultas.dart';
+import 'package:app_isae_desarrollo/src/utils/VariablesGlobales.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class BotonInicio extends StatefulWidget {
   IconData icono;
@@ -47,9 +55,15 @@ class _BotonInicioState extends State<BotonInicio> {
                   ),
                 ),
               ),
-              onTap: () {
+              onTap: () async {
                 switch (etiqueta) {
                   case 'proyectos':
+                    Navigator.of(context).pushNamed('/$etiqueta');
+                    break;
+                  case 'clientes':
+                    Navigator.of(context).pushNamed('/$etiqueta');
+                    break;
+                  case 'localidades':
                     Navigator.of(context).pushNamed('/$etiqueta');
                     break;
                   case 'usuarios':
@@ -62,7 +76,31 @@ class _BotonInicioState extends State<BotonInicio> {
                     Navigator.of(context).pushNamed('/$etiqueta');
                     break;
                   case 'registros':
-                    Navigator.of(context).pushNamed('/$etiqueta');
+                    PantallaDeCarga.loadingI(context, true);
+                    RegistroProvider registroProvider =
+                        Provider.of<RegistroProvider>(context, listen: false);
+                    // print(
+                    //     'Cliente: ${VariablesGlobales.usuario.clienteAplicacion.cliente}');
+                    // List<Cliente> listaClientes =
+                    //     await obtenerClientesPorUsuario(
+                    //         ApiDefinition.ipServer,
+                    //         VariablesGlobales
+                    //             .usuario.clienteAplicacion.idcliente);
+
+                    // PantallaDeCarga.loadingI(context, false);
+
+                    // Navigator.of(context).pushNamed('/clientes',
+                    //     arguments: registroProvider.listaClientes);
+                    PantallaDeCarga.loadingI(context, true);
+                    List<Proyecto> listaProyectosPorCliente =
+                        await obtenerProyecrtosPorCliente(
+                            ApiDefinition.ipServer,
+                            registroProvider.usuario.vistacliente);
+                    print(
+                        'Cantidad de proyectos: ${listaProyectosPorCliente.length}');
+                    PantallaDeCarga.loadingI(context, false);
+                    Navigator.pushNamed(context, '/registros',
+                        arguments: listaProyectosPorCliente);
                     break;
                   case 'asistencia':
                     Navigator.of(context).pushNamed('/$etiqueta');

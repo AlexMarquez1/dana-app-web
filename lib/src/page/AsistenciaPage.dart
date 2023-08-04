@@ -7,6 +7,7 @@ import 'package:app_isae_desarrollo/src/page/widgets/Tarjetas.dart';
 import 'package:app_isae_desarrollo/src/page/widgets/appBar.dart';
 import 'package:app_isae_desarrollo/src/services/APIWebService/ApiDefinitions.dart';
 import 'package:app_isae_desarrollo/src/services/APIWebService/Consultas.dart';
+import 'package:app_isae_desarrollo/src/utils/VariablesGlobales.dart';
 import 'package:flutter/material.dart';
 import 'dart:html' as html;
 
@@ -126,10 +127,21 @@ class _AsistenciaPageState extends State<AsistenciaPage> {
                               _listaPerfiles =
                                   await obtenerPerfiles(ApiDefinition.ipServer);
                             }
-                            _listaUsuarios = await obtenerUsuariosAsistencia(
+                            List<Usuario> listaAux = await obtenerUsuariosAsistencia(
                                 ApiDefinition.ipServer,
                                 '${_diaSeleccionadoInicio.year}-${_diaSeleccionadoInicio.month}-${_diaSeleccionadoInicio.day}',
                                 '${_diaSeleccionadoFinal.year}-${_diaSeleccionadoFinal.month}-${_diaSeleccionadoFinal.day}');
+                            print(VariablesGlobales.usuario.perfil.idperfil);
+                            if (VariablesGlobales.usuario.perfil.idperfil ==
+                                '3') {
+                              for (Usuario usuario in listaAux) {
+                                if (usuario.perfil.idperfil == '6') {
+                                  _listaUsuarios.add(usuario);
+                                }
+                              }
+                            } else {
+                              _listaUsuarios = listaAux;
+                            }
                             _listaAMostrar = _listaUsuarios;
                             PantallaDeCarga.loadingI(context, false);
                             setState(() {});
@@ -141,35 +153,36 @@ class _AsistenciaPageState extends State<AsistenciaPage> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          ElevatedButton(
-                            onPressed: () async {
-                              DateTime fecha;
-                              final formato =
-                                  new DateFormat('yyyy-MM-dd hh:mm');
-                              if (_diaSeleccionadoInicio.year >
-                                      _diaSeleccionadoFinal.year ||
-                                  _diaSeleccionadoInicio.month >
-                                      _diaSeleccionadoFinal.month ||
-                                  _diaSeleccionadoInicio.day >
-                                      _diaSeleccionadoFinal.day) {
-                                Dialogos.error(context,
-                                    'La fecha de inicio seleccionada tiene que ser menor a la fecha final seleccionada');
-                              } else {
-                                print(_diaSeleccionadoInicio.toString());
-                                String fechaInicio =
-                                    '${_diaSeleccionadoInicio.year}-${_diaSeleccionadoInicio.month}-${_diaSeleccionadoInicio.day}';
-                                String fechaFinal =
-                                    '${_diaSeleccionadoFinal.year}-${_diaSeleccionadoFinal.month}-${_diaSeleccionadoFinal.day}';
-                                PantallaDeCarga.loadingI(context, true);
-                                String url = ApiDefinition.ipServer +
-                                    '/asistencia/generarReporte/$fechaInicio/$fechaFinal';
-                                html.window.open(url, 'PlaceholderName');
-                              }
+                          //TODO: Arreglar la descarga del reporte de asistencia
+                          // ElevatedButton(
+                          //   onPressed: () async {
+                          //     DateTime fecha;
+                          //     final formato =
+                          //         new DateFormat('yyyy-MM-dd hh:mm');
+                          //     if (_diaSeleccionadoInicio.year >
+                          //             _diaSeleccionadoFinal.year ||
+                          //         _diaSeleccionadoInicio.month >
+                          //             _diaSeleccionadoFinal.month ||
+                          //         _diaSeleccionadoInicio.day >
+                          //             _diaSeleccionadoFinal.day) {
+                          //       Dialogos.error(context,
+                          //           'La fecha de inicio seleccionada tiene que ser menor a la fecha final seleccionada');
+                          //     } else {
+                          //       print(_diaSeleccionadoInicio.toString());
+                          //       String fechaInicio =
+                          //           '${_diaSeleccionadoInicio.year}-${_diaSeleccionadoInicio.month}-${_diaSeleccionadoInicio.day}';
+                          //       String fechaFinal =
+                          //           '${_diaSeleccionadoFinal.year}-${_diaSeleccionadoFinal.month}-${_diaSeleccionadoFinal.day}';
+                          //       PantallaDeCarga.loadingI(context, true);
+                          //       String url = ApiDefinition.ipServer +
+                          //           '/asistencia/generarReporte/$fechaInicio/$fechaFinal';
+                          //       html.window.open(url, 'PlaceholderName');
+                          //     }
 
-                              PantallaDeCarga.loadingI(context, false);
-                            },
-                            child: Text('Descargar reporte'),
-                          ),
+                          //     PantallaDeCarga.loadingI(context, false);
+                          //   },
+                          //   child: Text('Descargar reporte'),
+                          // ),
                         ],
                       ),
                       _tablaUsuariosAsistencia(),
@@ -226,7 +239,6 @@ class _AsistenciaPageState extends State<AsistenciaPage> {
             padding: EdgeInsets.only(top: 10.0),
             child: Text('Lista de asistencias'.toUpperCase()),
           ),
-          //TODO: Implementar busqueda de usuarios
           _listaAMostrar.isNotEmpty
               ? Padding(
                   padding: EdgeInsets.only(left: 20.0),
@@ -264,6 +276,7 @@ class _AsistenciaPageState extends State<AsistenciaPage> {
                             },
                             tipoBusqueda: 'SIMPLE',
                             usuariosSeleccionado: [],
+                            limiteSeleccion: 0,
                           )),
                       Container(
                         padding: EdgeInsets.only(left: 10.0),

@@ -3,9 +3,12 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 import 'dart:typed_data';
+import 'package:app_isae_desarrollo/src/models/Cliente.dart';
+import 'package:app_isae_desarrollo/src/models/ClienteAplicacion.dart';
 import 'package:app_isae_desarrollo/src/models/FotoEvidencia.dart';
 import 'package:app_isae_desarrollo/src/page/widgets/EditarRegistro.dart';
 import 'package:app_isae_desarrollo/src/page/widgets/ListaUsuarios.dart';
+import 'package:app_isae_desarrollo/src/page/widgets/TablaRegistros.dart';
 import 'package:app_isae_desarrollo/src/page/widgets/tipoDeCampos.dart';
 import 'package:app_isae_desarrollo/src/page/widgets/verEvidencia.dart';
 
@@ -43,11 +46,15 @@ class RegistroPage extends StatelessWidget {
   RegistroPage({Key key}) : super(key: key);
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  final GlobalKey<PaginatedDataTableState> _dataTable =
+      GlobalKey<PaginatedDataTableState>();
   final _formKeyRegistro = GlobalKey<FormState>();
   final _formKeyEditarAsignacion = GlobalKey<FormState>();
   TabController _controller;
   ScrollController _scrollRegistros = ScrollController();
   ScrollController _scrollEditarRegistro = ScrollController();
+  ScrollController _scrollRegistors =
+      ScrollController(initialScrollOffset: 0.0);
 
   List<Inventario> _listaRegistros = [];
   List<Inventario> _listaRegistrosCompleta = [];
@@ -116,10 +123,13 @@ class RegistroPage extends StatelessWidget {
   };
 
   Map<int, List<int>> _relacionUsuarioInventario = <int, List<int>>{};
+  StateSetter _actualizarLista;
 
   @override
   Widget build(BuildContext context) {
     _registroProvider = Provider.of<RegistroProvider>(context, listen: true);
+    _listaProyectos =
+        ModalRoute.of(context).settings.arguments as List<Proyecto> ?? [];
     return Scaffold(
       key: _scaffoldKey,
       appBar: appBarPrincipal(
@@ -378,6 +388,7 @@ class RegistroPage extends StatelessWidget {
     return SingleChildScrollView(
       child: StatefulBuilder(
           builder: (BuildContext context, StateSetter actualizar) {
+        _actualizarLista = actualizar;
         return Center(
           child: Column(
             children: [
@@ -396,44 +407,6 @@ class RegistroPage extends StatelessWidget {
                         SizedBox(
                           height: 20.0,
                         ),
-                        VariablesGlobales.usuario.perfil.idperfil == '1' ||
-                                VariablesGlobales.usuario.perfil.idperfil ==
-                                    '2' ||
-                                VariablesGlobales.usuario.perfil.idperfil ==
-                                    '3' ||
-                                VariablesGlobales.usuario.perfil.idperfil == '4'
-                            ? Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Container(
-                                    width: 100.0,
-                                    child: Text('Usuario'),
-                                  ),
-                                  SizedBox(
-                                    width: 20.0,
-                                  ),
-                                  Container(
-                                    width: 300.0,
-                                    child: _listaUsuarios.isEmpty
-                                        ? _listarUsuariosBuilder(actualizar)
-                                        : ListaUsuarios(
-                                            controllerUsuarios:
-                                                _controllerUsuarios,
-                                            listaUsuarios: _listaUsuarios,
-                                            usuariosSeleccionado:
-                                                _usuariosSeleccionados,
-                                            actualizar: actualizar,
-                                            usuarioSeleccionadoAccion:
-                                                _usuarioSeleccionadoAccion,
-                                            tipoBusqueda: 'MULTIPLE',
-                                          ),
-                                  )
-                                ],
-                              )
-                            : Container(),
-                        SizedBox(
-                          height: 20.0,
-                        ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -447,6 +420,47 @@ class RegistroPage extends StatelessWidget {
                             _listarProyectos(context, actualizar),
                           ],
                         ),
+                        SizedBox(
+                          height: 20.0,
+                        ),
+                        VariablesGlobales.usuario.perfil.idperfil == '1' ||
+                                VariablesGlobales.usuario.perfil.idperfil ==
+                                    '2' ||
+                                VariablesGlobales.usuario.perfil.idperfil ==
+                                    '3' ||
+                                VariablesGlobales.usuario.perfil.idperfil == '4'
+                            ? _proyectoSeleccionado != null
+                                ? Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Container(
+                                        width: 100.0,
+                                        child: Text('Usuario'),
+                                      ),
+                                      SizedBox(
+                                        width: 20.0,
+                                      ),
+                                      Container(
+                                        width: 300.0,
+                                        child: _listaUsuarios.isEmpty
+                                            ? _listarUsuariosBuilder(actualizar)
+                                            : ListaUsuarios(
+                                                controllerUsuarios:
+                                                    _controllerUsuarios,
+                                                listaUsuarios: _listaUsuarios,
+                                                usuariosSeleccionado:
+                                                    _usuariosSeleccionados,
+                                                actualizar: actualizar,
+                                                usuarioSeleccionadoAccion:
+                                                    _usuarioSeleccionadoAccion,
+                                                tipoBusqueda: 'MULTIPLE',
+                                                limiteSeleccion: 3,
+                                              ),
+                                      )
+                                    ],
+                                  )
+                                : Container()
+                            : Container(),
                         SizedBox(
                           height: 20.0,
                         ),
@@ -527,8 +541,8 @@ class RegistroPage extends StatelessWidget {
                                             PantallaDeCarga.loadingI(
                                                 context, true);
                                             registroAux = [];
-                                            for (Usuario usuario
-                                                in _usuariosSeleccionados) {
+                                            if (_usuariosSeleccionados
+                                                .isEmpty) {
                                               registroAux.addAll(
                                                   await obtenerValoresCampos(
                                                       ApiDefinition.ipServer,
@@ -536,7 +550,20 @@ class RegistroPage extends StatelessWidget {
                                                           .idproyecto,
                                                       _busquedaSeleccionada,
                                                       _controllerBusqueda.text,
-                                                      usuario.idUsuario));
+                                                      0));
+                                            } else {
+                                              for (Usuario usuario
+                                                  in _usuariosSeleccionados) {
+                                                registroAux.addAll(
+                                                    await obtenerValoresCampos(
+                                                        ApiDefinition.ipServer,
+                                                        _proyectoSeleccionado
+                                                            .idproyecto,
+                                                        _busquedaSeleccionada,
+                                                        _controllerBusqueda
+                                                            .text,
+                                                        usuario.idUsuario));
+                                              }
                                             }
                                             PantallaDeCarga.loadingI(
                                                 context, false);
@@ -551,6 +578,7 @@ class RegistroPage extends StatelessWidget {
                                           _registroProvider.mostrarMasOpciones =
                                               false;
                                           _listaRegistros = registroAux;
+                                          _dataTable.currentState.pageTo(0);
                                           actualizar(() {});
                                         },
                                         child: Text('Buscar'),
@@ -570,18 +598,335 @@ class RegistroPage extends StatelessWidget {
                 MediaQuery.of(context).size,
                 _tarjetaregistros(context, actualizar),
               ),
+              SizedBox(
+                height: 200.0,
+              ),
             ],
           ),
         );
       }),
     );
   }
+  // Widget _contenido(BuildContext context) {
+  //   return SingleChildScrollView(
+  //     child: StatefulBuilder(
+  //         builder: (BuildContext context, StateSetter actualizar) {
+  //       _actualizarLista = actualizar;
+  //       return Center(
+  //         child: Column(
+  //           children: [
+  //             Container(
+  //               padding: EdgeInsets.only(top: 20.0),
+  //               child: Text(
+  //                 'Registros'.toUpperCase(),
+  //                 style: TextStyle(fontSize: 40.0),
+  //               ),
+  //             ),
+  //             Container(
+  //               child: Tarjetas.tarjeta(
+  //                   MediaQuery.of(context).size,
+  //                   Column(
+  //                     children: [
+  //                       SizedBox(
+  //                         height: 20.0,
+  //                       ),
+  //                       VariablesGlobales.usuario.perfil.idperfil == '1' ||
+  //                               VariablesGlobales.usuario.perfil.idperfil ==
+  //                                   '2' ||
+  //                               VariablesGlobales.usuario.perfil.idperfil ==
+  //                                   '3' ||
+  //                               VariablesGlobales.usuario.perfil.idperfil == '4'
+  //                           ? Row(
+  //                               mainAxisAlignment: MainAxisAlignment.center,
+  //                               children: [
+  //                                 Container(
+  //                                   width: 100.0,
+  //                                   child: Text('Usuario'),
+  //                                 ),
+  //                                 SizedBox(
+  //                                   width: 20.0,
+  //                                 ),
+  //                                 Container(
+  //                                   width: 300.0,
+  //                                   child: _listaUsuarios.isEmpty
+  //                                       ? _listarUsuariosBuilder(actualizar)
+  //                                       : ListaUsuarios(
+  //                                           controllerUsuarios:
+  //                                               _controllerUsuarios,
+  //                                           listaUsuarios: _listaUsuarios,
+  //                                           usuariosSeleccionado:
+  //                                               _usuariosSeleccionados,
+  //                                           actualizar: actualizar,
+  //                                           usuarioSeleccionadoAccion:
+  //                                               _usuarioSeleccionadoAccion,
+  //                                           tipoBusqueda: 'MULTIPLE',
+  //                                           limiteSeleccion: 3,
+  //                                         ),
+  //                                 )
+  //                               ],
+  //                             )
+  //                           : Container(),
+  //                       SizedBox(
+  //                         height: 20.0,
+  //                       ),
+  //                       Row(
+  //                         mainAxisAlignment: MainAxisAlignment.center,
+  //                         children: [
+  //                           Container(
+  //                             width: 100.0,
+  //                             child: Text('Proyecto'),
+  //                           ),
+  //                           SizedBox(
+  //                             width: 20.0,
+  //                           ),
+  //                           _listarProyectos(context, actualizar),
+  //                         ],
+  //                       ),
+  //                       SizedBox(
+  //                         height: 20.0,
+  //                       ),
+  //                       _mostrarBusqueda
+  //                           ? Column(
+  //                               children: [
+  //                                 Row(
+  //                                   mainAxisAlignment: MainAxisAlignment.center,
+  //                                   children: [
+  //                                     Container(
+  //                                       width: 100.0,
+  //                                       child: Text('Buscar por:'),
+  //                                     ),
+  //                                     SizedBox(
+  //                                       width: 20.0,
+  //                                     ),
+  //                                     _listarOpcionesBusqueda(
+  //                                         context, actualizar),
+  //                                   ],
+  //                                 ),
+  //                                 SizedBox(
+  //                                   height: 20.0,
+  //                                 ),
+  //                                 Row(
+  //                                   mainAxisAlignment: MainAxisAlignment.center,
+  //                                   children: [
+  //                                     Container(
+  //                                       width: 100.0,
+  //                                       child: Text('Buscar:'),
+  //                                     ),
+  //                                     SizedBox(
+  //                                       width: 20.0,
+  //                                     ),
+  //                                     _autoCompletarBusqueda(actualizar),
+  //                                     SizedBox(
+  //                                       width: 20.0,
+  //                                     ),
+  //                                     ElevatedButton(
+  //                                       onPressed: () async {
+  //                                         List<Inventario> registroAux = [];
+  //                                         switch (_busquedaSeleccionada) {
+  //                                           case 'FOLIO':
+  //                                             for (Inventario registro
+  //                                                 in _listaRegistrosCompleta) {
+  //                                               if (registro.folio
+  //                                                   .toUpperCase()
+  //                                                   .contains(
+  //                                                       _controllerBusqueda.text
+  //                                                           .toUpperCase())) {
+  //                                                 registroAux.add(registro);
+  //                                               }
+  //                                             }
+  //                                             break;
+  //                                           case 'PROYECTO':
+  //                                             for (Inventario registro
+  //                                                 in _listaRegistrosCompleta) {
+  //                                               if (registro
+  //                                                       .proyecto.proyecto ==
+  //                                                   _controllerBusqueda.text
+  //                                                       .toUpperCase()) {
+  //                                                 registroAux.add(registro);
+  //                                               }
+  //                                             }
+  //                                             break;
+  //                                           case 'ESTATUS':
+  //                                             for (Inventario registro
+  //                                                 in _listaRegistrosCompleta) {
+  //                                               if (registro.estatus ==
+  //                                                   _controllerBusqueda.text
+  //                                                       .toUpperCase()) {
+  //                                                 registroAux.add(registro);
+  //                                               }
+  //                                             }
+  //                                             break;
+  //                                         }
+
+  //                                         if (registroAux.isEmpty) {
+  //                                           PantallaDeCarga.loadingI(
+  //                                               context, true);
+  //                                           registroAux = [];
+  //                                           for (Usuario usuario
+  //                                               in _usuariosSeleccionados) {
+  //                                             registroAux.addAll(
+  //                                                 await obtenerValoresCampos(
+  //                                                     ApiDefinition.ipServer,
+  //                                                     _proyectoSeleccionado
+  //                                                         .idproyecto,
+  //                                                     _busquedaSeleccionada,
+  //                                                     _controllerBusqueda.text,
+  //                                                     usuario.idUsuario));
+  //                                           }
+  //                                           PantallaDeCarga.loadingI(
+  //                                               context, false);
+  //                                         }
+
+  //                                         // _registroSeleccion = <int, bool>{};
+  //                                         for (Inventario registro
+  //                                             in _listaRegistros) {
+  //                                           _registroSeleccion[
+  //                                               registro.idinventario] = false;
+  //                                         }
+  //                                         _registroProvider.mostrarMasOpciones =
+  //                                             false;
+  //                                         _listaRegistros = registroAux;
+  //                                         _dataTable.currentState.pageTo(0);
+  //                                         actualizar(() {});
+  //                                       },
+  //                                       child: Text('Buscar'),
+  //                                     ),
+  //                                   ],
+  //                                 ),
+  //                                 SizedBox(
+  //                                   height: 20.0,
+  //                                 ),
+  //                               ],
+  //                             )
+  //                           : Container(),
+  //                     ],
+  //                   )),
+  //             ),
+  //             Tarjetas.tarjeta(
+  //               MediaQuery.of(context).size,
+  //               _tarjetaregistros(context, actualizar),
+  //             ),
+  //             SizedBox(
+  //               height: 200.0,
+  //             ),
+  //           ],
+  //         ),
+  //       );
+  //     }),
+  //   );
+  // }
 
   Widget _descargarDatos(BuildContext context) {
     return Container(
-      width: 250.0,
+      width: 350.0,
       child: Row(
         children: [
+          StatefulBuilder(
+              builder: (BuildContext context, StateSetter actualizar) {
+            return Tooltip(
+              message: 'Nuevo Registros',
+              textStyle: TextStyle(fontSize: 15.0, color: Colors.white),
+              child: FloatingActionButton.large(
+                heroTag: 'nuevo',
+                child: Icon(Icons.add),
+                onPressed: () async {
+                  if (_proyectoSeleccionado != null) {
+                    // _usuarioSeleccionado = null;
+                    _usuarioSeleccionado = VariablesGlobales.usuario;
+                    print(_usuariosSeleccionados.length);
+                    if (_usuariosSeleccionados.length >= 2) {
+                      _usuarioSeleccionado =
+                          _usuariosSeleccionados.elementAt(0);
+                      _usuarioSeleccionado = await showDialog(
+                          context: context,
+                          barrierDismissible: false,
+                          builder: (BuildContext context) {
+                            return SimpleDialog(
+                              title: Text(
+                                  'Selecciona el usuario al que se le asignara el registro'),
+                              children: [
+                                StatefulBuilder(builder: (BuildContext context,
+                                    StateSetter actualizar) {
+                                  return DropdownButtonFormField(
+                                    decoration: InputDecoration(
+                                      hintText: 'Usuario',
+                                      border: OutlineInputBorder(),
+                                    ),
+                                    validator: (value) {
+                                      if (value == null) {
+                                        return 'Selecciona una opcion';
+                                      }
+                                      return null;
+                                    },
+                                    value: _usuarioSeleccionado,
+                                    onChanged: (valor) async {
+                                      _usuarioSeleccionado = valor;
+                                      actualizar(() {});
+                                    },
+                                    items: _usuariosSeleccionados.map((item) {
+                                      return DropdownMenuItem(
+                                        value: item,
+                                        child: Text(
+                                          item.usuario,
+                                          maxLines: 3,
+                                          overflow: TextOverflow.clip,
+                                        ),
+                                      );
+                                    }).toList(),
+                                  );
+                                }),
+                                Row(
+                                  children: [
+                                    ElevatedButton(
+                                        onPressed: () {
+                                          Navigator.pop(
+                                              context, _usuarioSeleccionado);
+                                        },
+                                        child: Text('Aceptar')),
+                                    ElevatedButton(
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                        },
+                                        child: Text('Cancelar')),
+                                  ],
+                                ),
+                              ],
+                            );
+                          });
+                      if (_usuarioSeleccionado != null) {
+                        print(_usuarioSeleccionado.nombre);
+                        PantallaDeCarga.loadingI(context, true);
+                        await _registroProvider.nuevoRegistro(
+                          _proyectoSeleccionado,
+                        );
+                        PantallaDeCarga.loadingI(context, false);
+                        _mostrarCampos(
+                            context, _proyectoSeleccionado, actualizar, true);
+                      }
+                    } else {
+                      PantallaDeCarga.loadingI(context, true);
+                      await _registroProvider.nuevoRegistro(
+                        _proyectoSeleccionado,
+                      );
+                      PantallaDeCarga.loadingI(context, false);
+                      _mostrarCampos(
+                          context, _proyectoSeleccionado, actualizar, true);
+                    }
+
+                    //TODO: Comprobar porque no se guardan las evidencias y firmar, actualizar lista para que se muestre el registro creado
+
+                    _actualizarLista(() {});
+                  } else {
+                    Dialogos.mensaje(context,
+                        'Selecciona un proyecto para poder generar un nuevo registro');
+                  }
+                },
+              ),
+            );
+          }),
+          SizedBox(
+            width: 30.0,
+          ),
           Tooltip(
             message: 'Descargar Registros',
             textStyle: TextStyle(fontSize: 15.0, color: Colors.white),
@@ -827,7 +1172,8 @@ class RegistroPage extends StatelessWidget {
     return SingleChildScrollView(
       child: Card(
         color: Colors.grey[300],
-        child: _tablaRegistrosEditar(context, actualizar),
+        child: _respuestaRegistros(context, actualizar),
+        // child: _tablaRegistrosEditar(context, actualizar),
       ),
     );
   }
@@ -838,273 +1184,481 @@ class RegistroPage extends StatelessWidget {
     return Container(
       margin: EdgeInsets.only(left: 10.0),
       width: ancho * 0.7,
-      height: alto,
-      child: Scrollbar(
-        controller: _scrollRegistros,
-        trackVisibility: true,
-        // isAlwaysShown: true,
-        thumbVisibility: true,
-        thickness: 10.0,
-        child: ListView.builder(
-          controller: _scrollRegistros,
-          itemCount: _listaRegistros.length,
-          itemBuilder: (BuildContext context, int ind) {
-            return ListTile(
-              leading: _listaRegistros.elementAt(ind).estatus == 'CERRADO'
-                  ? Checkbox(
-                      value: _registroSeleccion[
-                          _listaRegistros.elementAt(ind).idinventario],
-                      onChanged: (bool valor) {
-                        print('Valor: $valor');
-                        _registroSeleccion[_listaRegistros
-                            .elementAt(ind)
-                            .idinventario] = valor;
-                        bool unaSeleccion = false;
-                        for (bool item in _registroSeleccion.values) {
-                          if (item) {
-                            unaSeleccion = true;
-                            break;
-                          }
+      height: alto * 0.6,
+      child: SingleChildScrollView(
+        child: Theme(
+            data: Theme.of(context).copyWith(
+              cardColor: Colors.grey[300],
+            ),
+            child: PaginatedDataTable(
+              key: _dataTable,
+              rowsPerPage: 10,
+              source: TablaRegistros(
+                  listaInventario: _listaRegistros,
+                  registroSeleccion: _registroSeleccion,
+                  clickRegistro: (Inventario registro) async {
+                    _registroSeleccionado = registro;
+                    PantallaDeCarga.loadingI(context, true);
+                    _relacionUsuarioInventario.forEach((key, value) {
+                      for (int item in value) {
+                        if (_registroSeleccionado.idinventario == item) {
+                          _usuarioSeleccionado = Usuario(
+                              idUsuario: key,
+                              nombre: 'SIN RESULTADOS',
+                              usuario: 'SIN RESULTADOS',
+                              correo: '_correo',
+                              telefono: '_telefono',
+                              ubicacion: '_ubicacion',
+                              jefeInmediato: '_jefeInmediato',
+                              perfil: Perfil(),
+                              password: '_password',
+                              passTemp: 0,
+                              clienteAplicacion: ClienteAplicacion(),
+                              status: '',
+                              token: '',
+                              vistacliente: Cliente());
+                          break;
                         }
-                        if (unaSeleccion) {
-                          _registroProvider.mostrarMasOpciones = true;
-                          _totalSeleccionado = _registroSeleccion.values
-                              .where((element) => element == true)
-                              .length;
-                        } else {
-                          _registroProvider.mostrarMasOpciones = false;
-                        }
-                        actualizar(() {});
-                      },
-                    )
-                  : Tooltip(
-                      message:
-                          'Para poder seleccionarlo el estatus tiene que estar en cerrado',
-                      textStyle: TextStyle(fontSize: 20.0, color: Colors.white),
-                      child: Container(
-                        padding: EdgeInsets.only(left: 4.0),
-                        child: Icon(Icons.dangerous_outlined),
-                      ),
-                    ),
-              onTap: () async {
-                _registroSeleccionado = _listaRegistros.elementAt(ind);
-                PantallaDeCarga.loadingI(context, true);
-                _relacionUsuarioInventario.forEach((key, value) {
-                  for (int item in value) {
-                    if (_registroSeleccionado.idinventario == item) {
-                      _usuarioSeleccionado = Usuario(key, '', '', '', '', '',
-                          '', Perfil(idperfil: '0', perfil: ''), '', 0);
-                      break;
+                      }
+                    });
+                    if (_usuarioSeleccionado != null) {
+                      print(
+                          'Usuario seleccionado: ${_usuarioSeleccionado.idUsuario}');
+                      await _registroProvider.obtenerRegistro(
+                          Inventario(
+                              idinventario: registro.idinventario,
+                              proyecto: registro.proyecto),
+                          _usuarioSeleccionado.idUsuario);
+                    } else {
+                      await _registroProvider.obtenerRegistro(
+                          Inventario(
+                              idinventario: registro.idinventario,
+                              proyecto: registro.proyecto),
+                          0);
                     }
-                  }
-                });
-                print(
-                    'Usuario seleccionado: ${_usuarioSeleccionado.idUsuario}');
-                await _registroProvider.obtenerRegistro(
-                    Inventario(
-                        idinventario:
-                            _listaRegistros.elementAt(ind).idinventario,
-                        proyecto: _listaRegistros.elementAt(ind).proyecto),
-                    _usuarioSeleccionado.idUsuario);
-                PantallaDeCarga.loadingI(context, false);
+                    PantallaDeCarga.loadingI(context, false);
 
-                _mostrarCampos(context, _listaRegistros.elementAt(ind).proyecto,
-                    actualizar);
-              },
-              title: Container(
-                width: MediaQuery.of(context).size.width * 0.5,
-                child: Wrap(
-                  spacing: 60.0,
-                  direction: Axis.horizontal,
-                  alignment: WrapAlignment.start,
-                  runAlignment: WrapAlignment.center,
-                  children: [
-                    Container(
-                      width: ancho * 0.15,
-                      height: 50.0,
-                      child: Center(
-                        child: Text(
-                          _listaRegistros.elementAt(ind).proyecto.proyecto,
-                          style: TextStyle(overflow: TextOverflow.ellipsis),
-                          maxLines: 2,
-                        ),
-                      ),
-                    ),
-                    Container(
-                      width: ancho * 0.1,
-                      height: 50.0,
-                      child: Center(
-                        child: Text(
-                          _listaRegistros.elementAt(ind).folio,
-                          style: TextStyle(overflow: TextOverflow.ellipsis),
-                          maxLines: 2,
-                        ),
-                      ),
-                    ),
-                    Container(
-                      width: ancho * 0.05,
-                      height: 50.0,
-                      child: Center(
-                        child: Text(
-                          _listaRegistros.elementAt(ind).estatus,
-                          style: TextStyle(overflow: TextOverflow.ellipsis),
-                          maxLines: 2,
-                        ),
-                      ),
-                    ),
-                    Container(
-                      width: ancho * 0.05,
-                      height: 50.0,
-                      child: Center(
-                        child: Text(
-                          _listaRegistros.elementAt(ind).fechacreacion,
-                          style: TextStyle(overflow: TextOverflow.ellipsis),
-                          maxLines: 2,
-                        ),
-                      ),
-                    ),
-                    IconButton(
-                      onPressed: () async {
-                        if (_listaRegistros.elementAt(ind).estatus !=
-                            'CERRADO') {
-                          String documento = await obtenerUrlDocumento(
-                              ApiDefinition.ipServer,
-                              _listaRegistros.elementAt(ind).idinventario);
+                    _mostrarCampos(
+                        context, registro.proyecto, actualizar, false);
+                  },
+                  accionSeleccionarRegistro: (bool valor, Inventario registro) {
+                    print('Valor: $valor');
+                    // _registroSeleccion[
+                    //     registro.idinventario] = valor;
+                    bool unaSeleccion = false;
+                    for (bool item in _registroSeleccion.values) {
+                      if (item) {
+                        unaSeleccion = true;
+                        break;
+                      }
+                    }
+                    if (unaSeleccion) {
+                      _registroProvider.mostrarMasOpciones = true;
+                      _totalSeleccionado = _registroSeleccion.values
+                          .where((element) => element == true)
+                          .length;
+                    } else {
+                      _registroProvider.mostrarMasOpciones = false;
+                    }
+                    actualizar(() {});
+                  },
+                  clickEditarAsignacion: (Inventario registro) async {
+                    //TODO: Arreglar el poder editar la asignacion en dado caso que no se ha seleccionado el usuario
+                    _registroSeleccionado = registro;
+                    PantallaDeCarga.loadingI(context, true);
+                    _registroProvider.listaAgrupaciones =
+                        // _listaAgrupacionesObtenidas =
+                        await obtenerDatosCamposRegistro(
+                            ApiDefinition.ipServer,
+                            registro.proyecto.idproyecto,
+                            registro.idinventario);
+                    _camposSeleccionados['Todos'] = false;
+                    for (int i = 0;
+                        i < _registroProvider.listaAgrupaciones.length;
+                        i++) {
+                      for (int j = 0;
+                          j <
+                              _registroProvider.listaAgrupaciones
+                                  .elementAt(i)
+                                  .campos
+                                  .length;
+                          j++) {
+                        _camposSeleccionados[_registroProvider.listaAgrupaciones
+                            .elementAt(i)
+                            .campos
+                            .elementAt(j)
+                            .nombreCampo] = false;
+                      }
+                      _agrupacionesSeleccionadas[_registroProvider
+                          .listaAgrupaciones
+                          .elementAt(i)
+                          .agrupacion] = false;
+                    }
+                    _controllerDescripcion.text = '';
+                    _motivoRegistro = null;
+                    if (_registroSeleccionado.estatus == 'PENDIENTE') {
+                      Pendiente pendiente =
+                          await _obtenerPendiente(_registroSeleccionado);
+                      _motivoRegistro = pendiente.motivo;
+                      _controllerDescripcion.text = pendiente.descripcion;
+                    }
 
-                          if (documento.isNotEmpty) {
-                            html.window.open(documento, 'new tab');
-                          } else {
-                            Dialogos.advertencia(context,
-                                'El registro no se encuentra cerrado quieres generar el PDF?',
-                                () async {
-                              PantallaDeCarga.loadingI(context, true);
-                              _registroProvider.listaAgrupaciones =
-                                  // _listaAgrupacionesObtenidas =
-                                  await obtenerDatosCamposRegistro(
-                                      ApiDefinition.ipServer,
-                                      _listaRegistros
-                                          .elementAt(ind)
-                                          .proyecto
-                                          .idproyecto,
-                                      _listaRegistros
-                                          .elementAt(ind)
-                                          .idinventario);
-                              Uint8List bytes = await obtenerPdf(
-                                  ApiDefinition.ipServer,
-                                  _registroProvider.listaAgrupaciones,
-                                  _listaRegistros.elementAt(ind).idinventario);
+                    _listaCamposAsignados = await obtenerCamposEdicion(
+                        ApiDefinition.ipServer,
+                        _usuarioSeleccionado.idUsuario,
+                        registro.idinventario);
 
-                              final blob =
-                                  html.Blob([bytes], 'application/pdf');
-                              final url =
-                                  html.Url.createObjectUrlFromBlob(blob);
-                              html.window.open(url, '_blank');
-                              html.Url.revokeObjectUrl(url);
-                              PantallaDeCarga.loadingI(context, false);
-                              Navigator.of(context).pop();
-                            });
-                          }
-                        } else {
-                          String urlDocumento = await obtenerUrlDocumento(
-                              ApiDefinition.ipServer,
-                              _listaRegistros.elementAt(ind).idinventario);
+                    if (_listaCamposAsignados.isNotEmpty) {
+                      for (EdicionAsignada edicion in _listaCamposAsignados) {
+                        _camposSeleccionados[edicion.camposProyecto.campo] =
+                            true;
+                      }
+                    }
 
-                          html.window.open(urlDocumento, 'new tab');
-                        }
-                      },
-                      icon: Icon(Icons.picture_as_pdf_rounded),
-                    ),
-                    IconButton(
-                      onPressed: () async {
-                        PantallaDeCarga.loadingI(context, true);
-                        await volverAGenerarDocumento(ApiDefinition.ipServer,
-                            _listaRegistros.elementAt(ind).idinventario);
-                        PantallaDeCarga.loadingI(context, false);
-                      },
-                      icon: Icon(Icons.replay_outlined),
-                    ),
-                    VerEvidencia(
-                      inventario: _listaRegistros.elementAt(ind),
-                    ),
-                    IgnorePointer(
-                      ignoring:
-                          VariablesGlobales.usuario.perfil.idperfil == "4",
-                      child: IconButton(
-                        onPressed: () async {
-                          _registroSeleccionado =
-                              _listaRegistros.elementAt(ind);
+                    PantallaDeCarga.loadingI(context, false);
+                    _estatusRegistro = _registroSeleccionado.estatus;
+                    await _mostrarCamposAsignarEdicion(
+                        context, registro.proyecto);
+                    actualizar(() {});
+                  },
+                  clickPdf: (Inventario registro) async {
+                    if (registro.estatus != 'CERRADO') {
+                      String documento = await obtenerUrlDocumento(
+                          ApiDefinition.ipServer, registro.idinventario);
+
+                      if (documento.isNotEmpty) {
+                        html.window.open(documento, 'new tab');
+                      } else {
+                        Dialogos.advertencia(context,
+                            'El registro no se encuentra cerrado quieres generar el PDF?',
+                            () async {
                           PantallaDeCarga.loadingI(context, true);
                           _registroProvider.listaAgrupaciones =
                               // _listaAgrupacionesObtenidas =
                               await obtenerDatosCamposRegistro(
                                   ApiDefinition.ipServer,
-                                  _listaRegistros
-                                      .elementAt(ind)
-                                      .proyecto
-                                      .idproyecto,
-                                  _listaRegistros.elementAt(ind).idinventario);
-                          _camposSeleccionados['Todos'] = false;
-                          for (int i = 0;
-                              i < _registroProvider.listaAgrupaciones.length;
-                              i++) {
-                            for (int j = 0;
-                                j <
-                                    _registroProvider.listaAgrupaciones
-                                        .elementAt(i)
-                                        .campos
-                                        .length;
-                                j++) {
-                              _camposSeleccionados[_registroProvider
-                                  .listaAgrupaciones
-                                  .elementAt(i)
-                                  .campos
-                                  .elementAt(j)
-                                  .nombreCampo] = false;
-                            }
-                            _agrupacionesSeleccionadas[_registroProvider
-                                .listaAgrupaciones
-                                .elementAt(i)
-                                .agrupacion] = false;
-                          }
-                          _controllerDescripcion.text = '';
-                          _motivoRegistro = null;
-                          if (_registroSeleccionado.estatus == 'PENDIENTE') {
-                            Pendiente pendiente =
-                                await _obtenerPendiente(_registroSeleccionado);
-                            _motivoRegistro = pendiente.motivo;
-                            _controllerDescripcion.text = pendiente.descripcion;
-                          }
-
-                          _listaCamposAsignados = await obtenerCamposEdicion(
+                                  registro.proyecto.idproyecto,
+                                  registro.idinventario);
+                          Uint8List bytes = await obtenerPdf(
                               ApiDefinition.ipServer,
-                              _usuarioSeleccionado.idUsuario,
-                              _listaRegistros.elementAt(ind).idinventario);
+                              _registroProvider.listaAgrupaciones,
+                              registro.idinventario);
 
-                          if (_listaCamposAsignados.isNotEmpty) {
-                            for (EdicionAsignada edicion
-                                in _listaCamposAsignados) {
-                              _camposSeleccionados[
-                                  edicion.camposProyecto.campo] = true;
-                            }
-                          }
-
+                          final blob = html.Blob([bytes], 'application/pdf');
+                          final url = html.Url.createObjectUrlFromBlob(blob);
+                          html.window.open(url, '_blank');
+                          html.Url.revokeObjectUrl(url);
                           PantallaDeCarga.loadingI(context, false);
-                          _estatusRegistro = _registroSeleccionado.estatus;
-                          await _mostrarCamposAsignarEdicion(
-                              context, _listaRegistros.elementAt(ind).proyecto);
-                          actualizar(() {});
-                        },
-                        icon: Icon(Icons.edit_note),
-                      ),
-                    )
-                  ],
-                ),
-              ),
-            );
-          },
-        ),
+                          Navigator.of(context).pop();
+                        });
+                      }
+                    } else {
+                      String urlDocumento = await obtenerUrlDocumento(
+                          ApiDefinition.ipServer, registro.idinventario);
+
+                      html.window.open(urlDocumento, 'new tab');
+                    }
+                  },
+                  clickVolverACargar: (Inventario registro) async {
+                    PantallaDeCarga.loadingI(context, true);
+                    await volverAGenerarDocumento(
+                        ApiDefinition.ipServer, registro.idinventario);
+                    PantallaDeCarga.loadingI(context, false);
+                  }),
+              columns: [
+                DataColumn(
+                    label: Text(
+                  'Folio'.toUpperCase(),
+                  textAlign: TextAlign.center,
+                )),
+                DataColumn(
+                    label: Text(
+                  'Estatus'.toUpperCase(),
+                  textAlign: TextAlign.center,
+                )),
+                DataColumn(
+                    label: Text(
+                  'Fecha Creacion'.toUpperCase(),
+                  textAlign: TextAlign.center,
+                )),
+                DataColumn(
+                    label: Text(
+                  'Abrir'.toUpperCase(),
+                  textAlign: TextAlign.center,
+                )),
+                DataColumn(
+                    label: Text(
+                  'PDF'.toUpperCase(),
+                  textAlign: TextAlign.center,
+                )),
+                DataColumn(
+                    label: Text(
+                  'Volver a cargar PDF'.toUpperCase(),
+                  textAlign: TextAlign.center,
+                )),
+                DataColumn(
+                    label: Text(
+                  'Evidencia'.toUpperCase(),
+                  textAlign: TextAlign.center,
+                )),
+                // DataColumn(
+                //   label: Text(
+                //     'Editar Asignacion'.toUpperCase(),
+                //     textAlign: TextAlign.center,
+                //   ),
+                // ),
+              ],
+            )),
       ),
     );
+    //Version vieja para mostrar los registros
+    // ListView.builder(
+    //   controller: _scrollRegistros,
+    //   itemCount: _listaRegistros.length,
+    //   itemBuilder: (BuildContext context, int ind) {
+    //     return ListTile(
+    //       leading: _listaRegistros.elementAt(ind).estatus == 'CERRADO'
+    //           ? Checkbox(
+    //               value: _registroSeleccion[
+    //                   _listaRegistros.elementAt(ind).idinventario],
+    //               onChanged: (bool valor) {
+    //                 print('Valor: $valor');
+    //                 _registroSeleccion[
+    //                     _listaRegistros.elementAt(ind).idinventario] = valor;
+    //                 bool unaSeleccion = false;
+    //                 for (bool item in _registroSeleccion.values) {
+    //                   if (item) {
+    //                     unaSeleccion = true;
+    //                     break;
+    //                   }
+    //                 }
+    //                 if (unaSeleccion) {
+    //                   _registroProvider.mostrarMasOpciones = true;
+    //                   _totalSeleccionado = _registroSeleccion.values
+    //                       .where((element) => element == true)
+    //                       .length;
+    //                 } else {
+    //                   _registroProvider.mostrarMasOpciones = false;
+    //                 }
+    //                 actualizar(() {});
+    //               },
+    //             )
+    //           : Tooltip(
+    //               message:
+    //                   'Para poder seleccionarlo el estatus tiene que estar en cerrado',
+    //               textStyle: TextStyle(fontSize: 20.0, color: Colors.white),
+    //               child: Container(
+    //                 padding: EdgeInsets.only(left: 4.0),
+    //                 child: Icon(Icons.dangerous_outlined),
+    //               ),
+    //             ),
+    //       onTap: () async {
+    //         _registroSeleccionado = _listaRegistros.elementAt(ind);
+    //         PantallaDeCarga.loadingI(context, true);
+    //         _relacionUsuarioInventario.forEach((key, value) {
+    //           for (int item in value) {
+    //             if (_registroSeleccionado.idinventario == item) {
+    //               _usuarioSeleccionado = Usuario(key, '', '', '', '', '', '',
+    //                   Perfil(idperfil: '0', perfil: ''), '', 0);
+    //               break;
+    //             }
+    //           }
+    //         });
+    //         print('Usuario seleccionado: ${_usuarioSeleccionado.idUsuario}');
+    //         await _registroProvider.obtenerRegistro(
+    //             Inventario(
+    //                 idinventario: _listaRegistros.elementAt(ind).idinventario,
+    //                 proyecto: _listaRegistros.elementAt(ind).proyecto),
+    //             _usuarioSeleccionado.idUsuario);
+    //         PantallaDeCarga.loadingI(context, false);
+
+    //         _mostrarCampos(context, _listaRegistros.elementAt(ind).proyecto,
+    //             actualizar, false);
+    //       },
+    //       title: Container(
+    //         width: MediaQuery.of(context).size.width * 0.5,
+    //         child: Wrap(
+    //           spacing: 60.0,
+    //           direction: Axis.horizontal,
+    //           alignment: WrapAlignment.start,
+    //           runAlignment: WrapAlignment.center,
+    //           children: [
+    //             Container(
+    //               width: ancho * 0.15,
+    //               height: 50.0,
+    //               child: Center(
+    //                 child: Text(
+    //                   _listaRegistros.elementAt(ind).proyecto.proyecto,
+    //                   style: TextStyle(overflow: TextOverflow.ellipsis),
+    //                   maxLines: 2,
+    //                 ),
+    //               ),
+    //             ),
+    //             Container(
+    //               width: ancho * 0.1,
+    //               height: 50.0,
+    //               child: Center(
+    //                 child: Text(
+    //                   _listaRegistros.elementAt(ind).folio,
+    //                   style: TextStyle(overflow: TextOverflow.ellipsis),
+    //                   maxLines: 2,
+    //                 ),
+    //               ),
+    //             ),
+    //             Container(
+    //               width: ancho * 0.05,
+    //               height: 50.0,
+    //               child: Center(
+    //                 child: Text(
+    //                   _listaRegistros.elementAt(ind).estatus,
+    //                   style: TextStyle(overflow: TextOverflow.ellipsis),
+    //                   maxLines: 2,
+    //                 ),
+    //               ),
+    //             ),
+    //             Container(
+    //               width: ancho * 0.05,
+    //               height: 50.0,
+    //               child: Center(
+    //                 child: Text(
+    //                   _listaRegistros.elementAt(ind).fechacreacion,
+    //                   style: TextStyle(overflow: TextOverflow.ellipsis),
+    //                   maxLines: 2,
+    //                 ),
+    //               ),
+    //             ),
+    //             IconButton(
+    //               onPressed: () async {
+    //                 if (_listaRegistros.elementAt(ind).estatus != 'CERRADO') {
+    //                   String documento = await obtenerUrlDocumento(
+    //                       ApiDefinition.ipServer,
+    //                       _listaRegistros.elementAt(ind).idinventario);
+
+    //                   if (documento.isNotEmpty) {
+    //                     html.window.open(documento, 'new tab');
+    //                   } else {
+    //                     Dialogos.advertencia(context,
+    //                         'El registro no se encuentra cerrado quieres generar el PDF?',
+    //                         () async {
+    //                       PantallaDeCarga.loadingI(context, true);
+    //                       _registroProvider.listaAgrupaciones =
+    //                           // _listaAgrupacionesObtenidas =
+    //                           await obtenerDatosCamposRegistro(
+    //                               ApiDefinition.ipServer,
+    //                               _listaRegistros
+    //                                   .elementAt(ind)
+    //                                   .proyecto
+    //                                   .idproyecto,
+    //                               _listaRegistros.elementAt(ind).idinventario);
+    //                       Uint8List bytes = await obtenerPdf(
+    //                           ApiDefinition.ipServer,
+    //                           _registroProvider.listaAgrupaciones,
+    //                           _listaRegistros.elementAt(ind).idinventario);
+
+    //                       final blob = html.Blob([bytes], 'application/pdf');
+    //                       final url = html.Url.createObjectUrlFromBlob(blob);
+    //                       html.window.open(url, '_blank');
+    //                       html.Url.revokeObjectUrl(url);
+    //                       PantallaDeCarga.loadingI(context, false);
+    //                       Navigator.of(context).pop();
+    //                     });
+    //                   }
+    //                 } else {
+    //                   String urlDocumento = await obtenerUrlDocumento(
+    //                       ApiDefinition.ipServer,
+    //                       _listaRegistros.elementAt(ind).idinventario);
+
+    //                   html.window.open(urlDocumento, 'new tab');
+    //                 }
+    //               },
+    //               icon: Icon(Icons.picture_as_pdf_rounded),
+    //             ),
+    //             IconButton(
+    //               onPressed: () async {
+    //                 PantallaDeCarga.loadingI(context, true);
+    //                 await volverAGenerarDocumento(ApiDefinition.ipServer,
+    //                     _listaRegistros.elementAt(ind).idinventario);
+    //                 PantallaDeCarga.loadingI(context, false);
+    //               },
+    //               icon: Icon(Icons.replay_outlined),
+    //             ),
+    //             VerEvidencia(
+    //               inventario: _listaRegistros.elementAt(ind),
+    //             ),
+    //             IgnorePointer(
+    //               ignoring: VariablesGlobales.usuario.perfil.idperfil == "4",
+    //               child: IconButton(
+    //                 onPressed: () async {
+    //                   _registroSeleccionado = _listaRegistros.elementAt(ind);
+    //                   PantallaDeCarga.loadingI(context, true);
+    //                   _registroProvider.listaAgrupaciones =
+    //                       // _listaAgrupacionesObtenidas =
+    //                       await obtenerDatosCamposRegistro(
+    //                           ApiDefinition.ipServer,
+    //                           _listaRegistros
+    //                               .elementAt(ind)
+    //                               .proyecto
+    //                               .idproyecto,
+    //                           _listaRegistros.elementAt(ind).idinventario);
+    //                   _camposSeleccionados['Todos'] = false;
+    //                   for (int i = 0;
+    //                       i < _registroProvider.listaAgrupaciones.length;
+    //                       i++) {
+    //                     for (int j = 0;
+    //                         j <
+    //                             _registroProvider.listaAgrupaciones
+    //                                 .elementAt(i)
+    //                                 .campos
+    //                                 .length;
+    //                         j++) {
+    //                       _camposSeleccionados[_registroProvider
+    //                           .listaAgrupaciones
+    //                           .elementAt(i)
+    //                           .campos
+    //                           .elementAt(j)
+    //                           .nombreCampo] = false;
+    //                     }
+    //                     _agrupacionesSeleccionadas[_registroProvider
+    //                         .listaAgrupaciones
+    //                         .elementAt(i)
+    //                         .agrupacion] = false;
+    //                   }
+    //                   _controllerDescripcion.text = '';
+    //                   _motivoRegistro = null;
+    //                   if (_registroSeleccionado.estatus == 'PENDIENTE') {
+    //                     Pendiente pendiente =
+    //                         await _obtenerPendiente(_registroSeleccionado);
+    //                     _motivoRegistro = pendiente.motivo;
+    //                     _controllerDescripcion.text = pendiente.descripcion;
+    //                   }
+
+    //                   _listaCamposAsignados = await obtenerCamposEdicion(
+    //                       ApiDefinition.ipServer,
+    //                       _usuarioSeleccionado.idUsuario,
+    //                       _listaRegistros.elementAt(ind).idinventario);
+
+    //                   if (_listaCamposAsignados.isNotEmpty) {
+    //                     for (EdicionAsignada edicion in _listaCamposAsignados) {
+    //                       _camposSeleccionados[edicion.camposProyecto.campo] =
+    //                           true;
+    //                     }
+    //                   }
+
+    //                   PantallaDeCarga.loadingI(context, false);
+    //                   _estatusRegistro = _registroSeleccionado.estatus;
+    //                   await _mostrarCamposAsignarEdicion(
+    //                       context, _listaRegistros.elementAt(ind).proyecto);
+    //                   actualizar(() {});
+    //                 },
+    //                 icon: Icon(Icons.edit_note),
+    //               ),
+    //             )
+    //           ],
+    //         ),
+    //       ),
+    //     );
+    //   },
+    // );
   }
 
   Widget _tablaRegistrosEditar(BuildContext context, StateSetter actualizar) {
@@ -1479,11 +2033,20 @@ class RegistroPage extends StatelessWidget {
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         if (snapshot.hasData) {
           _listaUsuarios = snapshot.data;
-          _listaUsuarios.insert(
-            0,
-            Usuario(0, 'TODOS', 'TODOS', '_correo', '_telefono', '_ubicacion',
-                '_jefeInmediato', Perfil(), '_password', 0),
-          );
+          // _listaUsuarios.insert(
+          //   0,
+          //   Usuario(
+          //       idUsuario: 0,
+          //       nombre: 'TODOS',
+          //       usuario: 'TODOS',
+          //       correo: '_correo',
+          //       telefono: '_telefono',
+          //       ubicacion: '_ubicacion',
+          //       jefeInmediato: '_jefeInmediato',
+          //       perfil: Perfil(),
+          //       password: '_password',
+          //       passTemp: 0),
+          // );
           return ListaUsuarios(
             controllerUsuarios: _controllerUsuarios,
             listaUsuarios: _listaUsuarios,
@@ -1491,6 +2054,7 @@ class RegistroPage extends StatelessWidget {
             actualizar: actualizar,
             usuarioSeleccionadoAccion: _usuarioSeleccionadoAccion,
             tipoBusqueda: 'MULTIPLE',
+            limiteSeleccion: 3,
           );
         } else {
           return LinearProgressIndicator();
@@ -1513,34 +2077,58 @@ class RegistroPage extends StatelessWidget {
       Usuario usuarioSeleccionado,
       List<Usuario> usuariosSeleccionados,
       StateSetter actualizar) async {
+    // if (usuarioSeleccionado != null) {
+    //   _usuariosSeleccionados = usuariosSeleccionados;
+    //   _usuarioSeleccionado = usuarioSeleccionado;
+    //   _controllerUsuarios.text = usuarioSeleccionado.usuario.toUpperCase();
+    //   _proyectoSeleccionado = null;
+    //   _listaProyectos = [];
+    //   _listaRegistros = [];
+    //   _mostrarBusqueda = false;
+    //   _registrosSeleccionadosEnCero();
+    //   PantallaDeCarga.loadingI(context, true);
+
+    //   if (usuarioSeleccionado.usuario == 'TODOS') {
+    //     _listaProyectos = await obtenerProyectos(ApiDefinition.ipServer);
+    //   } else {
+    //     _listaProyectos = [];
+    //     if (_usuariosSeleccionados.isNotEmpty) {
+    //       for (Usuario usuario in _usuariosSeleccionados) {
+    //         _listaProyectos.addAll(await obtenerProyectosAsignados(
+    //             ApiDefinition.ipServer, usuario));
+    //         // _listaProyectos.insert(
+    //         //     0, Proyecto(idproyecto: 0, proyecto: 'TODOS'));
+    //       }
+    //     }
+    //   }
+    //   PantallaDeCarga.loadingI(context, false);
+    // } else {
+    //   // _listaProyectos = [];
+    //   // _proyectoSeleccionado = null;
+    //   _listaRegistros = _listaRegistrosCompleta;
+    // }
     if (usuarioSeleccionado != null) {
       _usuariosSeleccionados = usuariosSeleccionados;
       _usuarioSeleccionado = usuarioSeleccionado;
       _controllerUsuarios.text = usuarioSeleccionado.usuario.toUpperCase();
-      _proyectoSeleccionado = null;
-      _listaProyectos = [];
       _listaRegistros = [];
-      _mostrarBusqueda = false;
       _registrosSeleccionadosEnCero();
       PantallaDeCarga.loadingI(context, true);
-
-      if (usuarioSeleccionado.usuario == 'TODOS') {
-        _listaProyectos = await obtenerProyectos(ApiDefinition.ipServer);
-      } else {
-        _listaProyectos = [];
-        if (_usuariosSeleccionados.isNotEmpty) {
-          for (Usuario usuario in _usuariosSeleccionados) {
-            _listaProyectos.addAll(await obtenerProyectosAsignados(
-                ApiDefinition.ipServer, usuario));
-            // _listaProyectos.insert(
-            //     0, Proyecto(idproyecto: 0, proyecto: 'TODOS'));
-          }
-        }
+      for (Usuario usuario in _usuariosSeleccionados) {
+        //TODO: almacenar los id inventario de los usuarios
+        List<Inventario> respuesta = await obtenerRegistrosUsuarioProyecto(
+            ApiDefinition.ipServer, usuario, _proyectoSeleccionado);
+        List<int> inventarios = [];
+        respuesta.forEach((element) {
+          inventarios.add(element.idinventario);
+        });
+        _relacionUsuarioInventario.addAll({usuario.idUsuario: inventarios});
+        _listaRegistros.addAll(respuesta);
       }
+
       PantallaDeCarga.loadingI(context, false);
     } else {
-      _listaProyectos = [];
-      _proyectoSeleccionado = null;
+      _listaRegistros = _listaRegistrosCompleta;
     }
     actualizar(() {});
   }
@@ -1564,20 +2152,25 @@ class RegistroPage extends StatelessWidget {
             PantallaDeCarga.loadingI(context, true);
             _listaRegistros = [];
             _relacionUsuarioInventario = {};
-            for (Usuario usuario in _usuariosSeleccionados) {
-              //TODO: almacenar los id inventario de los usuarios
-              List<Inventario> respuesta =
-                  await obtenerRegistrosUsuarioProyecto(
-                      ApiDefinition.ipServer, usuario, _proyectoSeleccionado);
-              List<int> inventarios = [];
-              respuesta.forEach((element) {
-                inventarios.add(element.idinventario);
-              });
-              _relacionUsuarioInventario
-                  .addAll({usuario.idUsuario: inventarios});
-              _listaRegistros.addAll(respuesta);
-            }
-            print('Relacion Usuario-Inventario: $_relacionUsuarioInventario');
+            _listaRegistros = await getRegistrosPorProyecto(
+                ApiDefinition.ipServer, _proyectoSeleccionado);
+            print('Lista Registros obtenida: ${_listaRegistros.length}');
+
+            // for (Usuario usuario in _usuariosSeleccionados) {
+            //   //TODO: almacenar los id inventario de los usuarios
+            //   List<Inventario> respuesta =
+            //       await obtenerRegistrosUsuarioProyecto(
+            //           ApiDefinition.ipServer, usuario, _proyectoSeleccionado);
+            //   List<int> inventarios = [];
+            //   respuesta.forEach((element) {
+            //     inventarios.add(element.idinventario);
+            //   });
+            //   _relacionUsuarioInventario
+            //       .addAll({usuario.idUsuario: inventarios});
+            //   _listaRegistros.addAll(respuesta);
+            // }
+            // print('Relacion Usuario-Inventario: $_relacionUsuarioInventario');
+
             _listaRegistrosCompleta = _listaRegistros;
             _controllerBusqueda.text = '';
             _opciones = await obtenerCamposProyectoBusqueda(
@@ -1639,21 +2232,59 @@ class RegistroPage extends StatelessWidget {
         ),
         value: _proyectoSeleccionado,
         onChanged: (valor) async {
+          // _proyectoSeleccionado = valor;
+          // PantallaDeCarga.loadingI(context, true);
+          // _listaRegistros = await obtenerRegistrosUsuarioProyecto(
+          //     ApiDefinition.ipServer,
+          //     VariablesGlobales.usuario,
+          //     _proyectoSeleccionado);
+          // _listaRegistrosCompleta = _listaRegistros;
+          // _controllerBusqueda.text = '';
+          // _opciones = await obtenerCamposProyectoBusqueda(
+          //     ApiDefinition.ipServer, _proyectoSeleccionado.idproyecto);
+          // _opciones.insert(0, 'ESTATUS');
+
+          // if (_listaRegistros.isNotEmpty) {
+          //   _mostrarBusqueda = true;
+          // }
+          // _busquedaSeleccionada = null;
+          // for (Inventario registro in _listaRegistros) {
+          //   _registroSeleccion[registro.idinventario] = false;
+          // }
+          // PantallaDeCarga.loadingI(context, false);
+          // actualizar(() {});
+
           _proyectoSeleccionado = valor;
           PantallaDeCarga.loadingI(context, true);
-          _listaRegistros = await obtenerRegistrosUsuarioProyecto(
-              ApiDefinition.ipServer,
-              VariablesGlobales.usuario,
-              _proyectoSeleccionado);
+          _listaRegistros = [];
+          _relacionUsuarioInventario = {};
+          _listaRegistros = await getRegistrosPorProyecto(
+              ApiDefinition.ipServer, _proyectoSeleccionado);
+          print('Lista Registros obtenida: ${_listaRegistros.length}');
+          // for (Usuario usuario in _usuariosSeleccionados) {
+          //   //TODO: almacenar los id inventario de los usuarios
+          //   List<Inventario> respuesta =
+          //       await obtenerRegistrosUsuarioProyecto(
+          //           ApiDefinition.ipServer, usuario, _proyectoSeleccionado);
+          //   List<int> inventarios = [];
+          //   respuesta.forEach((element) {
+          //     inventarios.add(element.idinventario);
+          //   });
+          //   _relacionUsuarioInventario
+          //       .addAll({usuario.idUsuario: inventarios});
+          //   _listaRegistros.addAll(respuesta);
+          // }
+          // print('Relacion Usuario-Inventario: $_relacionUsuarioInventario');
           _listaRegistrosCompleta = _listaRegistros;
           _controllerBusqueda.text = '';
+          _opciones = await obtenerCamposProyectoBusqueda(
+              ApiDefinition.ipServer, _proyectoSeleccionado.idproyecto);
+          _opciones.insert(0, 'ESTATUS');
           if (_listaRegistros.isNotEmpty) {
             _mostrarBusqueda = true;
           }
           _busquedaSeleccionada = null;
-          for (Inventario registro in _listaRegistros) {
-            _registroSeleccion[registro.idinventario] = false;
-          }
+          _registrosSeleccionadosEnCero();
           PantallaDeCarga.loadingI(context, false);
           actualizar(() {});
         },
@@ -1707,12 +2338,20 @@ class RegistroPage extends StatelessWidget {
           } else {
             PantallaDeCarga.loadingI(context, true);
             _listaBusqueda = [];
-            for (Usuario usuario in _usuariosSeleccionados) {
+            if (_usuariosSeleccionados.isEmpty) {
               _listaBusqueda.addAll(await obtenerValoresBusqueda(
                   ApiDefinition.ipServer,
                   _proyectoSeleccionado.idproyecto,
-                  usuario.idUsuario,
+                  0,
                   valor));
+            } else {
+              for (Usuario usuario in _usuariosSeleccionados) {
+                _listaBusqueda.addAll(await obtenerValoresBusqueda(
+                    ApiDefinition.ipServer,
+                    _proyectoSeleccionado.idproyecto,
+                    usuario.idUsuario,
+                    valor));
+              }
             }
             PantallaDeCarga.loadingI(context, false);
           }
@@ -1728,8 +2367,8 @@ class RegistroPage extends StatelessWidget {
     );
   }
 
-  _mostrarCampos(
-      BuildContext context, Proyecto proyecto, StateSetter actualizar) {
+  _mostrarCampos(BuildContext context, Proyecto proyecto,
+      StateSetter actualizar, bool nuevo) {
     return showDialog(
         barrierDismissible: false,
         context: context,
@@ -1750,9 +2389,11 @@ class RegistroPage extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(child: Text('PROYECTO: ${proyecto.proyecto}')),
-                      Container(
-                          child:
-                              Text('Registro: ${_registroSeleccionado.folio}')),
+                      nuevo
+                          ? Container()
+                          : Container(
+                              child: Text(
+                                  'Registro: ${_registroSeleccionado.folio}')),
                     ],
                   ),
                   Expanded(child: Container()),
@@ -1769,10 +2410,13 @@ class RegistroPage extends StatelessWidget {
                 size: size,
                 proyecto: proyecto,
                 formKeyRegistro: _formKeyRegistro,
-                usuarioSeleccionado: _usuarioSeleccionado,
+                usuarioSeleccionado: _usuarioSeleccionado != null
+                    ? _usuarioSeleccionado
+                    : VariablesGlobales.usuario,
                 inventarioSeleccionado: _registroSeleccionado,
                 registroProvider: _registroProvider,
                 actualizar: actualizar,
+                nuevo: nuevo,
               )
               // Center(
               //   child: size.width > 700

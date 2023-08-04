@@ -1,3 +1,5 @@
+import 'package:app_isae_desarrollo/src/models/Cliente.dart';
+import 'package:app_isae_desarrollo/src/models/ClienteAplicacion.dart';
 import 'package:chips_input/chips_input.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -14,6 +16,8 @@ class ListaUsuarios extends StatelessWidget {
   Function usuarioSeleccionadoAccion;
   Usuario usuarioSeleccionado;
   String tipoBusqueda;
+  int limiteSeleccion;
+  double widthComponente;
   ListaUsuarios({
     Key key,
     @required this.controllerUsuarios,
@@ -22,7 +26,9 @@ class ListaUsuarios extends StatelessWidget {
     @required this.actualizar,
     @required this.usuarioSeleccionadoAccion,
     @required this.tipoBusqueda,
+    @required this.limiteSeleccion,
     this.usuarioSeleccionado,
+    this.widthComponente = 200,
   }) : super(key: key);
 
   @override
@@ -38,7 +44,8 @@ class ListaUsuarios extends StatelessWidget {
     return Center(
       child: Column(children: [
         ChipsInput(
-          maxChips: 3, // remove, if you like infinity number of chips
+          maxChips:
+              limiteSeleccion, // remove, if you like infinity number of chips
           initialValue: usuariosSeleccionado,
           findSuggestions: (String query) {
             if (query.isNotEmpty) {
@@ -127,7 +134,7 @@ class ListaUsuarios extends StatelessWidget {
         }
         controllerUsuarios = textEditingController;
         return Container(
-          width: 200.0,
+          width: widthComponente,
           child: TextFormField(
               validator: (value) {
                 if (value == null || value.isEmpty) {
@@ -198,16 +205,21 @@ class ListaUsuarios extends StatelessWidget {
           if (listaUsuarios.isEmpty) {
             return [
               Usuario(
-                  0,
-                  'SIN RESULTADOS',
-                  'SIN RESULTADOS',
-                  '_correo',
-                  '_telefono',
-                  '_ubicacion',
-                  '_jefeInmediato',
-                  Perfil(),
-                  '_password',
-                  0)
+                idUsuario: 0,
+                nombre: 'SIN RESULTADOS',
+                usuario: 'SIN RESULTADOS',
+                correo: '_correo',
+                telefono: '_telefono',
+                ubicacion: '_ubicacion',
+                jefeInmediato: '_jefeInmediato',
+                perfil: Perfil(),
+                password: '_password',
+                passTemp: 0,
+                status: '',
+                token: '',
+                clienteAplicacion: ClienteAplicacion(),
+                vistacliente: Cliente(),
+              )
             ];
           } else {
             return listaUsuarios.where((Usuario usuario) {

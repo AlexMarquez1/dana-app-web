@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:app_isae_desarrollo/src/models/Cliente.dart';
+import 'package:app_isae_desarrollo/src/models/ClienteAplicacion.dart';
 import 'package:app_isae_desarrollo/src/models/Perfil.dart';
 
 Usuario usuarioFromJson(String str) => Usuario.fromJson(json.decode(str));
@@ -8,140 +10,70 @@ String usuarioToJson(Usuario data) => json.encode(data.toJson());
 
 class Usuario {
   Usuario(
-    this._idUsuario,
-    this._nombre,
-    this._usuario,
-    this._correo,
-    this._telefono,
-    this._ubicacion,
-    this._jefeInmediato,
-    this._perfil,
-    this._password,
-    this._passTemp, {
-    this.token,
-    this.status,
-  });
+      {this.idUsuario,
+      this.nombre,
+      this.usuario,
+      this.correo,
+      this.telefono,
+      this.ubicacion,
+      this.jefeInmediato,
+      this.perfil,
+      this.password,
+      this.passTemp,
+      this.token,
+      this.status,
+      this.clienteAplicacion,
+      this.vistacliente});
 
-  int _idUsuario;
-  String _nombre;
-  String _usuario;
-  String _correo;
-  String _telefono;
-  String _ubicacion;
-  String _jefeInmediato;
-  Perfil _perfil;
-  String _password;
-  int _passTemp;
+  int idUsuario;
+  String nombre;
+  String usuario;
+  String correo;
+  String telefono;
+  String ubicacion;
+  String jefeInmediato;
+  Perfil perfil;
+  String password;
+  int passTemp;
   String token;
   String status;
-
-  int get idUsuario {
-    return _idUsuario;
-  }
-
-  set idUsuario(int idUsuario) {
-    _idUsuario = idUsuario;
-  }
-
-  String get nombre {
-    return _nombre;
-  }
-
-  set nombre(String nombre) {
-    _nombre = nombre;
-  }
-
-  String get usuario {
-    return _usuario;
-  }
-
-  set usuario(String usuario) {
-    _usuario = usuario;
-  }
-
-  String get correo {
-    return _correo;
-  }
-
-  set(String correo) {
-    _correo = correo;
-  }
-
-  String get telefono {
-    return _telefono;
-  }
-
-  set telefono(String telefono) {
-    _telefono = telefono;
-  }
-
-  String get ubicacion {
-    return _ubicacion;
-  }
-
-  set ubicacion(String ubicacion) {
-    _ubicacion = ubicacion;
-  }
-
-  String get jefeInmediato {
-    return _jefeInmediato;
-  }
-
-  set jefeInmediato(String jefeInmediato) {
-    _jefeInmediato = jefeInmediato;
-  }
-
-  Perfil get perfil {
-    return _perfil;
-  }
-
-  set perfil(Perfil perfil) {
-    _perfil = perfil;
-  }
-
-  String get password {
-    return _password;
-  }
-
-  set password(String password) {
-    _password = password;
-  }
-
-  int get passTemp {
-    return _passTemp;
-  }
-
-  set passTemp(int passTemp) {
-    _passTemp = passTemp;
-  }
+  ClienteAplicacion clienteAplicacion;
+  Cliente vistacliente;
 
   factory Usuario.fromJson(Map<String, dynamic> json) => Usuario(
-        json["idusuario"] ?? 0,
-        json["nombre"] ?? '',
-        json["usuario"] ?? '',
-        json["correo"] ?? '',
-        json["telefono"] ?? '',
-        json["ubicacion"] ?? '',
-        json["jefeinmediato"] ?? '',
-        json["perfile"] == null ? null : Perfil.fromJson(json["perfile"]),
-        json["pass"].toString(),
-        json["passtemp"] ?? '',
-        status: json["status"] ?? '',
-        token: json["token"] ?? '',
-      );
+      idUsuario: json["idusuario"] ?? 0,
+      nombre: json["nombre"] ?? '',
+      usuario: json["usuario"] ?? '',
+      correo: json["correo"] ?? '',
+      telefono: json["telefono"] ?? '',
+      ubicacion: json["ubicacion"] ?? '',
+      jefeInmediato: json["jefeinmediato"] ?? '',
+      perfil: json["perfile"] == null ? null : Perfil.fromJson(json["perfile"]),
+      password: json["pass"].toString(),
+      passTemp: json["passtemp"] ?? '',
+      status: json["status"] ?? '',
+      token: json["token"] ?? '',
+      clienteAplicacion: json["clienteAplicacion"] == null
+          ? null
+          : ClienteAplicacion.fromJson(json["clienteAplicacion"]),
+      vistacliente: json["vistaCliente"] == null
+          ? null
+          : Cliente.fromJson(json["vistaCliente"]));
 
   Map<String, dynamic> toJson() => {
-        "idusuario": _idUsuario,
-        "nombre": _nombre,
-        "usuario": _usuario,
-        "correo": _correo,
-        "telefono": _telefono,
-        "ubicacion": _ubicacion,
-        "jefeinmediato": _jefeInmediato,
+        "idusuario": idUsuario,
+        "nombre": nombre,
+        "usuario": usuario,
+        "correo": correo,
+        "telefono": telefono,
+        "ubicacion": ubicacion,
+        "jefeinmediato": jefeInmediato,
         "perfile": perfil.toJson(),
-        "pass": _password,
-        "passtemp": _passTemp,
+        "pass": password,
+        "passtemp": passTemp,
         "status": status,
         "token": token,
+        "clienteAplicacion": clienteAplicacion.toJson(),
+        "vistaCliente": vistacliente.toJson(),
       };
 }

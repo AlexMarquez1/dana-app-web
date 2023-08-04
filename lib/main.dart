@@ -3,9 +3,11 @@ import 'package:app_isae_desarrollo/src/page/AsistenciaPage.dart';
 import 'package:app_isae_desarrollo/src/page/BalancePage.dart';
 import 'package:app_isae_desarrollo/src/page/CamposProyecto.dart';
 import 'package:app_isae_desarrollo/src/page/CatalogoPage.dart';
+import 'package:app_isae_desarrollo/src/page/ClientesPage.dart';
 import 'package:app_isae_desarrollo/src/page/DashboardPage.dart';
 import 'package:app_isae_desarrollo/src/page/Duplicidad.dart';
 import 'package:app_isae_desarrollo/src/page/InicioPage.dart';
+import 'package:app_isae_desarrollo/src/page/LocalidadesPage.dart';
 import 'package:app_isae_desarrollo/src/page/NotificacionesPage.dart';
 import 'package:app_isae_desarrollo/src/page/ProyectosPage.dart';
 import 'package:app_isae_desarrollo/src/page/RegistrosPage.dart';
@@ -92,6 +94,8 @@ class MyApp extends StatelessWidget {
         '/': (BuildContext context) => LoginPage(),
         '/inicio': (BuildContext context) => InicioPage(),
         '/proyectos': (BuildContext context) => ProyectosPage(),
+        '/clientes': (BuildContext context) => ClientesPage(),
+        '/localidades': (BuildContext context) => LocalidadesPage(),
         '/usuarios': (BuildContext context) => UsuariosPage(),
         '/catalogo': (BuildContext context) => CatalogoPage(),
         '/asignaciones': (BuildContext context) => AsignacionesPage(),

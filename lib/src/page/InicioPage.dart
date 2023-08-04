@@ -1,5 +1,6 @@
 import 'package:app_isae_desarrollo/src/page/widgets/BotonInicio.dart';
 import 'package:app_isae_desarrollo/src/page/widgets/DrawerWidget.dart';
+import 'package:app_isae_desarrollo/src/page/widgets/TarjetaInformacion.dart';
 import 'package:app_isae_desarrollo/src/page/widgets/appBar.dart';
 import 'package:app_isae_desarrollo/src/utils/VariablesGlobales.dart';
 import 'package:flutter/material.dart';
@@ -26,102 +27,87 @@ class _InicioPageState extends State<InicioPage> {
 
   Widget _contenido(BuildContext context) {
     return SingleChildScrollView(
-      child: Container(
-        padding: EdgeInsets.only(
-          top: MediaQuery.of(context).size.height * 0.1,
-          left: 30.0,
-          right: 30.0,
-        ),
-        child: Table(
-          //border: TableBorder.all(),
-          //columnWidths: {1: FractionColumnWidth(.2)},
-          children: _ordenarInicio(VariablesGlobales.usuario.perfil.perfil),
+      child: Center(
+        child: Column(
+          children: [
+            Container(
+              margin: EdgeInsets.only(
+                top: MediaQuery.of(context).size.height * 0.1,
+                left: 30.0,
+                right: 30.0,
+              ),
+              child: Wrap(
+                runSpacing: 150.0,
+                spacing: 200.0,
+                alignment: WrapAlignment.center,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children:
+                    _ordenarInicio(VariablesGlobales.usuario.perfil.perfil),
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  List<TableRow> _ordenarInicio(String perfil) {
-    final List<TableRow> componentes = [];
+  List<Widget> _ordenarInicio(String perfil) {
+    final List<Widget> componentes = [];
     switch (perfil) {
       case 'Super Admin':
-        componentes.add(TableRow(children: [
+        componentes.addAll([
           BotonInicio(icono: Icons.inventory, etiqueta: 'proyectos'),
+          BotonInicio(icono: Icons.business_sharp, etiqueta: 'clientes'),
+          BotonInicio(
+              icono: Icons.add_business_rounded, etiqueta: 'localidades'),
           BotonInicio(icono: Icons.person_add, etiqueta: 'usuarios'),
           BotonInicio(icono: Icons.assignment, etiqueta: 'catalogo'),
-        ]));
-        componentes.add(TableRow(children: [
           BotonInicio(icono: Icons.folder_shared, etiqueta: 'asignaciones'),
           BotonInicio(icono: Icons.folder, etiqueta: 'registros'),
           BotonInicio(icono: Icons.person_pin, etiqueta: 'asistencia'),
-        ]));
-        componentes.add(TableRow(children: [
           BotonInicio(icono: Icons.extension_off_sharp, etiqueta: 'dashborad'),
           BotonInicio(icono: Icons.data_usage_rounded, etiqueta: 'balance'),
           // BotonInicio(
           //     icono: Icons.notification_add_rounded,
           //     etiqueta: 'notificaciones'),
           BotonInicio(icono: Icons.rule, etiqueta: 'duplicados'),
-        ]));
+        ]);
         break;
       case 'Administrador':
-        componentes.add(TableRow(children: [
+        componentes.addAll([
           BotonInicio(icono: Icons.inventory, etiqueta: 'proyectos'),
-          BotonInicio(icono: Icons.person_add, etiqueta: 'usuarios'),
-          BotonInicio(icono: Icons.folder_shared, etiqueta: 'asignaciones'),
-        ]));
-        componentes.add(TableRow(children: [
+          BotonInicio(icono: Icons.business_sharp, etiqueta: 'clientes'),
+          BotonInicio(
+              icono: Icons.add_business_rounded, etiqueta: 'localidades'),
           BotonInicio(icono: Icons.folder, etiqueta: 'registros'),
+          BotonInicio(icono: Icons.folder_shared, etiqueta: 'asignaciones'),
+          BotonInicio(icono: Icons.person_add, etiqueta: 'usuarios'),
           BotonInicio(icono: Icons.person_pin, etiqueta: 'asistencia'),
-          BotonInicio(icono: Icons.data_usage_rounded, etiqueta: 'balance'),
-          // BotonInicio(
-          //     icono: Icons.notification_add_rounded,
-          //     etiqueta: 'notificaciones'),
-        ]));
-        componentes.add(TableRow(children: [
-          BotonInicio(icono: Icons.rule, etiqueta: 'duplicados'),
-          Container(),
-          Container(),
-        ]));
+          BotonInicio(icono: Icons.assignment, etiqueta: 'catalogo'),
+        ]);
         break;
       case 'Coordinador':
-        componentes.add(TableRow(children: [
+        componentes.addAll([
           BotonInicio(icono: Icons.inventory, etiqueta: 'proyectos'),
+          BotonInicio(icono: Icons.folder, etiqueta: 'registros'),
           BotonInicio(icono: Icons.folder_shared, etiqueta: 'asignaciones'),
-          BotonInicio(icono: Icons.folder, etiqueta: 'registros'),
-        ]));
-        componentes.add(TableRow(children: [
           BotonInicio(icono: Icons.person_pin, etiqueta: 'asistencia'),
-          BotonInicio(icono: Icons.data_usage_rounded, etiqueta: 'balance'),
-          // BotonInicio(
-          //     icono: Icons.notification_add_rounded,
-          //     etiqueta: 'notificaciones'),
-          BotonInicio(icono: Icons.rule, etiqueta: 'duplicados'),
-        ]));
-        break;
-      case 'Usuario':
-        componentes.add(TableRow(children: [
-          // BotonInicio(icono: Icons.inventory, etiqueta: 'proyectos'),
-          Container(),
-          BotonInicio(icono: Icons.folder, etiqueta: 'registros'),
-          // BotonInicio(icono: Icons.folder_shared, etiqueta: 'asignaciones'),
-          Container(),
-        ]));
+        ]);
         // componentes.add(TableRow(children: [
         //   BotonInicio(icono: Icons.person_pin, etiqueta: 'asistencia'),
-        //   BotonInicio(
-        //       icono: Icons.notification_add_rounded,
-        //       etiqueta: 'notificaciones'),
-        //   Container(),
+        //   BotonInicio(icono: Icons.data_usage_rounded, etiqueta: 'balance'),
+        //   // BotonInicio(
+        //   //     icono: Icons.notification_add_rounded,
+        //   //     etiqueta: 'notificaciones'),
+        //   BotonInicio(icono: Icons.rule, etiqueta: 'duplicados'),
         // ]));
         break;
       case 'Documentador':
-        componentes.add(TableRow(children: [
+        componentes.addAll([
           // BotonInicio(icono: Icons.inventory, etiqueta: 'proyectos'),
           BotonInicio(icono: Icons.inventory, etiqueta: 'proyectos'),
           BotonInicio(icono: Icons.folder, etiqueta: 'registros'),
-          Container(),
-        ]));
+        ]);
         // componentes.add(TableRow(children: [
         //   BotonInicio(icono: Icons.person_pin, etiqueta: 'asistencia'),
         //   BotonInicio(
@@ -129,6 +115,19 @@ class _InicioPageState extends State<InicioPage> {
         //       etiqueta: 'notificaciones'),
         //   Container(),
         // ]));
+        break;
+      case 'RH':
+        // componentes.add(TableRow(children: [
+        //   BotonInicio(icono: Icons.inventory, etiqueta: 'proyectos'),
+        //   Container(),
+        //   BotonInicio(icono: Icons.folder, etiqueta: 'registros'),
+        //   BotonInicio(icono: Icons.folder_shared, etiqueta: 'asignaciones'),
+        //   Container(),
+        // ]));
+        componentes.addAll([
+          BotonInicio(icono: Icons.person_add, etiqueta: 'usuarios'),
+          BotonInicio(icono: Icons.person_pin, etiqueta: 'asistencia'),
+        ]);
         break;
       case 'Cliente':
         break;
