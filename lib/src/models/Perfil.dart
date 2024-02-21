@@ -10,8 +10,8 @@ class Perfil {
     this.perfil,
   });
 
-  String idperfil;
-  String perfil;
+  String? idperfil;
+  String? perfil;
 
   factory Perfil.fromJson(Map<String, dynamic> json) => Perfil(
         idperfil: (json["idperfil"] ?? 0).toString(),

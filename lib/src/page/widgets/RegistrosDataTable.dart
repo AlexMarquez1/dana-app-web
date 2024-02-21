@@ -22,9 +22,9 @@ import 'package:universal_html/html.dart' as html;
 class RegistrosDataTable extends DataTableSource {
   final _formKeyRegistro = GlobalKey<FormState>();
   List<Inventario> _listaRegistro;
-  BuildContext context;
+  BuildContext? context;
   List<Agrupaciones> _listaAgrupacionesObtenidas = [];
-  Inventario _registroSeleccionado;
+  Inventario? _registroSeleccionado;
 
   Map<String, Catalogo> _catalogos = new Map<String, Catalogo>();
   Map<String, bool> _comprobarFirma = new Map<String, bool>();
@@ -32,7 +32,7 @@ class RegistrosDataTable extends DataTableSource {
   Map<String, GlobalKey<SignatureState>> _keyFirma =
       new Map<String, GlobalKey<SignatureState>>();
 
-  RegistrosDataTable({@required List<Inventario> listaRegistro, this.context})
+  RegistrosDataTable({required List<Inventario> listaRegistro, this.context})
       : _listaRegistro = listaRegistro,
         assert(listaRegistro != null);
 
@@ -43,23 +43,23 @@ class RegistrosDataTable extends DataTableSource {
       index: index,
       onSelectChanged: (seleccion) async {
         _registroSeleccionado = registro;
-        PantallaDeCarga.loadingI(context, true);
+        PantallaDeCarga.loadingI(context!, true);
         _listaAgrupacionesObtenidas = await obtenerDatosCamposRegistro(
             ApiDefinition.ipServer,
-            registro.proyecto.idproyecto,
-            registro.idinventario);
+            registro.proyecto!.idproyecto!,
+            registro.idinventario!);
         _catalogos = await obtenerCatalogosProyecto(
-            ApiDefinition.ipServer, registro.proyecto);
+            ApiDefinition.ipServer, registro.proyecto!);
         TextEditingController valor = TextEditingController();
         valor.text = 'PRUEBA';
 
         for (int i = 0; i < _listaAgrupacionesObtenidas.length; i++) {
           for (int j = 0;
-              j < _listaAgrupacionesObtenidas.elementAt(i).campos.length;
+              j < _listaAgrupacionesObtenidas.elementAt(i).campos!.length;
               j++) {
             if (_listaAgrupacionesObtenidas
                     .elementAt(i)
-                    .campos
+                    .campos!
                     .elementAt(j)
                     .tipoCampo ==
                 'FIRMA') {
@@ -67,99 +67,99 @@ class RegistrosDataTable extends DataTableSource {
               if (firma.isEmpty) {
                 _comprobarFirma[_listaAgrupacionesObtenidas
                     .elementAt(i)
-                    .campos
+                    .campos!
                     .elementAt(j)
-                    .nombreCampo] = false;
+                    .nombreCampo!] = false;
                 _keyFirma[_listaAgrupacionesObtenidas
                     .elementAt(i)
-                    .campos
+                    .campos!
                     .elementAt(j)
-                    .nombreCampo] = GlobalKey<SignatureState>();
+                    .nombreCampo!] = GlobalKey<SignatureState>();
                 _firma[_listaAgrupacionesObtenidas
                     .elementAt(i)
-                    .campos
+                    .campos!
                     .elementAt(j)
-                    .nombreCampo] = ByteData(0);
+                    .nombreCampo!] = ByteData(0);
               } else {
                 _comprobarFirma[_listaAgrupacionesObtenidas
                     .elementAt(i)
-                    .campos
+                    .campos!
                     .elementAt(j)
-                    .nombreCampo] = true;
+                    .nombreCampo!] = true;
                 _keyFirma[_listaAgrupacionesObtenidas
                     .elementAt(i)
-                    .campos
+                    .campos!
                     .elementAt(j)
-                    .nombreCampo] = GlobalKey<SignatureState>();
+                    .nombreCampo!] = GlobalKey<SignatureState>();
                 _firma[_listaAgrupacionesObtenidas
                     .elementAt(i)
-                    .campos
+                    .campos!
                     .elementAt(j)
-                    .nombreCampo] = ByteData(0);
+                    .nombreCampo!] = ByteData(0);
               }
             }
 
             TextEditingController aux = TextEditingController();
             aux.text = _listaAgrupacionesObtenidas
                 .elementAt(i)
-                .campos
+                .campos!
                 .elementAt(j)
-                .valor;
+                .valor!;
             _listaAgrupacionesObtenidas
                 .elementAt(i)
-                .campos
+                .campos!
                 .elementAt(j)
                 .valorController = aux;
 
             _listaAgrupacionesObtenidas
                 .elementAt(i)
-                .campos
+                .campos!
                 .elementAt(j)
                 .controladorLongitud = new TextEditingController();
             _listaAgrupacionesObtenidas
                 .elementAt(i)
-                .campos
+                .campos!
                 .elementAt(j)
                 .controladorNombreCampo = new TextEditingController();
             _listaAgrupacionesObtenidas
                 .elementAt(i)
-                .campos
+                .campos!
                 .elementAt(j)
                 .controladorRestriccion = new TextEditingController();
           }
         }
-        PantallaDeCarga.loadingI(context, false);
-        _mostrarCampos(registro.proyecto);
+        PantallaDeCarga.loadingI(context!, false);
+        _mostrarCampos(registro.proyecto!);
       },
       cells: <DataCell>[
-        DataCell(Text(registro.proyecto.proyecto)),
-        DataCell(Text(registro.folio)),
-        DataCell(Text(registro.estatus)),
-        DataCell(Text(registro.fechacreacion)),
+        DataCell(Text(registro.proyecto!.proyecto!)),
+        DataCell(Text(registro.folio!)),
+        DataCell(Text(registro.estatus!)),
+        DataCell(Text(registro.fechacreacion!)),
         DataCell(IconButton(
           onPressed: () async {
             if (registro.estatus != 'CERRADO') {
-              Dialogos.advertencia(context,
+              Dialogos.advertencia(context!,
                   'El registro no se encuentra cerrado quieres generar el PDF?',
                   () async {
-                PantallaDeCarga.loadingI(context, true);
+                PantallaDeCarga.loadingI(context!, true);
                 _listaAgrupacionesObtenidas = await obtenerDatosCamposRegistro(
                     ApiDefinition.ipServer,
-                    registro.proyecto.idproyecto,
-                    registro.idinventario);
+                    registro.proyecto!.idproyecto!,
+                    registro.idinventario!);
                 Uint8List bytes = await obtenerPdf(ApiDefinition.ipServer,
-                    _listaAgrupacionesObtenidas, registro.idinventario);
+                    _listaAgrupacionesObtenidas, registro.idinventario!);
 
                 final blob = html.Blob([bytes], 'application/pdf');
                 final url = html.Url.createObjectUrlFromBlob(blob);
                 html.window.open(url, '_blank');
                 html.Url.revokeObjectUrl(url);
-                PantallaDeCarga.loadingI(context, false);
-                Navigator.of(context).pop();
+                PantallaDeCarga.loadingI(context!, false);
+                Navigator.of(context!).pop();
               });
             } else {
               String urlDocumento = await obtenerUrlDocumento(
-                  ApiDefinition.ipServer, registro.idinventario);
+                  ApiDefinition.ipServer, registro.idinventario!);
 
               html.window.open(urlDocumento, 'new tab');
             }
@@ -173,7 +173,7 @@ class RegistrosDataTable extends DataTableSource {
   _mostrarCampos(Proyecto proyecto) {
     return showDialog(
         barrierDismissible: false,
-        context: context,
+        context: context!,
         builder: (context) {
           Size size = MediaQuery.of(context).size;
           return SimpleDialog(
@@ -221,12 +221,12 @@ class RegistrosDataTable extends DataTableSource {
                             List<ValoresCampos> valores = [];
                             for (Agrupaciones agrupaciones
                                 in _listaAgrupacionesObtenidas) {
-                              for (Campos item in agrupaciones.campos) {
+                              for (Campos item in agrupaciones.campos!) {
                                 valores.add(ValoresCampos(
-                                  valor: item.valorController.text,
+                                  valor: item.valorController!.text,
                                   idcampoproyecto: item.idCampo,
                                   idinventario:
-                                      _registroSeleccionado.idinventario,
+                                      _registroSeleccionado!.idinventario,
                                 ));
                               }
                             }
@@ -265,9 +265,9 @@ class RegistrosDataTable extends DataTableSource {
       key: _formKeyRegistro,
       child: Container(
         width: orientacion == 'columna'
-            ? MediaQuery.of(context).size.width * 0.5
-            : MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height - 300,
+            ? MediaQuery.of(context!).size.width * 0.5
+            : MediaQuery.of(context!).size.width,
+        height: MediaQuery.of(context!).size.height - 300,
         child: ListView.builder(
           itemCount: _listaAgrupacionesObtenidas.length,
           itemBuilder: (BuildContext context, int index) {
@@ -315,7 +315,7 @@ class RegistrosDataTable extends DataTableSource {
             i <
                 _listaAgrupacionesObtenidas
                     .elementAt(indAgrupacion)
-                    .campos
+                    .campos!
                     .length;
             i++)
           Padding(
@@ -325,7 +325,7 @@ class RegistrosDataTable extends DataTableSource {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 _buildTitle(
-                    '${_listaAgrupacionesObtenidas.elementAt(indAgrupacion).campos.elementAt(i).nombreCampo}'),
+                    '${_listaAgrupacionesObtenidas.elementAt(indAgrupacion).campos!.elementAt(i).nombreCampo}'),
                 _tipoDeComponente(indAgrupacion, i, proyecto, actualizar),
               ],
             ),
@@ -342,7 +342,7 @@ class RegistrosDataTable extends DataTableSource {
             i <
                 _listaAgrupacionesObtenidas
                     .elementAt(indAgrupacion)
-                    .campos
+                    .campos!
                     .length;
             i++)
           Padding(
@@ -352,7 +352,7 @@ class RegistrosDataTable extends DataTableSource {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 _buildTitle(
-                    '${_listaAgrupacionesObtenidas.elementAt(indAgrupacion).campos.elementAt(i).nombreCampo}'),
+                    '${_listaAgrupacionesObtenidas.elementAt(indAgrupacion).campos!.elementAt(i).nombreCampo}'),
                 SizedBox(
                   width: 10.0,
                 ),
@@ -391,9 +391,9 @@ class RegistrosDataTable extends DataTableSource {
       StateSetter actualizar) {
     String caracteresPermitidos = _listaAgrupacionesObtenidas
         .elementAt(indAgrupacion)
-        .campos
+        .campos!
         .elementAt(indCampo)
-        .restriccion
+        .restriccion!
         .replaceAll('[', '');
     caracteresPermitidos = caracteresPermitidos.replaceAll(']', '');
     if (caracteresPermitidos == 'N/A' ||
@@ -408,19 +408,19 @@ class RegistrosDataTable extends DataTableSource {
     }
     switch (_listaAgrupacionesObtenidas
         .elementAt(indAgrupacion)
-        .campos
+        .campos!
         .elementAt(indCampo)
         .tipoCampo) {
       case 'ALFANUMERICO':
         if (_listaAgrupacionesObtenidas
                 .elementAt(indAgrupacion)
-                .campos
+                .campos!
                 .elementAt(indCampo)
                 .nombreCampo ==
             'FOLIO') {
           print('Folio');
           print(
-              'Valor del controlador de folio: ${_listaAgrupacionesObtenidas.elementAt(0).campos.elementAt(0).valor}');
+              'Valor del controlador de folio: ${_listaAgrupacionesObtenidas.elementAt(0).campos!.elementAt(0).valor}');
         }
         return Container(
           //margin: EdgeInsets.only(left: 10.0),
@@ -428,7 +428,7 @@ class RegistrosDataTable extends DataTableSource {
           child: TextFormField(
             controller: _listaAgrupacionesObtenidas
                 .elementAt(indAgrupacion)
-                .campos
+                .campos!
                 .elementAt(indCampo)
                 .valorController,
             decoration: InputDecoration(
@@ -440,7 +440,7 @@ class RegistrosDataTable extends DataTableSource {
             inputFormatters: <TextInputFormatter>[
               _listaAgrupacionesObtenidas
                           .elementAt(indAgrupacion)
-                          .campos
+                          .campos!
                           .elementAt(indCampo)
                           .nombreCampo ==
                       'FOLIO'
@@ -451,14 +451,14 @@ class RegistrosDataTable extends DataTableSource {
             ],
             maxLength: _listaAgrupacionesObtenidas
                 .elementAt(indAgrupacion)
-                .campos
+                .campos!
                 .elementAt(indCampo)
                 .longitud,
             validator: (value) {
-              if (value.isNotEmpty) {
+              if (value!.isNotEmpty) {
                 return null;
               } else {
-                return 'INGRESE DATOS A ${_listaAgrupacionesObtenidas.elementAt(indAgrupacion).campos.elementAt(indCampo).nombreCampo}';
+                return 'INGRESE DATOS A ${_listaAgrupacionesObtenidas.elementAt(indAgrupacion).campos!.elementAt(indCampo).nombreCampo}';
               }
             },
           ),
@@ -471,7 +471,7 @@ class RegistrosDataTable extends DataTableSource {
           child: TextFormField(
             controller: _listaAgrupacionesObtenidas
                 .elementAt(indAgrupacion)
-                .campos
+                .campos!
                 .elementAt(indCampo)
                 .valorController,
             decoration: InputDecoration(
@@ -486,14 +486,14 @@ class RegistrosDataTable extends DataTableSource {
             ],
             maxLength: _listaAgrupacionesObtenidas
                 .elementAt(indAgrupacion)
-                .campos
+                .campos!
                 .elementAt(indCampo)
                 .longitud,
             validator: (value) {
-              if (value.isNotEmpty) {
+              if (value!.isNotEmpty) {
                 return null;
               } else {
-                return 'INGRESE DATOS A ${_listaAgrupacionesObtenidas.elementAt(indAgrupacion).campos.elementAt(indCampo).nombreCampo}';
+                return 'INGRESE DATOS A ${_listaAgrupacionesObtenidas.elementAt(indAgrupacion).campos!.elementAt(indCampo).nombreCampo}';
               }
             },
           ),
@@ -506,7 +506,7 @@ class RegistrosDataTable extends DataTableSource {
           child: TextFormField(
             controller: _listaAgrupacionesObtenidas
                 .elementAt(indAgrupacion)
-                .campos
+                .campos!
                 .elementAt(indCampo)
                 .valorController,
             decoration: InputDecoration(
@@ -517,7 +517,7 @@ class RegistrosDataTable extends DataTableSource {
             validator: (value) {
               bool emailValid =
                   RegExp(r'^.+@[a-zA-Z]+\.{1}[a-zA-Z]+(\.{0,1}[a-zA-Z]+)$')
-                      .hasMatch(value);
+                      .hasMatch(value!);
               if (emailValid) {
                 print(value.split('@')[1]);
                 return null;
@@ -535,7 +535,7 @@ class RegistrosDataTable extends DataTableSource {
           child: TextFormField(
             controller: _listaAgrupacionesObtenidas
                 .elementAt(indAgrupacion)
-                .campos
+                .campos!
                 .elementAt(indCampo)
                 .valorController,
             keyboardType: TextInputType.number,
@@ -549,14 +549,14 @@ class RegistrosDataTable extends DataTableSource {
             ],
             maxLength: _listaAgrupacionesObtenidas
                 .elementAt(indAgrupacion)
-                .campos
+                .campos!
                 .elementAt(indCampo)
                 .longitud,
             validator: (value) {
-              if (value.isNotEmpty) {
+              if (value!.isNotEmpty) {
                 return null;
               } else {
-                return 'INGRESE DATOS A ${_listaAgrupacionesObtenidas.elementAt(indAgrupacion).campos.elementAt(indCampo).nombreCampo}';
+                return 'INGRESE DATOS A ${_listaAgrupacionesObtenidas.elementAt(indAgrupacion).campos!.elementAt(indCampo).nombreCampo}';
               }
             },
           ),
@@ -565,78 +565,78 @@ class RegistrosDataTable extends DataTableSource {
       case 'CATALOGO':
         if (_listaAgrupacionesObtenidas
             .elementAt(indAgrupacion)
-            .campos
+            .campos!
             .elementAt(indCampo)
-            .valorController
+            .valorController!
             .text
             .isEmpty) {
           if (_listaAgrupacionesObtenidas
               .elementAt(indAgrupacion)
-              .campos
+              .campos!
               .elementAt(indCampo)
-              .restriccion
+              .restriccion!
               .contains('CAT')) {
             _catalogos[_listaAgrupacionesObtenidas
                     .elementAt(indAgrupacion)
-                    .campos
+                    .campos!
                     .elementAt(indCampo)
-                    .restriccion
+                    .restriccion!
                     .split(',')[1]] =
                 Catalogo(
                     catalogo: [],
                     proyecto: proyecto,
                     tipoCatalogo: _listaAgrupacionesObtenidas
                         .elementAt(indAgrupacion)
-                        .campos
+                        .campos!
                         .elementAt(indCampo)
                         .nombreCampo);
           }
         }
         print(
-            'Catalogo: ${_listaAgrupacionesObtenidas.elementAt(indAgrupacion).campos.elementAt(indCampo).valorController.text}');
+            'Catalogo: ${_listaAgrupacionesObtenidas.elementAt(indAgrupacion).campos!.elementAt(indCampo).valorController!.text}');
         if (_catalogos[_listaAgrupacionesObtenidas
                     .elementAt(indAgrupacion)
-                    .campos
+                    .campos!
                     .elementAt(indCampo)
-                    .nombreCampo]
+                    .nombreCampo]!
                 .catalogo ==
             null) {
           _catalogos[_listaAgrupacionesObtenidas
                   .elementAt(indAgrupacion)
-                  .campos
+                  .campos!
                   .elementAt(indCampo)
-                  .nombreCampo]
+                  .nombreCampo]!
               .catalogo = [];
         }
         if (_listaAgrupacionesObtenidas
                 .elementAt(indAgrupacion)
-                .campos
+                .campos!
                 .elementAt(indCampo)
-                .valorController
+                .valorController!
                 .text
                 .isEmpty ||
             _listaAgrupacionesObtenidas
                     .elementAt(indAgrupacion)
-                    .campos
+                    .campos!
                     .elementAt(indCampo)
-                    .valorController
+                    .valorController!
                     .text
                     .length <=
                 2) {
           _listaAgrupacionesObtenidas
               .elementAt(indAgrupacion)
-              .campos
+              .campos!
               .elementAt(indCampo)
-              .valorController
+              .valorController!
               .text = '';
         }
         return Container(
           width: 250.0,
-          child: DropdownButtonFormField(
+          child: DropdownButtonFormField<String>(
             decoration: InputDecoration(
               hintText: _listaAgrupacionesObtenidas
                   .elementAt(indAgrupacion)
-                  .campos
+                  .campos!
                   .elementAt(indCampo)
                   .nombreCampo,
               border: OutlineInputBorder(),
@@ -649,68 +649,68 @@ class RegistrosDataTable extends DataTableSource {
             },
             value: _listaAgrupacionesObtenidas
                     .elementAt(indAgrupacion)
-                    .campos
+                    .campos!
                     .elementAt(indCampo)
-                    .valorController
+                    .valorController!
                     .text
                     .isEmpty
                 ? null
                 : _listaAgrupacionesObtenidas
                     .elementAt(indAgrupacion)
-                    .campos
+                    .campos!
                     .elementAt(indCampo)
-                    .valorController
+                    .valorController!
                     .text,
-            onChanged: (valor) async {
-              PantallaDeCarga.loadingI(context, true);
+            onChanged: (String? valor) async {
+              PantallaDeCarga.loadingI(context!, true);
               if (_listaAgrupacionesObtenidas
                       .elementAt(indAgrupacion)
-                      .campos
+                      .campos!
                       .elementAt(indCampo)
                       .restriccion !=
                   '[N/A]') {
                 _catalogos[_listaAgrupacionesObtenidas
                         .elementAt(indAgrupacion)
-                        .campos
+                        .campos!
                         .elementAt(indCampo)
-                        .restriccion
+                        .restriccion!
                         .split(',')[1]] =
-                    await obtenerDatosCatalogoCamposProyectoRelacionado(
+                    (await obtenerDatosCatalogoCamposProyectoRelacionado(
                         ApiDefinition.ipServer,
                         proyecto,
                         _listaAgrupacionesObtenidas
                             .elementAt(indAgrupacion)
-                            .campos
+                            .campos!
                             .elementAt(indCampo)
-                            .restriccion
+                            .restriccion!
                             .split(',')[1],
-                        valor);
+                        valor!))!;
 
                 for (int i = 0;
                     i <
                         _listaAgrupacionesObtenidas
                             .elementAt(indAgrupacion)
-                            .campos
+                            .campos!
                             .length;
                     i++) {
                   if (_listaAgrupacionesObtenidas
                           .elementAt(indAgrupacion)
-                          .campos
+                          .campos!
                           .elementAt(i)
                           .nombreCampo ==
                       _listaAgrupacionesObtenidas
                           .elementAt(indAgrupacion)
-                          .campos
+                          .campos!
                           .elementAt(indCampo)
-                          .restriccion
+                          .restriccion!
                           .split(',')[1]) {
                     print(
-                        'Campo : ${_listaAgrupacionesObtenidas.elementAt(indAgrupacion).campos.elementAt(i).nombreCampo}');
+                        'Campo : ${_listaAgrupacionesObtenidas.elementAt(indAgrupacion).campos!.elementAt(i).nombreCampo}');
                     print(
-                        'Eliminar dato de : ${_listaAgrupacionesObtenidas.elementAt(indAgrupacion).campos.elementAt(i).valorController.text}');
+                        'Eliminar dato de : ${_listaAgrupacionesObtenidas.elementAt(indAgrupacion).campos!.elementAt(i).valorController!.text}');
                     _listaAgrupacionesObtenidas
                         .elementAt(indAgrupacion)
-                        .campos
+                        .campos!
                         .elementAt(i)
                         .valorController = new TextEditingController();
                   }
@@ -718,33 +718,33 @@ class RegistrosDataTable extends DataTableSource {
               }
               _listaAgrupacionesObtenidas
                   .elementAt(indAgrupacion)
-                  .campos
+                  .campos!
                   .elementAt(indCampo)
-                  .valorController
-                  .text = valor;
+                  .valorController!
+                  .text = valor!;
               print(_listaAgrupacionesObtenidas
                   .elementAt(indAgrupacion)
-                  .campos
+                  .campos!
                   .elementAt(indCampo)
-                  .valorController
+                  .valorController!
                   .text);
               actualizar(() {});
 
-              PantallaDeCarga.loadingI(context, false);
+              PantallaDeCarga.loadingI(context!, false);
             },
             items: _catalogos[_listaAgrupacionesObtenidas
                         .elementAt(indAgrupacion)
-                        .campos
+                        .campos!
                         .elementAt(indCampo)
                         .nombreCampo] ==
                     null
                 ? []
                 : _catalogos[_listaAgrupacionesObtenidas
                         .elementAt(indAgrupacion)
-                        .campos
+                        .campos!
                         .elementAt(indCampo)
-                        .nombreCampo]
-                    .catalogo
+                        .nombreCampo]!
+                    .catalogo!
                     .map((item) {
                     return DropdownMenuItem(
                       value: item,
@@ -764,7 +764,7 @@ class RegistrosDataTable extends DataTableSource {
                 onPressed: () async {
                   String datos = await showDialog(
                       barrierDismissible: false,
-                      context: context,
+                      context: context!,
                       builder: (context) {
                         return SimpleDialog(
                           shape: RoundedRectangleBorder(
@@ -786,15 +786,15 @@ class RegistrosDataTable extends DataTableSource {
                                     final sing = _keyFirma[
                                             _listaAgrupacionesObtenidas
                                                 .elementAt(indAgrupacion)
-                                                .campos
+                                                .campos!
                                                 .elementAt(indCampo)
-                                                .nombreCampo]
+                                                .nombreCampo]!
                                         .currentState;
                                     //print(sing.points.length);
                                   },
                                   key: _keyFirma[_listaAgrupacionesObtenidas
                                       .elementAt(indAgrupacion)
-                                      .campos
+                                      .campos!
                                       .elementAt(indCampo)
                                       .nombreCampo],
                                 ),
@@ -809,17 +809,17 @@ class RegistrosDataTable extends DataTableSource {
                                         final sing = _keyFirma[
                                                 _listaAgrupacionesObtenidas
                                                     .elementAt(indAgrupacion)
-                                                    .campos
+                                                    .campos!
                                                     .elementAt(indCampo)
-                                                    .nombreCampo]
+                                                    .nombreCampo]!
                                             .currentState;
-                                        sing.clear();
+                                        sing!.clear();
                                         actualizar(() {
                                           _firma[_listaAgrupacionesObtenidas
                                               .elementAt(indAgrupacion)
-                                              .campos
+                                              .campos!
                                               .elementAt(indCampo)
-                                              .nombreCampo] = ByteData(0);
+                                              .nombreCampo!] = ByteData(0);
                                         });
                                       },
                                       child: Text('Borrar'),
@@ -832,22 +832,22 @@ class RegistrosDataTable extends DataTableSource {
                                         final sing = _keyFirma[
                                                 _listaAgrupacionesObtenidas
                                                     .elementAt(indAgrupacion)
-                                                    .campos
+                                                    .campos!
                                                     .elementAt(indCampo)
-                                                    .nombreCampo]
+                                                    .nombreCampo]!
                                             .currentState;
-                                        final imagen = await sing.getData();
+                                        final imagen = await sing!.getData();
                                         var data = await imagen.toByteData(
                                             format: ui.ImageByteFormat.png);
                                         sing.clear();
                                         final encoded = base64
-                                            .encode(data.buffer.asUint8List());
+                                            .encode(data!.buffer.asUint8List());
                                         actualizar(() {
                                           _firma[_listaAgrupacionesObtenidas
                                               .elementAt(indAgrupacion)
-                                              .campos
+                                              .campos!
                                               .elementAt(indCampo)
-                                              .nombreCampo] = data;
+                                              .nombreCampo!] = data;
                                         });
                                         Dialogos.advertencia(context,
                                             'Estas seguro de guardar la firma?',
@@ -877,9 +877,9 @@ class RegistrosDataTable extends DataTableSource {
                     print(datos);
                     _comprobarFirma[_listaAgrupacionesObtenidas
                         .elementAt(indAgrupacion)
-                        .campos
+                        .campos!
                         .elementAt(indCampo)
-                        .nombreCampo] = true;
+                        .nombreCampo!] = true;
                     actualizar(() {});
                   } else {
                     print(datos);
@@ -904,14 +904,14 @@ class RegistrosDataTable extends DataTableSource {
                 onPressed: () async {
                   if (!_comprobarFirma[_listaAgrupacionesObtenidas
                       .elementAt(indAgrupacion)
-                      .campos
+                      .campos!
                       .elementAt(indCampo)
-                      .nombreCampo]) {
-                    Dialogos.error(context, 'No existe firma registrada');
+                      .nombreCampo]!) {
+                    Dialogos.error(context!, 'No existe firma registrada');
                   } else {
                     await showDialog(
                         barrierDismissible: false,
-                        context: context,
+                        context: context!,
                         builder: (context) {
                           return SimpleDialog(
                             shape: RoundedRectangleBorder(
@@ -931,9 +931,9 @@ class RegistrosDataTable extends DataTableSource {
                                         child: Image.memory(_firma[
                                                 _listaAgrupacionesObtenidas
                                                     .elementAt(indAgrupacion)
-                                                    .campos
+                                                    .campos!
                                                     .elementAt(indCampo)
-                                                    .nombreCampo]
+                                                    .nombreCampo]!
                                             .buffer
                                             .asUint8List()))),
                               ),
@@ -949,14 +949,14 @@ class RegistrosDataTable extends DataTableSource {
                                             _comprobarFirma[
                                                 _listaAgrupacionesObtenidas
                                                     .elementAt(indAgrupacion)
-                                                    .campos
+                                                    .campos!
                                                     .elementAt(indCampo)
-                                                    .nombreCampo] = false;
+                                                    .nombreCampo!] = false;
                                             _firma[_listaAgrupacionesObtenidas
                                                 .elementAt(indAgrupacion)
-                                                .campos
+                                                .campos!
                                                 .elementAt(indCampo)
-                                                .nombreCampo] = ByteData(0);
+                                                .nombreCampo!] = ByteData(0);
                                             actualizar(() {});
                                             Navigator.pop(context);
                                             Navigator.pop(context);
@@ -986,9 +986,9 @@ class RegistrosDataTable extends DataTableSource {
             ),
             _comprobarFirma[_listaAgrupacionesObtenidas
                     .elementAt(indAgrupacion)
-                    .campos
+                    .campos!
                     .elementAt(indCampo)
-                    .nombreCampo]
+                    .nombreCampo]!
                 ? Icon(Icons.check_circle_outline, color: Colors.green)
                 : Icon(Icons.cancel_outlined, color: Colors.red),
           ],
@@ -1001,7 +1001,7 @@ class RegistrosDataTable extends DataTableSource {
           child: TextFormField(
             controller: _listaAgrupacionesObtenidas
                 .elementAt(indAgrupacion)
-                .campos
+                .campos!
                 .elementAt(indCampo)
                 .valorController,
             decoration: InputDecoration(
@@ -1013,14 +1013,14 @@ class RegistrosDataTable extends DataTableSource {
             textCapitalization: TextCapitalization.characters,
             maxLength: _listaAgrupacionesObtenidas
                 .elementAt(indAgrupacion)
-                .campos
+                .campos!
                 .elementAt(indCampo)
                 .longitud,
             validator: (value) {
-              if (value.isNotEmpty) {
+              if (value!.isNotEmpty) {
                 return null;
               } else {
-                return 'INGRESE DATOS A ${_listaAgrupacionesObtenidas.elementAt(indAgrupacion).campos.elementAt(indCampo).nombreCampo}';
+                return 'INGRESE DATOS A ${_listaAgrupacionesObtenidas.elementAt(indAgrupacion).campos!.elementAt(indCampo).nombreCampo}';
               }
             },
           ),

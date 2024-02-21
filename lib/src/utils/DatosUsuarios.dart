@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 
 import '../models/Usuario.dart';
@@ -8,7 +6,7 @@ class DatosUsuarios extends DataTableSource {
   List<Usuario> data;
   Function accion;
 
-  DatosUsuarios({@required this.data, @required this.accion});
+  DatosUsuarios({required this.data, required this.accion});
 
   void sort<T>(Comparable<T> Function(Usuario d) getField, bool ascending) {
     data.sort((Usuario a, Usuario b) {
@@ -37,9 +35,9 @@ class DatosUsuarios extends DataTableSource {
           accion(onSelect, data.elementAt(index));
         },
         cells: [
-          DataCell(Text(data[index].idUsuario.toString())),
-          DataCell(Text(data[index].nombre)),
-          DataCell(Text(data[index].usuario)),
+          DataCell(Text(data[index].idUsuario!.toString())),
+          DataCell(Text(data[index].nombre!)),
+          DataCell(Text(data[index].usuario!)),
         ]);
   }
 }

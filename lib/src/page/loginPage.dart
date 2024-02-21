@@ -33,7 +33,7 @@ class _LoginPageState extends State<LoginPage> {
   bool _nuevoPassR = true;
   bool _ocultarPass = true;
 
-  AnimationController _animateController;
+  AnimationController? _animateController;
 
   Usuario _usuario = Usuario(
       idUsuario: 0,
@@ -50,7 +50,7 @@ class _LoginPageState extends State<LoginPage> {
       clienteAplicacion: ClienteAplicacion(),
       vistacliente: Cliente());
 
-  RegistroProvider _registroProvider;
+  RegistroProvider? _registroProvider;
 
   @override
   Widget build(BuildContext context) {
@@ -160,7 +160,7 @@ class _LoginPageState extends State<LoginPage> {
                           border: OutlineInputBorder(),
                           hintText: 'Nueva contraseña'),
                       validator: (validar) {
-                        if (validar.isEmpty) {
+                        if (validar!.isEmpty) {
                           return 'Ingresa una nueva contraseña';
                         } else {
                           return null;
@@ -193,7 +193,7 @@ class _LoginPageState extends State<LoginPage> {
                           border: OutlineInputBorder(),
                           hintText: 'Repetir contraseña'),
                       validator: (validar) {
-                        if (validar.isEmpty) {
+                        if (validar!.isEmpty) {
                           return 'Repite la contraseña';
                         } else {
                           return null;
@@ -211,7 +211,7 @@ class _LoginPageState extends State<LoginPage> {
                 height: 50.0,
                 child: ElevatedButton(
                   onPressed: () async {
-                    if (_formKeyNuevoPass.currentState.validate()) {
+                    if (_formKeyNuevoPass.currentState!.validate()) {
                       if (_nuevoPassController.text ==
                           _nuevoPassRController.text) {
                         PantallaDeCarga.loadingI(context, true);
@@ -287,7 +287,7 @@ class _LoginPageState extends State<LoginPage> {
                       decoration: InputDecoration(
                           border: OutlineInputBorder(), hintText: 'Usuario'),
                       validator: (validar) {
-                        if (validar.isEmpty) {
+                        if (validar!.isEmpty) {
                           return 'Ingresa el usuario';
                         } else {
                           return null;
@@ -323,7 +323,7 @@ class _LoginPageState extends State<LoginPage> {
                           border: OutlineInputBorder(),
                           hintText: 'Contraseña'),
                       validator: (validar) {
-                        if (validar.isEmpty) {
+                        if (validar!.isEmpty) {
                           return 'Ingresa la contraseña';
                         } else {
                           return null;
@@ -351,7 +351,7 @@ class _LoginPageState extends State<LoginPage> {
                 height: 50.0,
                 child: ElevatedButton(
                   onPressed: () async {
-                    if (_formKey.currentState.validate()) {
+                    if (_formKey.currentState!.validate()) {
                       _ingresar();
                     }
                     setState(() {});
@@ -382,18 +382,18 @@ class _LoginPageState extends State<LoginPage> {
     } else {
       if (usuario.elementAt(0).passTemp == 1) {
         _nuevoIniico = true;
-        _animateController.forward();
+        _animateController!.forward();
         setState(() {});
       } else {
         List<Cliente> listaClientes = await obtenerClientesPorUsuario(
             ApiDefinition.ipServer,
-            usuario.elementAt(0).clienteAplicacion.idcliente);
-        _registroProvider.listaClientes = listaClientes;
-        _registroProvider.usuario = usuario.first;
+            usuario.elementAt(0).clienteAplicacion!.idcliente!);
+        _registroProvider!.listaClientes = listaClientes;
+        _registroProvider!.usuario = usuario.first;
         VariablesGlobales.usuario = usuario.first;
         PantallaDeCarga.loadingI(context, false);
         if (usuario.first.status == 'ACTIVO' &&
-            usuario.first.perfil.idperfil != '6') {
+            usuario.first.perfil!.idperfil != '6') {
           Navigator.pushNamed(context, '/inicio');
         } else {
           PantallaDeCarga.loadingI(context, false);

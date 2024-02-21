@@ -25,20 +25,20 @@ class Usuario {
       this.clienteAplicacion,
       this.vistacliente});
 
-  int idUsuario;
-  String nombre;
-  String usuario;
-  String correo;
-  String telefono;
-  String ubicacion;
-  String jefeInmediato;
-  Perfil perfil;
-  String password;
-  int passTemp;
-  String token;
-  String status;
-  ClienteAplicacion clienteAplicacion;
-  Cliente vistacliente;
+  int? idUsuario;
+  String? nombre;
+  String? usuario;
+  String? correo;
+  String? telefono;
+  String? ubicacion;
+  String? jefeInmediato;
+  Perfil? perfil;
+  String? password;
+  int? passTemp;
+  String? token;
+  String? status;
+  ClienteAplicacion? clienteAplicacion;
+  Cliente? vistacliente;
 
   factory Usuario.fromJson(Map<String, dynamic> json) => Usuario(
       idUsuario: json["idusuario"] ?? 0,
@@ -68,12 +68,12 @@ class Usuario {
         "telefono": telefono,
         "ubicacion": ubicacion,
         "jefeinmediato": jefeInmediato,
-        "perfile": perfil.toJson(),
+        "perfile": perfil!.toJson(),
         "pass": password,
         "passtemp": passTemp,
         "status": status,
         "token": token,
-        "clienteAplicacion": clienteAplicacion.toJson(),
-        "vistaCliente": vistacliente.toJson(),
+        "clienteAplicacion": clienteAplicacion!.toJson(),
+        "vistaCliente": vistacliente!.toJson(),
       };
 }

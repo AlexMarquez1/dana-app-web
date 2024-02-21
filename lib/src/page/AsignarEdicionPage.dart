@@ -7,7 +7,7 @@ class AsignarEdicion extends StatefulWidget {
 
 class _AsignarEdicionState extends State<AsignarEdicion>
     with SingleTickerProviderStateMixin {
-  TabController _controller;
+  TabController? _controller;
 
   @override
   void initState() {

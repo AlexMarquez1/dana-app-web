@@ -4,13 +4,13 @@ import '../../models/Agrupaciones.dart';
 import '../../models/Campos.dart';
 
 class DatosInventario extends StatelessWidget {
-  List<Agrupaciones> agrupaciones;
-  int indRegistro;
-  Function editar;
-  Function eliminar;
+  List<Agrupaciones>? agrupaciones;
+  int? indRegistro;
+  Function()? editar;
+  Function()? eliminar;
 
   DatosInventario(
-      {Key key,
+      {Key? key,
       this.agrupaciones,
       this.indRegistro,
       this.editar,
@@ -22,8 +22,8 @@ class DatosInventario extends StatelessWidget {
     return _datosRegistro(context, agrupaciones, indRegistro);
   }
 
-  Widget _datosRegistro(
-      BuildContext context, List<Agrupaciones> agrupaciones, int indRegistro) {
+  Widget _datosRegistro(BuildContext context, List<Agrupaciones>? agrupaciones,
+      int? indRegistro) {
     return Container(
       padding: EdgeInsets.all(10.0),
       // width: 500.0,
@@ -82,8 +82,8 @@ class DatosInventario extends StatelessWidget {
                 padding: const EdgeInsets.all(8.0),
                 child: Column(
                   children: [
-                    for (Agrupaciones agrupacion in agrupaciones)
-                      for (Campos campo in agrupacion.campos)
+                    for (Agrupaciones agrupacion in agrupaciones!)
+                      for (Campos campo in agrupacion.campos!)
                         Container(
                           decoration: BoxDecoration(
                               border: Border.all(color: Colors.black)),
@@ -91,10 +91,11 @@ class DatosInventario extends StatelessWidget {
                             children: [
                               Container(
                                 width: 200.0,
-                                height:
-                                    campo.nombreCampo.length > 23 ? 55.0 : 40.0,
+                                height: campo.nombreCampo!.length > 23
+                                    ? 55.0
+                                    : 40.0,
                                 child: Center(
-                                  child: Text(campo.nombreCampo,
+                                  child: Text(campo.nombreCampo!,
                                       style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                         color: Color.fromRGBO(36, 90, 149, 1),
@@ -106,8 +107,9 @@ class DatosInventario extends StatelessWidget {
                               campo.valor == "TRUE"
                                   ? Container(
                                       width: 200.0,
-                                      height:
-                                          campo.valor.length > 23 ? 55.0 : 40.0,
+                                      height: campo.valor!.length > 23
+                                          ? 55.0
+                                          : 40.0,
                                       child: Icon(
                                         Icons.check_circle_outline_outlined,
                                         color: Colors.green,
@@ -116,7 +118,7 @@ class DatosInventario extends StatelessWidget {
                                   : campo.valor == "FALSE"
                                       ? Container(
                                           width: 200.0,
-                                          height: campo.valor.length > 23
+                                          height: campo.valor!.length > 23
                                               ? 55.0
                                               : 40.0,
                                           child: Icon(
@@ -126,11 +128,11 @@ class DatosInventario extends StatelessWidget {
                                         )
                                       : Container(
                                           width: 200.0,
-                                          height: campo.valor.length > 23
+                                          height: campo.valor!.length > 23
                                               ? 55.0
                                               : 40.0,
                                           child: Center(
-                                            child: Text(campo.valor,
+                                            child: Text(campo.valor!,
                                                 style: TextStyle(
                                                   overflow: TextOverflow.clip,
                                                 ),

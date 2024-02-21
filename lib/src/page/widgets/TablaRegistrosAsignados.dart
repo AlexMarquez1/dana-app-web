@@ -3,21 +3,21 @@ import 'package:flutter/material.dart';
 
 class TablaRegistroAsignado extends DataTableSource {
   List<Inventario> datos;
-  Function clickRegistro;
-  Function clickEliminar;
+  Function() clickRegistro;
+  Function(Inventario) clickEliminar;
   bool registroAsignado;
   Map<String, bool> seleccionRegistro;
 
   TablaRegistroAsignado(this.datos, this.clickRegistro, this.registroAsignado,
-      {this.clickEliminar, this.seleccionRegistro});
+      {required this.clickEliminar, required this.seleccionRegistro});
 
   @override
   DataRow getRow(int index) {
     List<DataCell> celdas = [];
-    celdas.add(DataCell(Text(datos.elementAt(index).folio)));
-    celdas.add(DataCell(Text(datos.elementAt(index).fechacreacion)));
+    celdas.add(DataCell(Text(datos.elementAt(index).folio!)));
+    celdas.add(DataCell(Text(datos.elementAt(index).fechacreacion!)));
     celdas.add(DataCell(Text(datos.elementAt(index).estatus != null
-        ? datos.elementAt(index).estatus
+        ? datos.elementAt(index).estatus!
         : 'nada')));
     if (registroAsignado) {
       celdas.add(DataCell(IconButton(
@@ -33,12 +33,12 @@ class TablaRegistroAsignado extends DataTableSource {
     } else {
       return DataRow(
           cells: celdas,
-          selected: seleccionRegistro[datos.elementAt(index).folio],
+          selected: seleccionRegistro[datos.elementAt(index).folio]!,
           onSelectChanged: (seleccion) {
-            if (seleccion) {
-              seleccionRegistro[datos.elementAt(index).folio] = seleccion;
+            if (seleccion!) {
+              seleccionRegistro[datos.elementAt(index).folio!] = seleccion;
             } else {
-              seleccionRegistro[datos.elementAt(index).folio] = seleccion;
+              seleccionRegistro[datos.elementAt(index).folio!] = seleccion;
             }
             notifyListeners();
           });

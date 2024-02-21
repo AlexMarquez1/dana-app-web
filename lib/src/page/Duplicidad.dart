@@ -14,9 +14,10 @@ import 'package:app_isae_desarrollo/src/providers/duplicadosProvider.dart';
 import 'package:app_isae_desarrollo/src/providers/registroProvider.dart';
 import 'package:app_isae_desarrollo/src/services/APIWebService/ApiDefinitions.dart';
 import 'package:app_isae_desarrollo/src/services/APIWebService/Consultas.dart';
+import 'package:cupertino_modal_sheet/cupertino_modal_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+
 import 'package:provider/provider.dart';
 
 import '../models/Agrupaciones.dart';
@@ -24,7 +25,7 @@ import '../models/Campos.dart';
 import '../utils/UpperCaseTextFormatterCustom.dart';
 
 class Duplicados extends StatelessWidget {
-  Duplicados({Key key}) : super(key: key);
+  Duplicados({Key? key}) : super(key: key);
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   List<Proyecto> _listaProyectos = [];
   Map<String, List<String>> _duplicadosGlobal = {};
@@ -33,9 +34,9 @@ class Duplicados extends StatelessWidget {
   TextEditingController _passwordEliminarProyectoController =
       TextEditingController();
   TextEditingController _controllerBusqueda = TextEditingController();
-  Proyecto _proyectoSeleccionado;
-  RegistroProvider _registroProvider;
-  DuplicadosProvider _duplicadosProvider;
+  Proyecto? _proyectoSeleccionado;
+  RegistroProvider? _registroProvider;
+  DuplicadosProvider? _duplicadosProvider;
   ScrollController _scrollControllerDuplicado = ScrollController();
   ScrollController _scrollControllerDuplicadoHorizontal = ScrollController();
   ScrollController _scrollControllerEditar = ScrollController();
@@ -108,10 +109,10 @@ class Duplicados extends StatelessWidget {
                           Map<String, List<String>> aux = {};
                           for (String item in _duplicadosGlobal.keys) {
                             if (item.contains(_controllerBusqueda.text)) {
-                              aux[item] = _duplicadosGlobal[item];
+                              aux[item] = _duplicadosGlobal[item]!;
                             }
                           }
-                          _duplicadosProvider.camposDuplicados = aux;
+                          _duplicadosProvider!.camposDuplicados = aux;
                         },
                         child: Text('Buscar')),
                   ],
@@ -123,7 +124,7 @@ class Duplicados extends StatelessWidget {
   }
 
   Widget _autoCompletarBusqueda() {
-    return Autocomplete(
+    return Autocomplete<Object>(
       fieldViewBuilder:
           (context, textEditingController, focusNode, onFieldSubmitted) {
         if (_controllerBusqueda.text.isNotEmpty) {
@@ -140,7 +141,7 @@ class Duplicados extends StatelessWidget {
                 return 'Ingresa una busqueda';
               } else {
                 bool validacion = false;
-                for (String busqueda in _duplicadosProvider.listaBusqueda) {
+                for (String busqueda in _duplicadosProvider!.listaBusqueda) {
                   if (busqueda == value) {
                     validacion = true;
                     break;
@@ -168,10 +169,10 @@ class Duplicados extends StatelessWidget {
         if (textEditingValue.text == '') {
           return Iterable.empty();
         } else {
-          if (_duplicadosProvider.listaBusqueda.isEmpty) {
+          if (_duplicadosProvider!.listaBusqueda.isEmpty) {
             return ['Sin resultados'];
           } else {
-            return _duplicadosProvider.listaBusqueda.where((String opcion) {
+            return _duplicadosProvider!.listaBusqueda.where((String opcion) {
               return opcion.contains(textEditingValue.text.toUpperCase());
             });
           }
@@ -248,28 +249,28 @@ class Duplicados extends StatelessWidget {
           hintStyle: TextStyle(),
         ),
         value: _proyectoSeleccionado,
-        onChanged: (valor) async {
+        onChanged: (Proyecto? valor) async {
           _proyectoSeleccionado = valor;
           PantallaDeCarga.loadingI(context, true);
-          _duplicadosProvider.camposDuplicados =
+          _duplicadosProvider!.camposDuplicados =
               await obtenerDuplicadosPorProyecto(
-                  ApiDefinition.ipServer, _proyectoSeleccionado.idproyecto);
-          _duplicadosGlobal = _duplicadosProvider.camposDuplicados;
+                  ApiDefinition.ipServer, _proyectoSeleccionado!.idproyecto!);
+          _duplicadosGlobal = _duplicadosProvider!.camposDuplicados;
           List<String> respuesta = [];
-          for (String item in _duplicadosProvider.camposDuplicados.keys) {
+          for (String item in _duplicadosProvider!.camposDuplicados.keys) {
             respuesta.add(item);
           }
-          _duplicadosProvider.listaBusqueda = respuesta;
+          _duplicadosProvider!.listaBusqueda = respuesta;
           PantallaDeCarga.loadingI(context, false);
           actualizar(() {});
         },
         items: _listaProyectos.map((item) {
           return DropdownMenuItem(
             value: item,
-            child: Text(item.proyecto),
+            child: Text(item.proyecto!),
           );
         }).toList(),
-        validator: (Proyecto value) {
+        validator: (Proyecto? value) {
           if (value == null) {
             return 'Selecciona un proyecto';
           } else {
@@ -297,7 +298,7 @@ class Duplicados extends StatelessWidget {
           height: size.height * 0.65,
           child: Tarjetas.tarjeta(
             size * 0.8,
-            _duplicadosProvider.listaAgrupaciones.isEmpty
+            _duplicadosProvider!.listaAgrupaciones.isEmpty
                 ? _sinInventarioSeleccionado()
                 : SingleChildScrollView(
                     controller: _scrollControllerDuplicado,
@@ -307,7 +308,7 @@ class Duplicados extends StatelessWidget {
                           height: 10.0,
                         ),
                         Text(
-                          'Valor duplicado: ${_duplicadosProvider.duplicadoSeleccionado}',
+                          'Valor duplicado: ${_duplicadosProvider!.duplicadoSeleccionado}',
                           style: TextStyle(
                               color: Color.fromRGBO(36, 90, 149, 1),
                               fontWeight: FontWeight.bold,
@@ -315,7 +316,7 @@ class Duplicados extends StatelessWidget {
                         ),
                         _datosDuplicados(
                           context,
-                          _duplicadosProvider.listaAgrupaciones,
+                          _duplicadosProvider!.listaAgrupaciones,
                         ),
                       ],
                     ),
@@ -343,15 +344,15 @@ class Duplicados extends StatelessWidget {
               editar: () async {
                 List<List<Agrupaciones>> agrupacionDiferente = [];
                 for (int i = 0;
-                    i < _duplicadosProvider.listaAgrupaciones.length;
+                    i < _duplicadosProvider!.listaAgrupaciones.length;
                     i++) {
                   if (i != indRegistro) {
                     agrupacionDiferente.add(
-                        _duplicadosProvider.listaAgrupaciones.elementAt(i));
+                        _duplicadosProvider!.listaAgrupaciones.elementAt(i));
                   }
                 }
                 PantallaDeCarga.loadingI(context, true);
-                await _registroProvider.obtenerRegistro(
+                await _registroProvider!.obtenerRegistro(
                     Inventario(
                         idinventario: agrupaciones
                             .elementAt(indRegistro)
@@ -361,32 +362,42 @@ class Duplicados extends StatelessWidget {
                     0);
                 PantallaDeCarga.loadingI(context, false);
 
-                await showMaterialModalBottomSheet(
+                // await showMaterialModalBottomSheet(
+                //   context: context,
+                //   expand: true,
+                //   builder: (context) => _modalEditar(
+                //       context,
+                //       agrupacionDiferente,
+                //       agrupaciones
+                //           .elementAt(indRegistro)
+                //           .elementAt(0)
+                //           .idInventario!),
+                // );
+                await showCupertinoModalSheet(
                   context: context,
-                  expand: true,
                   builder: (context) => _modalEditar(
                       context,
                       agrupacionDiferente,
                       agrupaciones
                           .elementAt(indRegistro)
                           .elementAt(0)
-                          .idInventario),
+                          .idInventario!),
                 );
               },
               eliminar: () async {
                 await _confirmarEliminarRegistro(
                     context,
-                    _proyectoSeleccionado,
+                    _proyectoSeleccionado!,
                     agrupaciones
                         .elementAt(indRegistro)
                         .elementAt(0)
-                        .idInventario,
+                        .idInventario!,
                     agrupaciones
                         .elementAt(indRegistro)
                         .elementAt(0)
-                        .campos
+                        .campos!
                         .elementAt(0)
-                        .valor);
+                        .valor!);
               },
             )
         ],
@@ -437,7 +448,7 @@ class Duplicados extends StatelessWidget {
             children: [
               EditarRegistro(
                   size: size,
-                  proyecto: _proyectoSeleccionado,
+                  proyecto: _proyectoSeleccionado!,
                   formKeyRegistro: _formKeyRegistro,
                   usuarioSeleccionado: Usuario(
                       idUsuario: 0,
@@ -452,7 +463,7 @@ class Duplicados extends StatelessWidget {
                       passTemp: 0),
                   inventarioSeleccionado:
                       Inventario(idinventario: idInventario),
-                  registroProvider: _registroProvider),
+                  registroProvider: _registroProvider!),
               Container(
                 child: SingleChildScrollView(
                   controller: _scrollControllerEditar,
@@ -503,24 +514,24 @@ class Duplicados extends StatelessWidget {
       height: boxConstraints.maxHeight - 10.0,
       padding: EdgeInsets.only(top: 10.0),
       child: ListView.builder(
-        itemCount: _duplicadosProvider.camposDuplicados.keys.length,
+        itemCount: _duplicadosProvider!.camposDuplicados.keys.length,
         itemBuilder: (BuildContext context, int index) {
           return Container(
-            color: _duplicadosProvider.indDuplicadoSeleccionado != index
+            color: _duplicadosProvider!.indDuplicadoSeleccionado != index
                 ? null
                 : Color.fromRGBO(36, 90, 149, 1),
             child: InkWell(
               hoverColor: Color.fromRGBO(36, 90, 149, 1),
               onTap: () async {
                 String duplicado =
-                    _duplicadosProvider.camposDuplicados.keys.elementAt(index);
-                _duplicadosProvider.indDuplicadoSeleccionado = index;
-                _duplicadosProvider.duplicadoSeleccionado = duplicado;
+                    _duplicadosProvider!.camposDuplicados.keys.elementAt(index);
+                _duplicadosProvider!.indDuplicadoSeleccionado = index;
+                _duplicadosProvider!.duplicadoSeleccionado = duplicado;
                 print('Clic en el elemento: $duplicado');
                 PantallaDeCarga.loadingI(context, true);
-                _duplicadosProvider.listaAgrupaciones =
+                _duplicadosProvider!.listaAgrupaciones =
                     await obtenerRegistrosDuplicados(ApiDefinition.ipServer,
-                        _proyectoSeleccionado, duplicado);
+                        _proyectoSeleccionado!, duplicado);
                 PantallaDeCarga.loadingI(context, false);
               },
               splashColor: Color.fromARGB(255, 137, 164, 193),
@@ -536,24 +547,24 @@ class Duplicados extends StatelessWidget {
                 child: boxConstraints.maxWidth > 300
                     ? Row(
                         children: [
-                          Text(_duplicadosProvider.camposDuplicados.keys
+                          Text(_duplicadosProvider!.camposDuplicados.keys
                                       .elementAt(index)
                                       .length <=
                                   15
-                              ? _duplicadosProvider.camposDuplicados.keys
+                              ? _duplicadosProvider!.camposDuplicados.keys
                                   .elementAt(index)
-                              : '${_duplicadosProvider.camposDuplicados.keys.elementAt(index).substring(0, 15)}...'),
+                              : '${_duplicadosProvider!.camposDuplicados.keys.elementAt(index).substring(0, 15)}...'),
                           Expanded(child: Container()),
                           Text(
-                              'Veces duplicado: ${_duplicadosProvider.camposDuplicados[_duplicadosProvider.camposDuplicados.keys.elementAt(index)].elementAt(3)}'),
+                              'Veces duplicado: ${_duplicadosProvider!.camposDuplicados[_duplicadosProvider!.camposDuplicados.keys.elementAt(index)]!.elementAt(3)}'),
                         ],
                       )
                     : Column(
                         children: [
-                          Text(_duplicadosProvider.camposDuplicados.keys
+                          Text(_duplicadosProvider!.camposDuplicados.keys
                               .elementAt(index)),
                           Text(
-                              'Veces duplicado: ${_duplicadosProvider.camposDuplicados[_duplicadosProvider.camposDuplicados.keys.elementAt(index)].elementAt(3)}'),
+                              'Veces duplicado: ${_duplicadosProvider!.camposDuplicados[_duplicadosProvider!.camposDuplicados.keys.elementAt(index)]!.elementAt(3)}'),
                         ],
                       ),
               ),
@@ -620,8 +631,8 @@ class Duplicados extends StatelessWidget {
                               decoration: InputDecoration(
                                   border: OutlineInputBorder(),
                                   hintText: 'Contraseña'),
-                              validator: (String valor) {
-                                if (valor.isNotEmpty) {
+                              validator: (String? valor) {
+                                if (valor!.isNotEmpty) {
                                   return null;
                                 } else {
                                   return 'Ingresa la contraseña para poder eliminar el proyecto';
@@ -639,7 +650,7 @@ class Duplicados extends StatelessWidget {
                               width: 100.0,
                               child: ElevatedButton(
                                 onPressed: () {
-                                  if (_formKeyEliminarProyecto.currentState
+                                  if (_formKeyEliminarProyecto.currentState!
                                       .validate()) {
                                     print(
                                         'Contraseña: ${_passwordEliminarProyectoController.text}');

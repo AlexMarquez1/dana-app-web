@@ -1,8 +1,6 @@
 import 'dart:ui';
 
 import 'package:app_isae_desarrollo/src/models/Cliente.dart';
-import 'package:app_isae_desarrollo/src/models/Proyecto.dart';
-import 'package:app_isae_desarrollo/src/page/widgets/PantallaCarga.dart';
 import 'package:app_isae_desarrollo/src/page/widgets/TarjetaInformacion.dart';
 import 'package:app_isae_desarrollo/src/page/widgets/appBar.dart';
 import 'package:app_isae_desarrollo/src/providers/registroProvider.dart';
@@ -10,7 +8,6 @@ import 'package:app_isae_desarrollo/src/services/APIWebService/ApiDefinitions.da
 import 'package:app_isae_desarrollo/src/utils/UpperCaseTextFormatterCustom.dart';
 import 'package:app_isae_desarrollo/src/utils/VariablesGlobales.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
@@ -20,12 +17,12 @@ import '../services/APIWebService/Consultas.dart';
 import 'widgets/DrawerWidget.dart';
 
 class ClientesPage extends StatelessWidget {
-  ClientesPage({key});
+  ClientesPage({Key? key});
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final _formKey = GlobalKey<FormState>();
   ScrollController _scrollNuevoCliente = ScrollController();
-  RegistroProvider _registroProvider;
+  RegistroProvider? _registroProvider;
   TextEditingController _nombreCliente = TextEditingController();
   TextEditingController _telefono = TextEditingController();
   TextEditingController _direccion = TextEditingController();
@@ -58,7 +55,7 @@ class ClientesPage extends StatelessWidget {
               ),
             ),
           ),
-          _registroProvider.listaClientes != null
+          _registroProvider!.listaClientes != null
               ? _tarjeta(sizePantalla, _listaClientes(context))
               : Container(),
         ],
@@ -143,16 +140,16 @@ class ClientesPage extends StatelessWidget {
             ),
           ),
         ),
-        for (Cliente cliente in _registroProvider.listaClientes)
+        for (Cliente cliente in _registroProvider!.listaClientes)
           TarjetaInformacion(
             click: () async {
               _nuevoLogo = Uint8List(0);
-              _nombreCliente.text = cliente.cliente;
-              _telefono.text = cliente.telefono;
-              _direccion.text = cliente.direccion;
-              if (cliente.urllogo.isNotEmpty) {
+              _nombreCliente.text = cliente.cliente!;
+              _telefono.text = cliente.telefono!;
+              _direccion.text = cliente.direccion!;
+              if (cliente.urllogo!.isNotEmpty) {
                 http.Response response =
-                    await http.get(Uri.parse(cliente.urllogo));
+                    await http.get(Uri.parse(cliente.urllogo!));
                 _nuevoLogo = response.bodyBytes;
               }
               await showDialog(
@@ -206,13 +203,13 @@ class ClientesPage extends StatelessWidget {
                   });
             },
             width: 200.0,
-            titulo: cliente.cliente,
+            titulo: cliente.cliente!,
             contenido: Container(
               width: 100.0,
               height: 100.0,
-              child: cliente.urllogo.isNotEmpty
+              child: cliente.urllogo!.isNotEmpty
                   ? Image.network(
-                      cliente.urllogo,
+                      cliente.urllogo!,
                       fit: BoxFit.contain,
                     )
                   : Container(
@@ -228,7 +225,7 @@ class ClientesPage extends StatelessWidget {
     );
   }
 
-  Widget _nuevoCliente(Size size, StateSetter actualizar, Cliente cliente) {
+  Widget _nuevoCliente(Size size, StateSetter actualizar, Cliente? cliente) {
     return Container(
       width: size.width * 0.7,
       height: size.height * 0.6,
@@ -360,13 +357,13 @@ class ClientesPage extends StatelessWidget {
                         width: size.width * 0.2,
                         child: ElevatedButton(
                           onPressed: () async {
-                            FilePickerResult result = await FilePicker.platform
+                            FilePickerResult? result = await FilePicker.platform
                                 .pickFiles(
                                     type: FileType.custom,
                                     allowedExtensions: ['jpg', 'png'],
                                     allowMultiple: false);
                             if (result != null) {
-                              _nuevoLogo = result.files.first.bytes;
+                              _nuevoLogo = result.files.first.bytes!;
                             }
                             actualizar(() {});
                           },

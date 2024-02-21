@@ -18,15 +18,15 @@ class CamposProyecto {
     this.idAgrupacion,
   });
 
-  int idcamposproyecto;
-  String alerta;
-  String campo;
-  String validadDuplicidad;
-  String editable;
-  int longitud;
-  String pattern;
-  String tipocampo;
-  int idAgrupacion;
+  int? idcamposproyecto;
+  String? alerta;
+  String? campo;
+  String? validadDuplicidad;
+  String? editable;
+  int? longitud;
+  String? pattern;
+  String? tipocampo;
+  int? idAgrupacion;
 
   factory CamposProyecto.fromJson(Map<String, dynamic> json) => CamposProyecto(
         idcamposproyecto: json['idcamposproyecto'] ?? 0,

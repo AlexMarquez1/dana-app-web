@@ -7,11 +7,11 @@ import 'package:app_isae_desarrollo/src/utils/VariablesGlobales.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-RegistroProvider _registroProvider;
+RegistroProvider? _registroProvider;
 
 PreferredSizeWidget appBarPrincipal(
     BuildContext context, GlobalKey<ScaffoldState> scaffold,
-    {RegistroProvider registroProvider}) {
+    {RegistroProvider? registroProvider}) {
   _registroProvider = Provider.of<RegistroProvider>(context, listen: true);
   return PreferredSize(
     preferredSize: Size.fromHeight(100.0),
@@ -34,13 +34,13 @@ PreferredSizeWidget appBarPrincipal(
         child: Container(
           width: 200.0,
           height: 100.0,
-          child: VariablesGlobales.usuario.clienteAplicacion.urllogo == null
+          child: VariablesGlobales.usuario.clienteAplicacion!.urllogo == null
               ? Image(
                   image: AssetImage('assets/img/AppIcon.png'),
                   fit: BoxFit.contain,
                 )
               : Image.network(
-                  VariablesGlobales.usuario.clienteAplicacion.urllogo,
+                  VariablesGlobales.usuario.clienteAplicacion!.urllogo!,
                   // width: 200.0,
                   fit: BoxFit.contain,
                 ),
@@ -71,7 +71,7 @@ PreferredSizeWidget appBarPrincipal(
       //   ),
       // ),
       actions: [
-        _registroProvider.listaClientes != null
+        _registroProvider!.listaClientes != null
             ? _clientes(context)
             : Container(),
         SizedBox(
@@ -81,7 +81,7 @@ PreferredSizeWidget appBarPrincipal(
           padding: EdgeInsets.only(right: 20.0),
           child: IconButton(
               onPressed: () {
-                scaffold.currentState.openEndDrawer();
+                scaffold.currentState!.openEndDrawer();
               },
               icon: Icon(Icons.menu)),
         ),
@@ -95,35 +95,35 @@ Widget _clientes(BuildContext context) {
     color: Colors.white,
     offset: Offset(0, 100),
     tooltip:
-        '${_registroProvider.usuario.vistacliente == null ? _registroProvider.listaClientes.elementAt(0).cliente : _registroProvider.usuario.vistacliente.cliente}',
+        '${_registroProvider!.usuario.vistacliente == null ? _registroProvider!.listaClientes.elementAt(0).cliente : _registroProvider!.usuario.vistacliente!.cliente}',
     shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.all(
       Radius.circular(20.0),
     )),
-    initialValue: _registroProvider.usuario.vistacliente == null
-        ? _registroProvider.listaClientes.elementAt(0)
-        : _registroProvider.usuario.vistacliente,
+    initialValue: _registroProvider!.usuario.vistacliente == null
+        ? _registroProvider!.listaClientes.elementAt(0)
+        : _registroProvider!.usuario.vistacliente,
     itemBuilder: (context) => <PopupMenuItem<Cliente>>[
-      for (Cliente cliente in _registroProvider.listaClientes)
+      for (Cliente cliente in _registroProvider!.listaClientes)
         PopupMenuItem<Cliente>(
           value: cliente,
           child: _designCliente(cliente),
         ),
     ],
-    child: _designCliente(_registroProvider.usuario.vistacliente == null
-        ? _registroProvider.listaClientes.elementAt(0)
-        : _registroProvider.usuario.vistacliente),
+    child: _designCliente(_registroProvider!.usuario.vistacliente == null
+        ? _registroProvider!.listaClientes.elementAt(0)
+        : _registroProvider!.usuario.vistacliente),
     onSelected: (Cliente value) {
-      Usuario usuario = _registroProvider.usuario;
+      Usuario usuario = _registroProvider!.usuario;
       usuario.vistacliente = value;
 
-      _registroProvider.usuario = usuario;
+      _registroProvider!.usuario = usuario;
       Navigator.pushNamed(context, '/inicio');
     },
   );
 }
 
-Widget _designCliente(Cliente cliente) {
+Widget _designCliente(Cliente? cliente) {
   return Center(
     child: Container(
       width: 90.0,
@@ -134,13 +134,13 @@ Widget _designCliente(Cliente cliente) {
         borderRadius: BorderRadius.circular(10),
         color: Colors.white,
       ),
-      child: cliente.urllogo.isNotEmpty
+      child: cliente!.urllogo!.isNotEmpty
           ? Image.network(
-              cliente.urllogo,
+              cliente!.urllogo!,
               fit: BoxFit.contain,
             )
           : Text(
-              cliente.cliente,
+              cliente.cliente!,
               style: TextStyle(color: Colors.black),
               textAlign: TextAlign.center,
             ),
@@ -267,7 +267,7 @@ PreferredSizeWidget appBarRegistro(
         padding: EdgeInsets.only(right: 20.0),
         child: IconButton(
             onPressed: () {
-              scaffold.currentState.openEndDrawer();
+              scaffold.currentState!.openEndDrawer();
             },
             icon: Icon(Icons.menu)),
       ),

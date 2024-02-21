@@ -13,12 +13,12 @@ class DetallesImagen extends StatefulWidget {
   double anchoImagen;
   double altoImagen;
   DetallesImagen({
-    Key key,
-    @required this.evidencia,
-    @required this.seleccionCheck,
-    @required this.tipoComponente,
-    @required this.anchoImagen,
-    @required this.altoImagen,
+    Key? key,
+    required this.evidencia,
+    required this.seleccionCheck,
+    required this.tipoComponente,
+    required this.anchoImagen,
+    required this.altoImagen,
   }) : super(key: key);
 
   @override
@@ -26,7 +26,7 @@ class DetallesImagen extends StatefulWidget {
 }
 
 class _DetallesImagenState extends State<DetallesImagen> {
-  EvidenciaSeleccionadaProvider _evidenciaSeleccionada;
+  late EvidenciaSeleccionadaProvider _evidenciaSeleccionada;
   bool _seleccion = false;
 
   @override
@@ -66,7 +66,7 @@ class _DetallesImagenState extends State<DetallesImagen> {
             splashColor: Colors.blue,
             child: Stack(
               children: [
-                widget.evidencia.nombrefoto.contains('.pdf')
+                widget.evidencia.nombrefoto!.contains('.pdf')
                     ? SizedBox(
                         width: widget.anchoImagen,
                         height: widget.altoImagen,
@@ -79,7 +79,7 @@ class _DetallesImagenState extends State<DetallesImagen> {
                     : Material(
                         child: FadeInImage.assetNetwork(
                           placeholder: 'assets/img/loadingImage.gif',
-                          image: widget.evidencia.url,
+                          image: widget.evidencia.url!,
                           fit: BoxFit.cover,
                           width: widget.anchoImagen,
                           height: widget.altoImagen,
@@ -105,11 +105,11 @@ class _DetallesImagenState extends State<DetallesImagen> {
                         children: [
                           Tooltip(
                             message:
-                                'Proyecto: ${widget.evidencia.inventario.proyecto.proyecto}',
+                                'Proyecto: ${widget.evidencia.inventario!.proyecto!.proyecto}',
                             child: Container(
                               width: 190.0,
                               child: Text(
-                                'Proyecto: ${widget.evidencia.inventario.proyecto.proyecto}',
+                                'Proyecto: ${widget.evidencia.inventario!.proyecto!.proyecto}',
                                 style: TextStyle(color: Colors.white),
                                 overflow: TextOverflow.ellipsis,
                               ),
@@ -117,11 +117,11 @@ class _DetallesImagenState extends State<DetallesImagen> {
                           ),
                           Tooltip(
                             message:
-                                'Registro: ${widget.evidencia.inventario.folio}',
+                                'Registro: ${widget.evidencia.inventario!.folio}',
                             child: Container(
                               width: 190.0,
                               child: Text(
-                                'Registro: ${widget.evidencia.inventario.folio}',
+                                'Registro: ${widget.evidencia.inventario!.folio}',
                                 style: TextStyle(color: Colors.white),
                                 overflow: TextOverflow.ellipsis,
                               ),
@@ -165,7 +165,7 @@ class _DetallesImagenState extends State<DetallesImagen> {
         respuesta.add(Positioned(
           child: Checkbox(
             value: widget.seleccionCheck,
-            onChanged: (bool valor) {
+            onChanged: (bool? valor) {
               setState(() {
                 _actualizarComponente();
               });
@@ -205,14 +205,14 @@ class _DetallesImagenState extends State<DetallesImagen> {
   }
 
   void _vistaPreviaImagen() async {
-    if (widget.evidencia.nombrefoto.contains('.pdf')) {
-      html.window.open(widget.evidencia.url, 'new tab');
+    if (widget.evidencia.nombrefoto!.contains('.pdf')) {
+      html.window.open(widget.evidencia.url!, 'new tab');
     } else {
       await showDialog(
         barrierDismissible: true,
         context: context,
         builder: (BuildContext context) => VistaPreviaFoto(
-          urlImagen: widget.evidencia.url,
+          urlImagen: widget.evidencia.url!,
         ),
       );
     }

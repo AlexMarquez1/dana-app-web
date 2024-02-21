@@ -31,16 +31,16 @@ class TipoDeCampos extends StatelessWidget {
   StateSetter actualizar;
 
   TipoDeCampos(
-      {Key key,
-      @required this.indAgrupacion,
-      @required this.indCampo,
-      @required this.proyecto,
-      @required this.actualizar})
+      {Key? key,
+      required this.indAgrupacion,
+      required this.indCampo,
+      required this.proyecto,
+      required this.actualizar})
       : super(key: key);
 
   ScrollController _scrollEvidencia = ScrollController();
 
-  RegistroProvider _registroProvider;
+  late RegistroProvider _registroProvider;
   @override
   Widget build(BuildContext context) {
     _registroProvider = Provider.of<RegistroProvider>(context, listen: true);
@@ -50,9 +50,9 @@ class TipoDeCampos extends StatelessWidget {
   Widget _tipoDeComponente(BuildContext context) {
     String caracteresPermitidos = _registroProvider.listaAgrupaciones
         .elementAt(indAgrupacion)
-        .campos
+        .campos!
         .elementAt(indCampo)
-        .restriccion
+        .restriccion!
         .replaceAll('[', '');
     caracteresPermitidos = caracteresPermitidos.replaceAll(']', '');
     if (caracteresPermitidos == 'N/A' ||
@@ -67,7 +67,7 @@ class TipoDeCampos extends StatelessWidget {
     }
     switch (_registroProvider.listaAgrupaciones
         .elementAt(indAgrupacion)
-        .campos
+        .campos!
         .elementAt(indCampo)
         .tipoCampo) {
       case 'ALFANUMERICO':
@@ -75,13 +75,16 @@ class TipoDeCampos extends StatelessWidget {
           //margin: EdgeInsets.only(left: 10.0),
           width: 250.0,
           child: TextFormField(
-            readOnly:
-                VariablesGlobales.usuario.perfil.idperfil != "4" ? false : true,
+            readOnly: VariablesGlobales.usuario.perfil!.idperfil != "4"
+                ? false
+                : true,
             enableInteractiveSelection:
-                VariablesGlobales.usuario.perfil.idperfil != "4" ? true : false,
+                VariablesGlobales.usuario.perfil!.idperfil != "4"
+                    ? true
+                    : false,
             controller: _registroProvider.listaAgrupaciones
                 .elementAt(indAgrupacion)
-                .campos
+                .campos!
                 .elementAt(indCampo)
                 .valorController,
             decoration: InputDecoration(
@@ -90,14 +93,14 @@ class TipoDeCampos extends StatelessWidget {
                 fillColor: Colors.white,
                 hintText: _registroProvider.listaAgrupaciones
                     .elementAt(indAgrupacion)
-                    .campos
+                    .campos!
                     .elementAt(indCampo)
                     .nombreCampo),
             textCapitalization: TextCapitalization.characters,
             inputFormatters: <TextInputFormatter>[
               _registroProvider.listaAgrupaciones
                           .elementAt(indAgrupacion)
-                          .campos
+                          .campos!
                           .elementAt(indCampo)
                           .nombreCampo ==
                       'FOLIO'
@@ -108,14 +111,14 @@ class TipoDeCampos extends StatelessWidget {
             ],
             maxLength: _registroProvider.listaAgrupaciones
                 .elementAt(indAgrupacion)
-                .campos
+                .campos!
                 .elementAt(indCampo)
                 .longitud,
             validator: (value) {
-              if (value.isNotEmpty) {
+              if (value!.isNotEmpty) {
                 return null;
               } else {
-                return 'INGRESE DATOS A ${_registroProvider.listaAgrupaciones.elementAt(indAgrupacion).campos.elementAt(indCampo).nombreCampo}';
+                return 'INGRESE DATOS A ${_registroProvider.listaAgrupaciones.elementAt(indAgrupacion).campos!.elementAt(indCampo).nombreCampo}';
               }
             },
           ),
@@ -126,13 +129,16 @@ class TipoDeCampos extends StatelessWidget {
           //margin: EdgeInsets.only(left: 10.0),
           width: 250.0,
           child: TextFormField(
-            readOnly:
-                VariablesGlobales.usuario.perfil.idperfil != "4" ? false : true,
+            readOnly: VariablesGlobales.usuario.perfil!.idperfil != "4"
+                ? false
+                : true,
             enableInteractiveSelection:
-                VariablesGlobales.usuario.perfil.idperfil != "4" ? true : false,
+                VariablesGlobales.usuario.perfil!.idperfil != "4"
+                    ? true
+                    : false,
             controller: _registroProvider.listaAgrupaciones
                 .elementAt(indAgrupacion)
-                .campos
+                .campos!
                 .elementAt(indCampo)
                 .valorController,
             decoration: InputDecoration(
@@ -141,7 +147,7 @@ class TipoDeCampos extends StatelessWidget {
                 fillColor: Colors.white,
                 hintText: _registroProvider.listaAgrupaciones
                     .elementAt(indAgrupacion)
-                    .campos
+                    .campos!
                     .elementAt(indCampo)
                     .nombreCampo),
             textCapitalization: TextCapitalization.characters,
@@ -152,14 +158,14 @@ class TipoDeCampos extends StatelessWidget {
             ],
             maxLength: _registroProvider.listaAgrupaciones
                 .elementAt(indAgrupacion)
-                .campos
+                .campos!
                 .elementAt(indCampo)
                 .longitud,
             validator: (value) {
-              if (value.isNotEmpty) {
+              if (value!.isNotEmpty) {
                 return null;
               } else {
-                return 'INGRESE DATOS A ${_registroProvider.listaAgrupaciones.elementAt(indAgrupacion).campos.elementAt(indCampo).nombreCampo}';
+                return 'INGRESE DATOS A ${_registroProvider.listaAgrupaciones.elementAt(indAgrupacion).campos!.elementAt(indCampo).nombreCampo}';
               }
             },
           ),
@@ -170,13 +176,16 @@ class TipoDeCampos extends StatelessWidget {
           //margin: EdgeInsets.only(left: 10.0),
           width: 250.0,
           child: TextFormField(
-            readOnly:
-                VariablesGlobales.usuario.perfil.idperfil != "4" ? false : true,
+            readOnly: VariablesGlobales.usuario.perfil!.idperfil != "4"
+                ? false
+                : true,
             enableInteractiveSelection:
-                VariablesGlobales.usuario.perfil.idperfil != "4" ? true : false,
+                VariablesGlobales.usuario.perfil!.idperfil != "4"
+                    ? true
+                    : false,
             controller: _registroProvider.listaAgrupaciones
                 .elementAt(indAgrupacion)
-                .campos
+                .campos!
                 .elementAt(indCampo)
                 .valorController,
             decoration: InputDecoration(
@@ -185,13 +194,13 @@ class TipoDeCampos extends StatelessWidget {
                 fillColor: Colors.white,
                 hintText: _registroProvider.listaAgrupaciones
                     .elementAt(indAgrupacion)
-                    .campos
+                    .campos!
                     .elementAt(indCampo)
                     .nombreCampo),
             validator: (value) {
               bool emailValid =
                   RegExp(r'^.+@[a-zA-Z]+\.{1}[a-zA-Z]+(\.{0,1}[a-zA-Z]+)$')
-                      .hasMatch(value);
+                      .hasMatch(value!);
               if (emailValid) {
                 print(value.split('@')[1]);
                 return null;
@@ -207,13 +216,16 @@ class TipoDeCampos extends StatelessWidget {
           //margin: EdgeInsets.only(left: 10.0),
           width: 250.0,
           child: TextFormField(
-            readOnly:
-                VariablesGlobales.usuario.perfil.idperfil != "4" ? false : true,
+            readOnly: VariablesGlobales.usuario.perfil!.idperfil != "4"
+                ? false
+                : true,
             enableInteractiveSelection:
-                VariablesGlobales.usuario.perfil.idperfil != "4" ? true : false,
+                VariablesGlobales.usuario.perfil!.idperfil != "4"
+                    ? true
+                    : false,
             controller: _registroProvider.listaAgrupaciones
                 .elementAt(indAgrupacion)
-                .campos
+                .campos!
                 .elementAt(indCampo)
                 .valorController,
             keyboardType: TextInputType.number,
@@ -223,7 +235,7 @@ class TipoDeCampos extends StatelessWidget {
                 fillColor: Colors.white,
                 hintText: _registroProvider.listaAgrupaciones
                     .elementAt(indAgrupacion)
-                    .campos
+                    .campos!
                     .elementAt(indCampo)
                     .nombreCampo),
             inputFormatters: <TextInputFormatter>[
@@ -232,14 +244,14 @@ class TipoDeCampos extends StatelessWidget {
             ],
             maxLength: _registroProvider.listaAgrupaciones
                 .elementAt(indAgrupacion)
-                .campos
+                .campos!
                 .elementAt(indCampo)
                 .longitud,
             validator: (value) {
-              if (value.isNotEmpty) {
+              if (value!.isNotEmpty) {
                 return null;
               } else {
-                return 'INGRESE DATOS A ${_registroProvider.listaAgrupaciones.elementAt(indAgrupacion).campos.elementAt(indCampo).nombreCampo}';
+                return 'INGRESE DATOS A ${_registroProvider.listaAgrupaciones.elementAt(indAgrupacion).campos!.elementAt(indCampo).nombreCampo}';
               }
             },
           ),
@@ -250,8 +262,9 @@ class TipoDeCampos extends StatelessWidget {
         return SizedBox(
           width: 250.0,
           child: IgnorePointer(
-            ignoring:
-                VariablesGlobales.usuario.perfil.idperfil != "4" ? false : true,
+            ignoring: VariablesGlobales.usuario.perfil!.idperfil != "4"
+                ? false
+                : true,
             child: Autocomplete<String>(
               fieldViewBuilder: (BuildContext context,
                   TextEditingController fieldTextEditingController,
@@ -260,16 +273,16 @@ class TipoDeCampos extends StatelessWidget {
                 fieldTextEditingController.text = _registroProvider
                     .listaAgrupaciones
                     .elementAt(indAgrupacion)
-                    .campos
+                    .campos!
                     .elementAt(indCampo)
-                    .valorController
+                    .valorController!
                     .text;
                 return TextFormField(
-                  readOnly: VariablesGlobales.usuario.perfil.idperfil != 4
+                  readOnly: VariablesGlobales.usuario.perfil!.idperfil != 4
                       ? false
                       : true,
                   enableInteractiveSelection:
-                      VariablesGlobales.usuario.perfil.idperfil != 4
+                      VariablesGlobales.usuario.perfil!.idperfil != 4
                           ? true
                           : false,
                   controller: fieldTextEditingController,
@@ -280,7 +293,7 @@ class TipoDeCampos extends StatelessWidget {
                     fillColor: Colors.white,
                     hintText: _registroProvider.listaAgrupaciones
                         .elementAt(indAgrupacion)
-                        .campos
+                        .campos!
                         .elementAt(indCampo)
                         .nombreCampo,
                   ),
@@ -291,7 +304,7 @@ class TipoDeCampos extends StatelessWidget {
                     );
                     _registroProvider.listaAgrupaciones
                         .elementAt(indAgrupacion)
-                        .campos
+                        .campos!
                         .elementAt(indCampo)
                         .valorController = fieldTextEditingController;
                   },
@@ -302,10 +315,10 @@ class TipoDeCampos extends StatelessWidget {
                     UpperCaseTextFormatter(),
                   ],
                   validator: (value) {
-                    if (value.isNotEmpty) {
+                    if (value!.isNotEmpty) {
                       return null;
                     } else {
-                      return 'INGRESE DATOS A ${_registroProvider.listaAgrupaciones.elementAt(indAgrupacion).campos.elementAt(indCampo).nombreCampo}';
+                      return 'INGRESE DATOS A ${_registroProvider.listaAgrupaciones.elementAt(indAgrupacion).campos!.elementAt(indCampo).nombreCampo}';
                     }
                   },
                 );
@@ -319,18 +332,18 @@ class TipoDeCampos extends StatelessWidget {
                   if (_registroProvider
                           .catalogos[_registroProvider.listaAgrupaciones
                               .elementAt(indAgrupacion)
-                              .campos
+                              .campos!
                               .elementAt(indCampo)
-                              .nombreCampo]
+                              .nombreCampo]!
                           .catalogo !=
                       null) {
                     return _registroProvider
                         .catalogos[_registroProvider.listaAgrupaciones
                             .elementAt(indAgrupacion)
-                            .campos
+                            .campos!
                             .elementAt(indCampo)
-                            .nombreCampo]
-                        .catalogo
+                            .nombreCampo]!
+                        .catalogo!
                         .where((suggestion) => suggestion
                             .toUpperCase()
                             .contains(value.text.toUpperCase()));
@@ -395,18 +408,18 @@ class TipoDeCampos extends StatelessWidget {
               onSelected: (value) {
                 _registroProvider.listaAgrupaciones
                     .elementAt(indAgrupacion)
-                    .campos
+                    .campos!
                     .elementAt(indCampo)
-                    .valorController
+                    .valorController!
                     .text = value;
                 actualizar(() {
                   TextEditingValue(
                     text: value.toUpperCase(),
                     selection: _registroProvider.listaAgrupaciones
                         .elementAt(indAgrupacion)
-                        .campos
+                        .campos!
                         .elementAt(indCampo)
-                        .valorController
+                        .valorController!
                         .selection,
                   );
                 });
@@ -421,55 +434,55 @@ class TipoDeCampos extends StatelessWidget {
         if (!_registroProvider
             .catalogos[_registroProvider.listaAgrupaciones
                 .elementAt(indAgrupacion)
-                .campos
+                .campos!
                 .elementAt(indCampo)
-                .nombreCampo]
-            .catalogo
+                .nombreCampo]!
+            .catalogo!
             .contains(_registroProvider.listaAgrupaciones
                 .elementAt(indAgrupacion)
-                .campos
+                .campos!
                 .elementAt(indCampo)
-                .valorController
+                .valorController!
                 .text)) {
           _registroProvider
               .catalogos[_registroProvider.listaAgrupaciones
                   .elementAt(indAgrupacion)
-                  .campos
+                  .campos!
                   .elementAt(indCampo)
-                  .nombreCampo]
-              .catalogo
+                  .nombreCampo]!
+              .catalogo!
               .add(_registroProvider.listaAgrupaciones
                   .elementAt(indAgrupacion)
-                  .campos
+                  .campos!
                   .elementAt(indCampo)
-                  .valorController
+                  .valorController!
                   .text);
         }
         if (_registroProvider.listaAgrupaciones
             .elementAt(indAgrupacion)
-            .campos
+            .campos!
             .elementAt(indCampo)
-            .valorController
+            .valorController!
             .text
             .isEmpty) {
           if (_registroProvider.listaAgrupaciones
               .elementAt(indAgrupacion)
-              .campos
+              .campos!
               .elementAt(indCampo)
-              .restriccion
+              .restriccion!
               .contains('CAT')) {
             _registroProvider.catalogos[_registroProvider.listaAgrupaciones
                     .elementAt(indAgrupacion)
-                    .campos
+                    .campos!
                     .elementAt(indCampo)
-                    .restriccion
+                    .restriccion!
                     .split(',')[1]] =
                 Catalogo(
                     catalogo: [],
                     proyecto: proyecto,
                     tipoCatalogo: _registroProvider.listaAgrupaciones
                         .elementAt(indAgrupacion)
-                        .campos
+                        .campos!
                         .elementAt(indCampo)
                         .nombreCampo);
           }
@@ -478,13 +491,14 @@ class TipoDeCampos extends StatelessWidget {
         return Container(
           width: 250.0,
           child: IgnorePointer(
-            ignoring:
-                VariablesGlobales.usuario.perfil.idperfil != "4" ? false : true,
-            child: DropdownButtonFormField(
+            ignoring: VariablesGlobales.usuario.perfil!.idperfil != "4"
+                ? false
+                : true,
+            child: DropdownButtonFormField<String>(
               decoration: InputDecoration(
                 hintText: _registroProvider.listaAgrupaciones
                     .elementAt(indAgrupacion)
-                    .campos
+                    .campos!
                     .elementAt(indCampo)
                     .nombreCampo,
                 border: OutlineInputBorder(),
@@ -497,106 +511,106 @@ class TipoDeCampos extends StatelessWidget {
               },
               value: _registroProvider.listaAgrupaciones
                       .elementAt(indAgrupacion)
-                      .campos
+                      .campos!
                       .elementAt(indCampo)
-                      .valorController
+                      .valorController!
                       .text
                       .isEmpty
                   ? null
                   : _registroProvider.listaAgrupaciones
                       .elementAt(indAgrupacion)
-                      .campos
+                      .campos!
                       .elementAt(indCampo)
-                      .valorController
+                      .valorController!
                       .text,
               onChanged: (valor) async {
                 PantallaDeCarga.loadingI(context, true);
                 if (_registroProvider.listaAgrupaciones
                         .elementAt(indAgrupacion)
-                        .campos
+                        .campos!
                         .elementAt(indCampo)
                         .restriccion !=
                     '[N/A]') {
-                  Catalogo catalogoRespuesta =
+                  Catalogo? catalogoRespuesta =
                       await obtenerDatosCatalogoCamposProyectoRelacionado(
                           ApiDefinition.ipServer,
                           proyecto,
                           _registroProvider.listaAgrupaciones
                               .elementAt(indAgrupacion)
-                              .campos
+                              .campos!
                               .elementAt(indCampo)
-                              .restriccion
+                              .restriccion!
                               .split(',')[1],
-                          valor);
+                          valor!);
 
                   for (int i = 0;
                       i <
                           _registroProvider.listaAgrupaciones
                               .elementAt(indAgrupacion)
-                              .campos
+                              .campos!
                               .length;
                       i++) {
                     if (_registroProvider.listaAgrupaciones
                             .elementAt(indAgrupacion)
-                            .campos
+                            .campos!
                             .elementAt(i)
                             .nombreCampo ==
                         _registroProvider.listaAgrupaciones
                             .elementAt(indAgrupacion)
-                            .campos
+                            .campos!
                             .elementAt(indCampo)
-                            .restriccion
+                            .restriccion!
                             .split(',')[1]) {
                       if (catalogoRespuesta != null) {
                         print(
-                            'Ingresando este dato: ${_registroProvider.listaAgrupaciones.elementAt(indAgrupacion).campos.elementAt(indCampo).valorController.text}');
+                            'Ingresando este dato: ${_registroProvider.listaAgrupaciones.elementAt(indAgrupacion).campos!.elementAt(indCampo).valorController!.text}');
                         //TODO: Erreglar error :(
-                        if (!catalogoRespuesta.catalogo.contains(
+                        if (!catalogoRespuesta.catalogo!.contains(
                                 _registroProvider.listaAgrupaciones
                                     .elementAt(indAgrupacion)
-                                    .campos
+                                    .campos!
                                     .elementAt(i)
-                                    .valorController
+                                    .valorController!
                                     .text) &&
                             _registroProvider.listaAgrupaciones
                                 .elementAt(indAgrupacion)
-                                .campos
+                                .campos!
                                 .elementAt(i)
-                                .valorController
+                                .valorController!
                                 .text
                                 .isEmpty) {
                           _registroProvider.actualizarValor(
                               indAgrupacion, i, '');
-                          catalogoRespuesta.catalogo.add(_registroProvider
+                          catalogoRespuesta.catalogo!.add(_registroProvider
                                   .listaAgrupaciones
                                   .elementAt(indAgrupacion)
-                                  .campos
+                                  .campos!
                                   .elementAt(indCampo)
-                                  .valorController
+                                  .valorController!
                                   .text
                                   .isEmpty
                               ? ''
                               : _registroProvider.listaAgrupaciones
                                   .elementAt(indAgrupacion)
-                                  .campos
+                                  .campos!
                                   .elementAt(i)
-                                  .valorController
+                                  .valorController!
                                   .text);
                         }
                         _registroProvider.actualizarCatalogos(
                             _registroProvider.listaAgrupaciones
                                 .elementAt(indAgrupacion)
-                                .campos
+                                .campos!
                                 .elementAt(indCampo)
-                                .restriccion
+                                .restriccion!
                                 .split(',')[1],
                             catalogoRespuesta);
                       }
 
                       print(
-                          'Campo : ${_registroProvider.listaAgrupaciones.elementAt(indAgrupacion).campos.elementAt(i).nombreCampo}');
+                          'Campo : ${_registroProvider.listaAgrupaciones.elementAt(indAgrupacion).campos!.elementAt(i).nombreCampo}');
                       print(
-                          'Eliminar dato de : ${_registroProvider.listaAgrupaciones.elementAt(indAgrupacion).campos.elementAt(i).valorController.text}');
+                          'Eliminar dato de : ${_registroProvider.listaAgrupaciones.elementAt(indAgrupacion).campos!.elementAt(i).valorController!.text}');
                       // _registroProvider.listaAgrupaciones
                       //     .elementAt(indAgrupacion)
                       //     .campos
@@ -615,15 +629,15 @@ class TipoDeCampos extends StatelessWidget {
                 }
                 _registroProvider.listaAgrupaciones
                     .elementAt(indAgrupacion)
-                    .campos
+                    .campos!
                     .elementAt(indCampo)
-                    .valorController
-                    .text = valor;
+                    .valorController!
+                    .text = valor!;
                 print(_registroProvider.listaAgrupaciones
                     .elementAt(indAgrupacion)
-                    .campos
+                    .campos!
                     .elementAt(indCampo)
-                    .valorController
+                    .valorController!
                     .text);
                 // actualizar(() {
 
@@ -634,18 +648,18 @@ class TipoDeCampos extends StatelessWidget {
               items: _registroProvider
                           .catalogos[_registroProvider.listaAgrupaciones
                               .elementAt(indAgrupacion)
-                              .campos
+                              .campos!
                               .elementAt(indCampo)
-                              .nombreCampo]
+                              .nombreCampo]!
                           .catalogo !=
                       null
                   ? _registroProvider
                       .catalogos[_registroProvider.listaAgrupaciones
                           .elementAt(indAgrupacion)
-                          .campos
+                          .campos!
                           .elementAt(indCampo)
-                          .nombreCampo]
-                      .catalogo
+                          .nombreCampo]!
+                      .catalogo!
                       .map((item) {
                       return DropdownMenuItem(
                         value: item,
@@ -672,7 +686,7 @@ class TipoDeCampos extends StatelessWidget {
                 child: StatefulBuilder(
                     builder: (BuildContext context, StateSetter state) {
                   return IgnorePointer(
-                    ignoring: VariablesGlobales.usuario.perfil.idperfil != 4
+                    ignoring: VariablesGlobales.usuario.perfil!.idperfil != 4
                         ? false
                         : true,
                     child: ElevatedButton(
@@ -691,9 +705,9 @@ class TipoDeCampos extends StatelessWidget {
                                     child: Text(_registroProvider
                                         .listaAgrupaciones
                                         .elementAt(indAgrupacion)
-                                        .campos
+                                        .campos!
                                         .elementAt(indCampo)
-                                        .nombreCampo)),
+                                        .nombreCampo!)),
                                 children: <Widget>[
                                   Center(
                                     child: Container(
@@ -711,9 +725,9 @@ class TipoDeCampos extends StatelessWidget {
                                                 .keyFirma[_registroProvider
                                                     .listaAgrupaciones
                                                     .elementAt(indAgrupacion)
-                                                    .campos
+                                                    .campos!
                                                     .elementAt(indCampo)
-                                                    .nombreCampo]
+                                                    .nombreCampo]!
                                                 .currentState;
                                             //print(sing.points.length);
                                           });
@@ -721,7 +735,7 @@ class TipoDeCampos extends StatelessWidget {
                                         key: _registroProvider.keyFirma[
                                             _registroProvider.listaAgrupaciones
                                                 .elementAt(indAgrupacion)
-                                                .campos
+                                                .campos!
                                                 .elementAt(indCampo)
                                                 .nombreCampo],
                                       ),
@@ -738,20 +752,20 @@ class TipoDeCampos extends StatelessWidget {
                                                   .keyFirma[_registroProvider
                                                       .listaAgrupaciones
                                                       .elementAt(indAgrupacion)
-                                                      .campos
+                                                      .campos!
                                                       .elementAt(indCampo)
-                                                      .nombreCampo]
+                                                      .nombreCampo]!
                                                   .currentState;
-                                              sing.clear();
+                                              sing!.clear();
                                               state(() {
                                                 _registroProvider.firmas[
                                                         _registroProvider
                                                             .listaAgrupaciones
                                                             .elementAt(
                                                                 indAgrupacion)
-                                                            .campos
+                                                            .campos!
                                                             .elementAt(indCampo)
-                                                            .nombreCampo] =
+                                                            .nombreCampo!] =
                                                     ByteData(0);
                                               });
                                             },
@@ -766,28 +780,28 @@ class TipoDeCampos extends StatelessWidget {
                                                   .keyFirma[_registroProvider
                                                       .listaAgrupaciones
                                                       .elementAt(indAgrupacion)
-                                                      .campos
+                                                      .campos!
                                                       .elementAt(indCampo)
-                                                      .nombreCampo]
+                                                      .nombreCampo]!
                                                   .currentState;
                                               final imagen =
-                                                  await sing.getData();
+                                                  await sing!.getData();
                                               var data =
                                                   await imagen.toByteData(
                                                       format: ui
                                                           .ImageByteFormat.png);
                                               sing.clear();
                                               final encoded = base64.encode(
-                                                  data.buffer.asUint8List());
+                                                  data!.buffer.asUint8List());
                                               state(() {
                                                 _registroProvider.firmas[
                                                     _registroProvider
                                                         .listaAgrupaciones
                                                         .elementAt(
                                                             indAgrupacion)
-                                                        .campos
+                                                        .campos!
                                                         .elementAt(indCampo)
-                                                        .nombreCampo] = data;
+                                                        .nombreCampo!] = data;
                                               });
                                               Dialogos.advertencia(context,
                                                   'Estas seguro de guardar la firma?',
@@ -819,9 +833,9 @@ class TipoDeCampos extends StatelessWidget {
                           _registroProvider.comprobarFirmasActualizarDato(
                               _registroProvider.listaAgrupaciones
                                   .elementAt(indAgrupacion)
-                                  .campos
+                                  .campos!
                                   .elementAt(indCampo)
-                                  .nombreCampo,
+                                  .nombreCampo!,
                               true);
                         } else {
                           print(datos);
@@ -849,9 +863,9 @@ class TipoDeCampos extends StatelessWidget {
                     if (!_registroProvider.comprobarFirmas[_registroProvider
                         .listaAgrupaciones
                         .elementAt(indAgrupacion)
-                        .campos
+                        .campos!
                         .elementAt(indCampo)
-                        .nombreCampo]) {
+                        .nombreCampo]!) {
                       Dialogos.error(context, 'No existe firma registrada');
                     } else {
                       await showDialog(
@@ -868,9 +882,9 @@ class TipoDeCampos extends StatelessWidget {
                                   child: Text(_registroProvider
                                       .listaAgrupaciones
                                       .elementAt(indAgrupacion)
-                                      .campos
+                                      .campos!
                                       .elementAt(indCampo)
-                                      .nombreCampo)),
+                                      .nombreCampo!)),
                               children: <Widget>[
                                 Center(
                                   child: Container(
@@ -884,9 +898,9 @@ class TipoDeCampos extends StatelessWidget {
                                               .firmas[_registroProvider
                                                   .listaAgrupaciones
                                                   .elementAt(indAgrupacion)
-                                                  .campos
+                                                  .campos!
                                                   .elementAt(indCampo)
-                                                  .nombreCampo]
+                                                  .nombreCampo]!
                                               .buffer
                                               .asUint8List()))),
                                 ),
@@ -906,17 +920,17 @@ class TipoDeCampos extends StatelessWidget {
                                                           .listaAgrupaciones
                                                           .elementAt(
                                                               indAgrupacion)
-                                                          .campos
+                                                          .campos!
                                                           .elementAt(indCampo)
-                                                          .nombreCampo,
+                                                          .nombreCampo!,
                                                       false);
                                               _registroProvider.firmas[
                                                   _registroProvider
                                                       .listaAgrupaciones
                                                       .elementAt(indAgrupacion)
-                                                      .campos
+                                                      .campos!
                                                       .elementAt(indCampo)
-                                                      .nombreCampo] = ByteData(
+                                                      .nombreCampo!] = ByteData(
                                                   0);
                                               actualizar(() {});
                                               Navigator.pop(context);
@@ -948,9 +962,9 @@ class TipoDeCampos extends StatelessWidget {
               _registroProvider.comprobarFirmas[_registroProvider
                       .listaAgrupaciones
                       .elementAt(indAgrupacion)
-                      .campos
+                      .campos!
                       .elementAt(indCampo)
-                      .nombreCampo]
+                      .nombreCampo]!
                   ? Icon(Icons.check_circle_outline, color: Colors.green)
                   : Icon(Icons.cancel_outlined, color: Colors.red),
             ],
@@ -976,16 +990,16 @@ class TipoDeCampos extends StatelessWidget {
                     _registroProvider.comprobarFotos[_registroProvider
                             .listaAgrupaciones
                             .elementAt(indAgrupacion)
-                            .campos
+                            .campos!
                             .elementAt(indCampo)
-                            .nombreCampo]
+                            .nombreCampo]!
                         ? Icon(Icons.check_circle_outline, color: Colors.green)
                         : Icon(Icons.cancel_outlined, color: Colors.red),
                     SizedBox(
                       width: 10.0,
                     ),
                     IgnorePointer(
-                      ignoring: VariablesGlobales.usuario.perfil.idperfil != 4
+                      ignoring: VariablesGlobales.usuario.perfil!.idperfil != 4
                           ? false
                           : true,
                       child: IconButton(
@@ -994,9 +1008,9 @@ class TipoDeCampos extends StatelessWidget {
                                     .evidencia[_registroProvider
                                         .listaAgrupaciones
                                         .elementAt(indAgrupacion)
-                                        .campos
+                                        .campos!
                                         .elementAt(indCampo)
-                                        .nombreCampo]
+                                        .nombreCampo]!
                                     .length !=
                                 0) {
                               String datos = await showDialog(
@@ -1013,9 +1027,9 @@ class TipoDeCampos extends StatelessWidget {
                                           child: Text(_registroProvider
                                               .listaAgrupaciones
                                               .elementAt(indAgrupacion)
-                                              .campos
+                                              .campos!
                                               .elementAt(indCampo)
-                                              .nombreCampo)),
+                                              .nombreCampo!)),
                                       children: <Widget>[
                                         Center(
                                           child: Container(
@@ -1030,9 +1044,9 @@ class TipoDeCampos extends StatelessWidget {
                                                         .listaAgrupaciones
                                                         .elementAt(
                                                             indAgrupacion)
-                                                        .campos
+                                                        .campos!
                                                         .elementAt(indCampo)
-                                                        .nombreCampo]),
+                                                        .nombreCampo]!),
                                           ),
                                         ),
                                         Container(
@@ -1052,10 +1066,10 @@ class TipoDeCampos extends StatelessWidget {
                                                               .listaAgrupaciones
                                                               .elementAt(
                                                                   indAgrupacion)
-                                                              .campos
+                                                              .campos!
                                                               .elementAt(
                                                                   indCampo)
-                                                              .nombreCampo] = Uint8List(
+                                                              .nombreCampo!] = Uint8List(
                                                           0);
                                                       _registroProvider
                                                               .comprobarFotos[
@@ -1063,10 +1077,10 @@ class TipoDeCampos extends StatelessWidget {
                                                               .listaAgrupaciones
                                                               .elementAt(
                                                                   indAgrupacion)
-                                                              .campos
+                                                              .campos!
                                                               .elementAt(
                                                                   indCampo)
-                                                              .nombreCampo] = false;
+                                                              .nombreCampo!] = false;
                                                       Navigator.of(context)
                                                           .pop();
                                                       Navigator.of(context)
@@ -1105,7 +1119,7 @@ class TipoDeCampos extends StatelessWidget {
                 ),
               ),
               onTap: () async {
-                FilePickerResult result = await FilePicker.platform.pickFiles(
+                FilePickerResult? result = await FilePicker.platform.pickFiles(
                   type: FileType.custom,
                   allowedExtensions: ['jpg', 'png'],
                 );
@@ -1115,26 +1129,26 @@ class TipoDeCampos extends StatelessWidget {
                   Uint8List fileBytes;
                   String fileName;
                   if (result.files.first.bytes == null) {
-                    File archivo = new File(lectura.path);
+                    File archivo = new File(lectura.path!);
                     fileBytes = await archivo.readAsBytes();
                     fileName = lectura.name;
                   } else {
-                    fileBytes = lectura.bytes;
+                    fileBytes = lectura.bytes!;
                     fileName = lectura.name;
                   }
                   actualizar(() {
                     _registroProvider.evidencia[_registroProvider
                         .listaAgrupaciones
                         .elementAt(indAgrupacion)
-                        .campos
+                        .campos!
                         .elementAt(indCampo)
-                        .nombreCampo] = fileBytes;
+                        .nombreCampo!] = fileBytes;
                     _registroProvider.comprobarFotos[_registroProvider
                         .listaAgrupaciones
                         .elementAt(indAgrupacion)
-                        .campos
+                        .campos!
                         .elementAt(indCampo)
-                        .nombreCampo] = true;
+                        .nombreCampo!] = true;
                   });
                 } else {
                   print('Operacion cancelada');
@@ -1147,7 +1161,7 @@ class TipoDeCampos extends StatelessWidget {
               child: TextFormField(
                 controller: _registroProvider.listaAgrupaciones
                     .elementAt(indAgrupacion)
-                    .campos
+                    .campos!
                     .elementAt(indCampo)
                     .valorController,
                 decoration: InputDecoration(
@@ -1159,7 +1173,7 @@ class TipoDeCampos extends StatelessWidget {
                 inputFormatters: <TextInputFormatter>[
                   _registroProvider.listaAgrupaciones
                               .elementAt(indAgrupacion)
-                              .campos
+                              .campos!
                               .elementAt(indCampo)
                               .nombreCampo ==
                           'FOLIO'
@@ -1170,14 +1184,14 @@ class TipoDeCampos extends StatelessWidget {
                 ],
                 maxLength: _registroProvider.listaAgrupaciones
                     .elementAt(indAgrupacion)
-                    .campos
+                    .campos!
                     .elementAt(indCampo)
                     .longitud,
                 validator: (value) {
-                  if (value.isNotEmpty) {
+                  if (value!.isNotEmpty) {
                     return null;
                   } else {
-                    return 'INGRESE DATOS A ${_registroProvider.listaAgrupaciones.elementAt(indAgrupacion).campos.elementAt(indCampo).nombreCampo}';
+                    return 'INGRESE DATOS A ${_registroProvider.listaAgrupaciones.elementAt(indAgrupacion).campos!.elementAt(indCampo).nombreCampo}';
                   }
                 },
               ),
@@ -1188,32 +1202,32 @@ class TipoDeCampos extends StatelessWidget {
       case 'CALENDARIO':
         return IgnorePointer(
           ignoring:
-              VariablesGlobales.usuario.perfil.idperfil != "4" ? false : true,
+              VariablesGlobales.usuario.perfil!.idperfil != "4" ? false : true,
           child: Container(
               margin: EdgeInsets.only(left: 10.0),
               width: 250.0,
               child: InkWell(
                 onTap: () async {
                   print(
-                      'Fecha actual: ${_registroProvider.camposCalendario[_registroProvider.listaAgrupaciones.elementAt(indAgrupacion).campos.elementAt(indCampo).nombreCampo]}');
-                  final DateTime picked = await showDatePicker(
+                      'Fecha actual: ${_registroProvider.camposCalendario[_registroProvider.listaAgrupaciones.elementAt(indAgrupacion).campos!.elementAt(indCampo).nombreCampo]}');
+                  final DateTime? picked = await showDatePicker(
                       locale: Locale('es', 'ES'),
                       context: context,
                       initialDate: _registroProvider.camposCalendario[
                           _registroProvider.listaAgrupaciones
                               .elementAt(indAgrupacion)
-                              .campos
+                              .campos!
                               .elementAt(indCampo)
-                              .nombreCampo],
+                              .nombreCampo]!,
                       firstDate: new DateTime(2000),
                       lastDate: new DateTime(2040));
                   if (picked != null) {
                     _registroProvider.actualizarCampoCalendario(
                         _registroProvider.listaAgrupaciones
                             .elementAt(indAgrupacion)
-                            .campos
+                            .campos!
                             .elementAt(indCampo)
-                            .nombreCampo,
+                            .nombreCampo!,
                         picked);
                     _registroProvider.actualizarValor(indAgrupacion, indCampo,
                         "${picked.day.toString().padLeft(2, '0')}/${picked.month.toString().padLeft(2, '0')}/${picked.year}");
@@ -1229,7 +1243,7 @@ class TipoDeCampos extends StatelessWidget {
                     mainAxisSize: MainAxisSize.max,
                     children: <Widget>[
                       Text(
-                        '${DateFormat.yMMMd().format(_registroProvider.camposCalendario[_registroProvider.listaAgrupaciones.elementAt(indAgrupacion).campos.elementAt(indCampo).nombreCampo])}',
+                        '${DateFormat.yMMMd().format(_registroProvider.camposCalendario[_registroProvider.listaAgrupaciones.elementAt(indAgrupacion).campos!.elementAt(indCampo).nombreCampo]!)}',
                       ),
                       Icon(Icons.arrow_drop_down,
                           color:
@@ -1245,21 +1259,21 @@ class TipoDeCampos extends StatelessWidget {
       case 'HORA':
         return IgnorePointer(
           ignoring:
-              VariablesGlobales.usuario.perfil.idperfil != "4" ? false : true,
+              VariablesGlobales.usuario.perfil!.idperfil != "4" ? false : true,
           child: Container(
               margin: const EdgeInsets.only(left: 10.0),
               width: 250.0,
               child: InkWell(
                 onTap: () async {
                   print(
-                      'Hora actual: ${_registroProvider.camposHora[_registroProvider.listaAgrupaciones.elementAt(indAgrupacion).campos.elementAt(indCampo).nombreCampo]}');
-                  final TimeOfDay picked = await showTimePicker(
+                      'Hora actual: ${_registroProvider.camposHora[_registroProvider.listaAgrupaciones.elementAt(indAgrupacion).campos!.elementAt(indCampo).nombreCampo]}');
+                  final TimeOfDay? picked = await showTimePicker(
                     initialTime: _registroProvider.camposHora[_registroProvider
                         .listaAgrupaciones
                         .elementAt(indAgrupacion)
-                        .campos
+                        .campos!
                         .elementAt(indCampo)
-                        .nombreCampo],
+                        .nombreCampo]!,
                     context: context,
                   );
                   if (picked != null) {
@@ -1270,9 +1284,9 @@ class TipoDeCampos extends StatelessWidget {
                     _registroProvider.actualizarCampoHorao(
                         _registroProvider.listaAgrupaciones
                             .elementAt(indAgrupacion)
-                            .campos
+                            .campos!
                             .elementAt(indCampo)
-                            .nombreCampo,
+                            .nombreCampo!,
                         picked);
                     _registroProvider.actualizarValor(
                         indAgrupacion, indCampo, hora);
@@ -1288,7 +1302,7 @@ class TipoDeCampos extends StatelessWidget {
                     mainAxisSize: MainAxisSize.max,
                     children: <Widget>[
                       Text(
-                        "${_registroProvider.camposHora[_registroProvider.listaAgrupaciones.elementAt(indAgrupacion).campos.elementAt(indCampo).nombreCampo].hour.toString().padLeft(2, '0')}:${_registroProvider.camposHora[_registroProvider.listaAgrupaciones.elementAt(indAgrupacion).campos.elementAt(indCampo).nombreCampo].minute.toString().padLeft(2, '0')}",
+                        "${_registroProvider.camposHora[_registroProvider.listaAgrupaciones.elementAt(indAgrupacion).campos!.elementAt(indCampo).nombreCampo]!.hour.toString().padLeft(2, '0')}:${_registroProvider.camposHora[_registroProvider.listaAgrupaciones.elementAt(indAgrupacion).campos!.elementAt(indCampo).nombreCampo]!.minute.toString().padLeft(2, '0')}",
                       ),
                       Icon(Icons.arrow_drop_down,
                           color:
@@ -1304,7 +1318,7 @@ class TipoDeCampos extends StatelessWidget {
       case 'CHECKBOX':
         return IgnorePointer(
           ignoring:
-              VariablesGlobales.usuario.perfil.idperfil != "4" ? false : true,
+              VariablesGlobales.usuario.perfil!.idperfil != "4" ? false : true,
           child: Container(
             margin: EdgeInsets.only(left: 10.0),
             width: 250.0,
@@ -1312,38 +1326,38 @@ class TipoDeCampos extends StatelessWidget {
               initialValue: _registroProvider.checkBox[_registroProvider
                   .listaAgrupaciones
                   .elementAt(indAgrupacion)
-                  .campos
+                  .campos!
                   .elementAt(indCampo)
-                  .nombreCampo],
+                  .nombreCampo]!,
               onSaved: (valor) {
                 _registroProvider.checkBox[_registroProvider.listaAgrupaciones
                     .elementAt(indAgrupacion)
-                    .campos
+                    .campos!
                     .elementAt(indCampo)
-                    .nombreCampo] = valor;
+                    .nombreCampo!] = valor!;
                 if (_registroProvider.checkBox[_registroProvider
                     .listaAgrupaciones
                     .elementAt(indAgrupacion)
-                    .campos
+                    .campos!
                     .elementAt(indCampo)
-                    .nombreCampo]) {
+                    .nombreCampo]!) {
                   _registroProvider.listaAgrupaciones
                       .elementAt(indAgrupacion)
-                      .campos
+                      .campos!
                       .elementAt(indCampo)
-                      .valorController
+                      .valorController!
                       .text = 'true';
                 } else {
                   _registroProvider.listaAgrupaciones
                       .elementAt(indAgrupacion)
-                      .campos
+                      .campos!
                       .elementAt(indCampo)
-                      .valorController
+                      .valorController!
                       .text = 'false';
                 }
               },
               validator: (valor) {
-                if (valor) {
+                if (valor!) {
                   return null;
                 } else {
                   return 'NECESITAS MARCAR ESTE CAMPO';
@@ -1358,7 +1372,7 @@ class TipoDeCampos extends StatelessWidget {
           child: SizedBox(
             width: 170.0,
             child: IgnorePointer(
-              ignoring: VariablesGlobales.usuario.perfil.idperfil != "4"
+              ignoring: VariablesGlobales.usuario.perfil!.idperfil != "4"
                   ? false
                   : true,
               child: ElevatedButton(
@@ -1371,16 +1385,16 @@ class TipoDeCampos extends StatelessWidget {
                         _registroProvider.evidenciaCheckList[_registroProvider
                             .listaAgrupaciones
                             .elementAt(indAgrupacion)
-                            .campos
+                            .campos!
                             .elementAt(indCampo)
-                            .nombreCampo];
+                            .nombreCampo]!;
 
                     _registroProvider.evidenciaCheckList[_registroProvider
                             .listaAgrupaciones
                             .elementAt(indAgrupacion)
-                            .campos
+                            .campos!
                             .elementAt(indCampo)
-                            .nombreCampo]
+                            .nombreCampo]!
                         .forEach((key, value) {
                       datosAnteriores[key] = value;
                     });
@@ -1388,9 +1402,9 @@ class TipoDeCampos extends StatelessWidget {
                     _registroProvider.evidenciaCheckList[
                         _registroProvider.listaAgrupaciones
                             .elementAt(indAgrupacion)
-                            .campos
+                            .campos!
                             .elementAt(indCampo)
-                            .nombreCampo] = await showDialog(
+                            .nombreCampo!] = await showDialog(
                         barrierDismissible: false,
                         context: context,
                         builder: (context) {
@@ -1408,7 +1422,7 @@ class TipoDeCampos extends StatelessWidget {
                                     Expanded(child: Container()),
                                     ElevatedButton(
                                         onPressed: () async {
-                                          FilePickerResult result =
+                                          FilePickerResult? result =
                                               await FilePicker.platform
                                                   .pickFiles(
                                             type: FileType.custom,
@@ -1423,9 +1437,9 @@ class TipoDeCampos extends StatelessWidget {
                                           state(() {
                                             if (result != null) {
                                               result.files.forEach((element) {
-                                                argumentos['evidencias']
-                                                        [element.name] =
-                                                    element.bytes;
+                                                argumentos['evidencias']![
+                                                        element.name] =
+                                                    element.bytes!;
                                               });
                                             }
                                           });
@@ -1447,8 +1461,8 @@ class TipoDeCampos extends StatelessWidget {
                                             _dropTarget(
                                               context,
                                               state,
-                                              argumentos['evidencias'],
-                                              null,
+                                              argumentos['evidencias']!,
+                                              Offset.zero,
                                               false,
                                             ),
                                             // for (Uint8List item
@@ -1498,46 +1512,46 @@ class TipoDeCampos extends StatelessWidget {
                     if (_registroProvider
                         .evidenciaCheckList[_registroProvider.listaAgrupaciones
                             .elementAt(indAgrupacion)
-                            .campos
+                            .campos!
                             .elementAt(indCampo)
-                            .nombreCampo]
+                            .nombreCampo]!
                         .isNotEmpty) {
                       _registroProvider.comprobarEvidenciaCheck[
                           _registroProvider.listaAgrupaciones
                               .elementAt(indAgrupacion)
-                              .campos
+                              .campos!
                               .elementAt(indCampo)
-                              .nombreCampo] = true;
+                              .nombreCampo!] = true;
                       _registroProvider.checkBoxEvidencia[_registroProvider
                           .listaAgrupaciones
                           .elementAt(indAgrupacion)
-                          .campos
+                          .campos!
                           .elementAt(indCampo)
-                          .nombreCampo] = true;
+                          .nombreCampo!] = true;
                       _registroProvider.listaAgrupaciones
                           .elementAt(indAgrupacion)
-                          .campos
+                          .campos!
                           .elementAt(indCampo)
-                          .valorController
+                          .valorController!
                           .text = 'TRUE';
                     } else {
                       _registroProvider.comprobarEvidenciaCheck[
                           _registroProvider.listaAgrupaciones
                               .elementAt(indAgrupacion)
-                              .campos
+                              .campos!
                               .elementAt(indCampo)
-                              .nombreCampo] = false;
+                              .nombreCampo!] = false;
                       _registroProvider.checkBoxEvidencia[_registroProvider
                           .listaAgrupaciones
                           .elementAt(indAgrupacion)
-                          .campos
+                          .campos!
                           .elementAt(indCampo)
-                          .nombreCampo] = false;
+                          .nombreCampo!] = false;
                       _registroProvider.listaAgrupaciones
                           .elementAt(indAgrupacion)
-                          .campos
+                          .campos!
                           .elementAt(indCampo)
-                          .valorController
+                          .valorController!
                           .text = 'FALSE';
                     }
                     actualizar(() {});
@@ -1551,9 +1565,9 @@ class TipoDeCampos extends StatelessWidget {
                       _registroProvider.comprobarEvidenciaCheck[
                               _registroProvider.listaAgrupaciones
                                   .elementAt(indAgrupacion)
-                                  .campos
+                                  .campos!
                                   .elementAt(indCampo)
-                                  .nombreCampo]
+                                  .nombreCampo]!
                           ? const Icon(Icons.check_circle_outline,
                               color: Colors.white)
                           : const Icon(Icons.cancel_outlined,
@@ -1569,13 +1583,16 @@ class TipoDeCampos extends StatelessWidget {
           //margin: EdgeInsets.only(left: 10.0),
           width: 250.0,
           child: TextFormField(
-            readOnly:
-                VariablesGlobales.usuario.perfil.idperfil != "4" ? false : true,
+            readOnly: VariablesGlobales.usuario.perfil!.idperfil != "4"
+                ? false
+                : true,
             enableInteractiveSelection:
-                VariablesGlobales.usuario.perfil.idperfil != "4" ? true : false,
+                VariablesGlobales.usuario.perfil!.idperfil != "4"
+                    ? true
+                    : false,
             enabled: _registroProvider.listaAgrupaciones
                         .elementAt(indAgrupacion)
-                        .campos
+                        .campos!
                         .elementAt(indCampo)
                         .nombreCampo ==
                     'FOLIO'
@@ -1583,7 +1600,7 @@ class TipoDeCampos extends StatelessWidget {
                 : true,
             controller: _registroProvider.listaAgrupaciones
                 .elementAt(indAgrupacion)
-                .campos
+                .campos!
                 .elementAt(indCampo)
                 .valorController,
             decoration: InputDecoration(
@@ -1592,14 +1609,14 @@ class TipoDeCampos extends StatelessWidget {
                 fillColor: Colors.white,
                 hintText: _registroProvider.listaAgrupaciones
                     .elementAt(indAgrupacion)
-                    .campos
+                    .campos!
                     .elementAt(indCampo)
                     .nombreCampo),
             textCapitalization: TextCapitalization.characters,
             inputFormatters: <TextInputFormatter>[
               _registroProvider.listaAgrupaciones
                           .elementAt(indAgrupacion)
-                          .campos
+                          .campos!
                           .elementAt(indCampo)
                           .nombreCampo ==
                       'FOLIO'
@@ -1610,14 +1627,14 @@ class TipoDeCampos extends StatelessWidget {
             ],
             maxLength: _registroProvider.listaAgrupaciones
                 .elementAt(indAgrupacion)
-                .campos
+                .campos!
                 .elementAt(indCampo)
                 .longitud,
             validator: (value) {
-              if (value.isNotEmpty) {
+              if (value!.isNotEmpty) {
                 return null;
               } else {
-                return 'INGRESE DATOS A ${_registroProvider.listaAgrupaciones.elementAt(indAgrupacion).campos.elementAt(indCampo).nombreCampo}';
+                return 'INGRESE DATOS A ${_registroProvider.listaAgrupaciones.elementAt(indAgrupacion).campos!.elementAt(indCampo).nombreCampo}';
               }
             },
           ),
@@ -1650,7 +1667,7 @@ class TipoDeCampos extends StatelessWidget {
       onDragExited: (detail) {
         state(() {
           dragging = false;
-          offset = null;
+          offset = Offset.zero;
         });
       },
       child: Container(
@@ -1668,7 +1685,7 @@ class TipoDeCampos extends StatelessWidget {
             else
               for (String item in evidencia.keys)
                 DetallesImagenEvidencia(
-                  evidencia: evidencia[item],
+                  evidencia: evidencia[item]!,
                   nombreEvidencia: item,
                   anchoImagen: 180,
                   altoImagen: 230,

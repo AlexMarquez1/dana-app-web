@@ -8,16 +8,16 @@ import 'package:flutter/services.dart';
 class TarjetaNuevoCampo extends StatefulWidget {
   Campos campo;
   String agrupacion;
-  Function eliminar;
+  Function() eliminar;
   ScrollController scrollCampo;
   List<Agrupaciones> listaAgrupaciones;
   TarjetaNuevoCampo({
-    Key key,
-    @required this.campo,
-    @required this.agrupacion,
-    @required this.eliminar,
-    @required this.scrollCampo,
-    @required this.listaAgrupaciones,
+    Key? key,
+    required this.campo,
+    required this.agrupacion,
+    required this.eliminar,
+    required this.scrollCampo,
+    required this.listaAgrupaciones,
   }) : super(key: key);
 
   @override
@@ -71,7 +71,7 @@ class _TarjetaNuevoCampoState extends State<TarjetaNuevoCampo> {
                   ),
                 ),
                 title: Text(
-                  widget.campo.controladorNombreCampo.text,
+                  widget.campo.controladorNombreCampo!.text,
                   style: TextStyle(color: Colors.black),
                 ),
               );
@@ -107,7 +107,7 @@ class _TarjetaNuevoCampoState extends State<TarjetaNuevoCampo> {
                 Column(
                   children: [
                     _etiquetaCampo('CAMPO:'),
-                    _txtCampo(campo.controladorNombreCampo),
+                    _txtCampo(campo.controladorNombreCampo!),
                   ],
                 ),
                 Column(
@@ -130,13 +130,13 @@ class _TarjetaNuevoCampoState extends State<TarjetaNuevoCampo> {
                     Column(
                       children: [
                         _etiquetaCampo('restriccion:'),
-                        _txtCampo(campo.controladorRestriccion),
+                        _txtCampo(campo.controladorRestriccion!),
                       ],
                     ),
                     Column(
                       children: [
                         _etiquetaCampo('tamaño:'),
-                        _numCampo(campo.controladorLongitud),
+                        _numCampo(campo.controladorLongitud!),
                       ],
                     ),
                   ],
@@ -165,7 +165,7 @@ class _TarjetaNuevoCampoState extends State<TarjetaNuevoCampo> {
                 //   width: 20.0,
                 // ),
                 _etiquetaCampo('CAMPO:'),
-                _txtCampo(campo.controladorNombreCampo),
+                _txtCampo(campo.controladorNombreCampo!),
                 SizedBox(
                   width: 20.0,
                 ),
@@ -180,7 +180,7 @@ class _TarjetaNuevoCampoState extends State<TarjetaNuevoCampo> {
                         campo.tipoCampo == 'CHECKBOX' ||
                         campo.tipoCampo == 'CALENDARIO'
                     ? Container()
-                    : _txtCampo(campo.controladorRestriccion),
+                    : _txtCampo(campo.controladorRestriccion!),
                 SizedBox(
                   width: 30.0,
                 ),
@@ -195,7 +195,7 @@ class _TarjetaNuevoCampoState extends State<TarjetaNuevoCampo> {
                         campo.tipoCampo == 'CHECKBOX' ||
                         campo.tipoCampo == 'CALENDARIO'
                     ? Container()
-                    : _numCampo(campo.controladorLongitud),
+                    : _numCampo(campo.controladorLongitud!),
               ],
             ),
           ),
@@ -268,7 +268,7 @@ class _TarjetaNuevoCampoState extends State<TarjetaNuevoCampo> {
     ];
     String seleccion = 'ALFANUMERICO';
 
-    switch (campo.tipoCampo.toUpperCase()) {
+    switch (campo.tipoCampo!.toUpperCase()) {
       case 'NUMERICO':
         seleccion = tipos.elementAt(0);
         break;
@@ -303,7 +303,7 @@ class _TarjetaNuevoCampoState extends State<TarjetaNuevoCampo> {
     return TipoCampo(
       tipoSeleccionado: seleccion,
       listaAgrupaciones: widget.listaAgrupaciones,
-      nombreCampo: campo.nombreCampo,
+      nombreCampo: campo.nombreCampo!,
       actualizar: () {
         setState(() {});
       },

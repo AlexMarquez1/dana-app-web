@@ -16,13 +16,13 @@ class TotalDatos {
     this.totalNuevos,
   });
 
-  String tipoProyecto;
-  int totalRegistros;
-  int totalCerrados;
-  int totalPendientes;
-  int totalEnProceso;
-  int totalAsignados;
-  int totalNuevos;
+  String? tipoProyecto;
+  int? totalRegistros;
+  int? totalCerrados;
+  int? totalPendientes;
+  int? totalEnProceso;
+  int? totalAsignados;
+  int? totalNuevos;
 
   factory TotalDatos.fromJson(Map<String, dynamic> json) => TotalDatos(
         tipoProyecto: json["tipoProyecto"],

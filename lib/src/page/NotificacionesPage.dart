@@ -22,7 +22,7 @@ import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
 class NotificacionesPage extends StatefulWidget {
-  NotificacionesPage({Key key}) : super(key: key);
+  NotificacionesPage({Key? key}) : super(key: key);
 
   @override
   State<NotificacionesPage> createState() => _NotificacionesPageState();
@@ -31,7 +31,7 @@ class NotificacionesPage extends StatefulWidget {
 class _NotificacionesPageState extends State<NotificacionesPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  List<Usuario> _listaUsuarios;
+  List<Usuario>? _listaUsuarios;
 
   Map<int, bool> _usuarioSeleccionado = Map<int, bool>();
   final ScrollController _scrollControllerUsuarios = ScrollController();
@@ -39,22 +39,22 @@ class _NotificacionesPageState extends State<NotificacionesPage> {
   final TextEditingController _controllerRemitente =
       TextEditingController(text: VariablesGlobales.usuario.nombre);
 
-  EvidenciaSeleccionadaProvider _evidenciaSeleccionada;
-  NotificacionProvider _notificacion;
+  EvidenciaSeleccionadaProvider? _evidenciaSeleccionada;
+  NotificacionProvider? _notificacion;
 
   List<DetallesImagen> _listaComponenteImagen = [];
   Map<String, bool> _opciones = {'BAJA': true, 'MEDIA': false, 'ALTA': false};
 
-  AnimationController _animacionEntradaController;
-  AnimationController _animacionSalidaController;
+  AnimationController? _animacionEntradaController;
+  AnimationController? _animacionSalidaController;
 
-  AnimationController _animacionEntradaMensaje;
-  AnimationController _animacionSalidaMensaje;
+  AnimationController? _animacionEntradaMensaje;
+  AnimationController? _animacionSalidaMensaje;
 
   String _tituloMensaje = 'Listo';
   String _contenidoMensaje =
       'Los mensajes han sido enviados satisfactoriamente';
-  Color _colorMensaje = Colors.green[300];
+  Color _colorMensaje = Colors.green[300]!;
   IconData _iconoMensaje = Icons.check;
   bool _bloquearBoton = false;
 
@@ -118,7 +118,7 @@ class _NotificacionesPageState extends State<NotificacionesPage> {
           child: MensajeWidget(
               entrada: (controller) => _animacionEntradaMensaje = controller,
               salida: (controller) => _animacionSalidaMensaje = controller,
-              fnSalida: () => _animacionSalidaMensaje.forward(),
+              fnSalida: () => _animacionSalidaMensaje!.forward(),
               titulo: _tituloMensaje,
               contenido: _contenidoMensaje,
               color: _colorMensaje,
@@ -154,7 +154,7 @@ class _NotificacionesPageState extends State<NotificacionesPage> {
 
   Widget _notificaicon(int ancho) {
     _listaComponenteImagen = [];
-    for (FotoEvidencia item in _evidenciaSeleccionada.evidenciaSeleccionada) {
+    for (FotoEvidencia item in _evidenciaSeleccionada!.evidenciaSeleccionada) {
       _listaComponenteImagen.add(
         DetallesImagen(
           evidencia: item,
@@ -247,7 +247,7 @@ class _NotificacionesPageState extends State<NotificacionesPage> {
                         Container(
                           width: 400.0,
                           child: TextFormField(
-                            controller: _notificacion.tituloController,
+                            controller: _notificacion!.tituloController,
                             decoration: InputDecoration(
                                 border: OutlineInputBorder(),
                                 hintText: 'Titulo notificacion'),
@@ -275,7 +275,7 @@ class _NotificacionesPageState extends State<NotificacionesPage> {
                         Container(
                           width: 400.0,
                           child: TextFormField(
-                            controller: _notificacion.contenidoController,
+                            controller: _notificacion!.contenidoController,
                             decoration: InputDecoration(
                                 border: OutlineInputBorder(),
                                 hintText: 'Contenido notificacion'),
@@ -347,7 +347,7 @@ class _NotificacionesPageState extends State<NotificacionesPage> {
                       ),
                     ),
                   ),
-                  _evidenciaSeleccionada.evidenciaSeleccionada.length != 0
+                  _evidenciaSeleccionada!.evidenciaSeleccionada.length != 0
                       ? Container(
                           // height: 470.0,
                           width: 400.0,
@@ -357,7 +357,7 @@ class _NotificacionesPageState extends State<NotificacionesPage> {
                             child: ExpansionTile(
                               maintainState: true,
                               title: Text(
-                                  'Imagenes adjuntas: ${_evidenciaSeleccionada.evidenciaSeleccionada.length}'),
+                                  'Imagenes adjuntas: ${_evidenciaSeleccionada!.evidenciaSeleccionada.length}'),
                               children: [
                                 Container(
                                   padding: const EdgeInsets.only(top: 10.0),
@@ -390,11 +390,11 @@ class _NotificacionesPageState extends State<NotificacionesPage> {
 
   Widget _clip(String label, Widget icono) {
     return InputChip(
-      selected: _opciones[label],
+      selected: _opciones[label]!,
       label: Text(label),
       tooltip: label,
       labelStyle:
-          TextStyle(color: _opciones[label] ? Colors.white : Colors.black),
+          TextStyle(color: _opciones[label]! ? Colors.white : Colors.black),
       selectedColor: Colors.blue.withOpacity(0.8),
       avatar: CircleAvatar(
         child: icono,
@@ -520,11 +520,12 @@ class _NotificacionesPageState extends State<NotificacionesPage> {
                                     padding: EdgeInsets.only(top: 5.0),
                                     width: anchoTexto,
                                     child: Text(
-                                      _notificacion.tituloController.text
+                                      _notificacion!.tituloController.text
                                                   .length ==
                                               0
                                           ? 'Titulo Notificacion'
-                                          : _notificacion.tituloController.text,
+                                          : _notificacion!
+                                              .tituloController.text,
                                       style: TextStyle(
                                           fontWeight: FontWeight.bold,
                                           fontSize: 10.0),
@@ -538,11 +539,11 @@ class _NotificacionesPageState extends State<NotificacionesPage> {
                                     width: anchoTexto,
                                     height: 50.0,
                                     child: Text(
-                                      _notificacion.contenidoController.text
+                                      _notificacion!.contenidoController.text
                                                   .length ==
                                               0
                                           ? 'Contenido de la notificacion'
-                                          : _notificacion
+                                          : _notificacion!
                                               .contenidoController.text,
                                       textAlign: TextAlign.justify,
                                       style: TextStyle(fontSize: 10.0),
@@ -558,7 +559,7 @@ class _NotificacionesPageState extends State<NotificacionesPage> {
                                 width: 60.0,
                                 height: 60.0,
                                 color: Colors.grey[400],
-                                child: _evidenciaSeleccionada
+                                child: _evidenciaSeleccionada!
                                             .evidenciaSeleccionada.length ==
                                         0
                                     ? Icon(
@@ -567,8 +568,8 @@ class _NotificacionesPageState extends State<NotificacionesPage> {
                                         size: 50,
                                       )
                                     : Image.network(
-                                        _evidenciaSeleccionada
-                                            .evidenciaSeleccionada[0].url,
+                                        _evidenciaSeleccionada!
+                                            .evidenciaSeleccionada[0].url!,
                                         fit: BoxFit.cover,
                                       ),
                               ),
@@ -591,7 +592,7 @@ class _NotificacionesPageState extends State<NotificacionesPage> {
                       ? null
                       : () async {
                           bool usuarioSeleccionado = false;
-                          String prioridad;
+                          String? prioridad;
 
                           _opciones.forEach((key, value) {
                             if (value) {
@@ -599,21 +600,21 @@ class _NotificacionesPageState extends State<NotificacionesPage> {
                             }
                           });
 
-                          for (Usuario usuario in _listaUsuarios) {
-                            if (_usuarioSeleccionado[usuario.idUsuario]) {
+                          for (Usuario usuario in _listaUsuarios!) {
+                            if (_usuarioSeleccionado[usuario.idUsuario]!) {
                               usuarioSeleccionado = true;
                               break;
                             }
                           }
                           if (usuarioSeleccionado) {
-                            if (_notificacion
+                            if (_notificacion!
                                     .tituloController.text.isNotEmpty &&
-                                _notificacion
+                                _notificacion!
                                     .contenidoController.text.isNotEmpty) {
                               List<Usuario> listaUsuarios = [];
 
-                              for (Usuario usuario in _listaUsuarios) {
-                                if (_usuarioSeleccionado[usuario.idUsuario]) {
+                              for (Usuario usuario in _listaUsuarios!) {
+                                if (_usuarioSeleccionado[usuario.idUsuario]!) {
                                   listaUsuarios.add(usuario);
                                 }
                               }
@@ -628,29 +629,29 @@ class _NotificacionesPageState extends State<NotificacionesPage> {
                                     '${dia.length == 1 ? '0$dia' : dia}-${mes.length == 1 ? '0$mes' : mes}-$anio',
                                 'HORA':
                                     '${hora.length == 1 ? '0$hora' : hora}:${minutos.length == 1 ? '0$minutos' : minutos}',
-                                'PRIORIDAD': prioridad,
+                                'PRIORIDAD': prioridad!,
                                 'REMITENTE': _controllerRemitente.text,
                               };
 
-                              for (FotoEvidencia foto in _evidenciaSeleccionada
+                              for (FotoEvidencia foto in _evidenciaSeleccionada!
                                   .evidenciaSeleccionada) {
                                 data['${foto.idfoto}-${foto.nombrefoto}'] =
-                                    foto.url;
+                                    foto.url!;
                               }
 
                               Notificaciones notificacion = Notificaciones(
                                 id: 0,
-                                titulo: _notificacion.tituloController.text,
+                                titulo: _notificacion!.tituloController.text,
                                 contenido:
-                                    _notificacion.contenidoController.text,
-                                image: _evidenciaSeleccionada
+                                    _notificacion!.contenidoController.text,
+                                image: _evidenciaSeleccionada!
                                         .evidenciaSeleccionada.isEmpty
                                     ? ''
-                                    : _evidenciaSeleccionada
+                                    : _evidenciaSeleccionada!
                                         .evidenciaSeleccionada[0].url,
                                 data: data,
                                 token: listaUsuarios,
-                                imagenes: _evidenciaSeleccionada
+                                imagenes: _evidenciaSeleccionada!
                                     .evidenciaSeleccionada,
                               );
 
@@ -661,39 +662,39 @@ class _NotificacionesPageState extends State<NotificacionesPage> {
                                 await mandarNotificacion(
                                     ApiDefinition.ipServer, notificacion);
 
-                                _notificacion.tituloController.text = '';
-                                _notificacion.contenidoController.text = '';
-                                _evidenciaSeleccionada.removeAll();
+                                _notificacion!.tituloController.text = '';
+                                _notificacion!.contenidoController.text = '';
+                                _evidenciaSeleccionada!.removeAll();
 
-                                _animacionSalidaController.forward();
+                                _animacionSalidaController!.forward();
 
                                 Future.delayed(Duration(seconds: 2), () {
-                                  _animacionEntradaController.reset();
-                                  _animacionEntradaController.forward();
-                                  _animacionSalidaController.reset();
+                                  _animacionEntradaController!.reset();
+                                  _animacionEntradaController!.forward();
+                                  _animacionSalidaController!.reset();
                                   setState(() {
                                     _bloquearBoton = false;
-                                    for (Usuario usuario in _listaUsuarios) {
-                                      _usuarioSeleccionado[usuario.idUsuario] =
+                                    for (Usuario usuario in _listaUsuarios!) {
+                                      _usuarioSeleccionado[usuario.idUsuario!] =
                                           false;
                                     }
                                   });
                                 });
                                 print('Datos: $data');
 
-                                _animacionEntradaMensaje.reset();
-                                _animacionSalidaMensaje.reset();
-                                _animacionEntradaMensaje.forward();
+                                _animacionEntradaMensaje!.reset();
+                                _animacionSalidaMensaje!.reset();
+                                _animacionEntradaMensaje!.forward();
 
                                 Future.delayed(Duration(seconds: 10), () {
-                                  _animacionSalidaMensaje.forward();
+                                  _animacionSalidaMensaje!.forward();
                                 });
                               } catch (e) {
                                 setState(() {
                                   _tituloMensaje = 'Error';
                                   _contenidoMensaje =
                                       'Ocurrio un error en la ejecucion, vuelve a intentarlo de nuevo mas tarde';
-                                  _colorMensaje = Colors.red[300];
+                                  _colorMensaje = Colors.red[300]!;
                                   _iconoMensaje = Icons.close;
                                 });
                               }
@@ -732,7 +733,7 @@ class _NotificacionesPageState extends State<NotificacionesPage> {
   }
 
   Future<Uint8List> _obtenerBytes(String url) async {
-    http.Response respuesta = await http.get(url);
+    http.Response respuesta = await http.get(url as Uri);
 
     if (respuesta.bodyBytes.isEmpty) {
       return Uint8List(0);
@@ -756,7 +757,7 @@ class _NotificacionesPageState extends State<NotificacionesPage> {
               ),
             ),
             Divider(),
-            _listaUsuarios == null || _listaUsuarios.isEmpty
+            _listaUsuarios == null || _listaUsuarios!.isEmpty
                 ? _tablaUsuariosDisponiblesBuilder()
                 : _tablaUsuariosDisponibles(),
           ],
@@ -784,8 +785,8 @@ class _NotificacionesPageState extends State<NotificacionesPage> {
                 if (snapshot.hasData) {
                   _listaUsuarios = snapshot.data;
                   if (_usuarioSeleccionado.isEmpty) {
-                    for (Usuario usuario in snapshot.data) {
-                      _usuarioSeleccionado[usuario.idUsuario] = false;
+                    for (Usuario usuario in snapshot.data!) {
+                      _usuarioSeleccionado[usuario.idUsuario!] = false;
                     }
                   }
                   return DataTable(
@@ -798,26 +799,26 @@ class _NotificacionesPageState extends State<NotificacionesPage> {
                     ],
                     rows: snapshot.data == null
                         ? []
-                        : snapshot.data
+                        : snapshot.data!
                             .map(
                               (usuario) => DataRow(
                                 selected:
-                                    _usuarioSeleccionado[usuario.idUsuario],
+                                    _usuarioSeleccionado[usuario.idUsuario]!,
                                 onSelectChanged: (seleccion) {
-                                  if (seleccion) {
-                                    _usuarioSeleccionado[usuario.idUsuario] =
+                                  if (seleccion!) {
+                                    _usuarioSeleccionado[usuario.idUsuario!] =
                                         seleccion;
                                   } else {
-                                    _usuarioSeleccionado[usuario.idUsuario] =
+                                    _usuarioSeleccionado[usuario.idUsuario!] =
                                         seleccion;
                                   }
                                   setState(() {});
                                 },
                                 cells: [
-                                  DataCell(Text(usuario.usuario)),
-                                  DataCell(Text(usuario.nombre)),
-                                  DataCell(Text(usuario.telefono)),
-                                  DataCell(Text(usuario.correo)),
+                                  DataCell(Text(usuario.usuario!)),
+                                  DataCell(Text(usuario.nombre!)),
+                                  DataCell(Text(usuario.telefono!)),
+                                  DataCell(Text(usuario.correo!)),
                                 ],
                               ),
                             )
@@ -856,25 +857,25 @@ class _NotificacionesPageState extends State<NotificacionesPage> {
               ],
               rows: _listaUsuarios == null
                   ? []
-                  : _listaUsuarios
+                  : _listaUsuarios!
                       .map(
                         (usuario) => DataRow(
-                          selected: _usuarioSeleccionado[usuario.idUsuario],
+                          selected: _usuarioSeleccionado[usuario.idUsuario]!,
                           onSelectChanged: (seleccion) {
-                            if (seleccion) {
-                              _usuarioSeleccionado[usuario.idUsuario] =
+                            if (seleccion!) {
+                              _usuarioSeleccionado[usuario.idUsuario!] =
                                   seleccion;
                             } else {
-                              _usuarioSeleccionado[usuario.idUsuario] =
+                              _usuarioSeleccionado[usuario.idUsuario!] =
                                   seleccion;
                             }
                             setState(() {});
                           },
                           cells: [
-                            DataCell(Text(usuario.usuario)),
-                            DataCell(Text(usuario.nombre)),
-                            DataCell(Text(usuario.telefono)),
-                            DataCell(Text(usuario.correo)),
+                            DataCell(Text(usuario.usuario!)),
+                            DataCell(Text(usuario.nombre!)),
+                            DataCell(Text(usuario.telefono!)),
+                            DataCell(Text(usuario.correo!)),
                           ],
                         ),
                       )
@@ -887,7 +888,7 @@ class _NotificacionesPageState extends State<NotificacionesPage> {
   }
 
   Widget _tarjeta(
-      Size sizePantalla, Widget contenido, double ancho, double alto) {
+      Size sizePantalla, Widget contenido, double ancho, double? alto) {
     return Container(
       width: ancho,
       height: alto,

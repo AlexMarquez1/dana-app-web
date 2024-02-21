@@ -8,9 +8,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class DrawerPrincipal extends StatelessWidget {
-  DrawerPrincipal({Key key}) : super(key: key);
+  DrawerPrincipal({Key? key}) : super(key: key);
   final ScrollController scrollController = ScrollController();
-  RegistroProvider _registroProvider;
+  late RegistroProvider _registroProvider;
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +52,7 @@ class DrawerPrincipal extends StatelessWidget {
   List<Widget> _listaOpciones(BuildContext context) {
     List<Widget> lista = [];
 
-    switch (VariablesGlobales.usuario.perfil.perfil) {
+    switch (VariablesGlobales.usuario.perfil!.perfil) {
       case 'Super Admin':
         lista.add(
           _opciones(context, Icons.inventory, 'proyectos'),

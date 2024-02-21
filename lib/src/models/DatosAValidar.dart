@@ -16,11 +16,11 @@ class DatosAValidar {
     this.inventario,
   });
 
-  int iddatoavalidar;
-  String dato;
-  String estatus;
-  String tipodedato;
-  Inventario inventario;
+  int? iddatoavalidar;
+  String? dato;
+  String? estatus;
+  String? tipodedato;
+  Inventario? inventario;
 
   factory DatosAValidar.fromJson(Map<String, dynamic> json) => DatosAValidar(
         iddatoavalidar: json["iddatoavalidar"] ?? 0,
@@ -37,6 +37,6 @@ class DatosAValidar {
         "dato": dato,
         "estatus": estatus,
         "tipodedato": tipodedato,
-        "inventario": inventario.toJson(),
+        "inventario": inventario!.toJson(),
       };
 }

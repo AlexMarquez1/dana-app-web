@@ -21,26 +21,27 @@ class TablaHistorico extends DataTableSource {
   @override
   DataRow getRow(int index) {
     return DataRow(cells: [
-      DataCell(Text(listaCambios.elementAt(index).campo.campo)),
-      DataCell(Text(listaCambios.elementAt(index).usuario.nombre)),
-      DataCell(_valorComoImagen(listaCambios.elementAt(index).valoranterior,
-          listaCambios.elementAt(index).campo.tipocampo)),
-      DataCell(_valorComoImagen(listaCambios.elementAt(index).valornuevo,
-          listaCambios.elementAt(index).campo.tipocampo)),
-      DataCell(Text(listaCambios.elementAt(index).fechacambio)),
-      DataCell(Text(listaCambios.elementAt(index).horacambio)),
-      DataCell(listaCambios.elementAt(index).campo.tipocampo ==
+      DataCell(Text(listaCambios.elementAt(index).campo!.campo!)),
+      DataCell(Text(listaCambios.elementAt(index).usuario!.nombre!)),
+      DataCell(_valorComoImagen(listaCambios.elementAt(index).valoranterior!,
+          listaCambios.elementAt(index).campo!.tipocampo!)),
+      DataCell(_valorComoImagen(listaCambios.elementAt(index).valornuevo!,
+          listaCambios.elementAt(index).campo!.tipocampo!)),
+      DataCell(Text(listaCambios.elementAt(index).fechacambio!)),
+      DataCell(Text(listaCambios.elementAt(index).horacambio!)),
+      DataCell(listaCambios.elementAt(index).campo!.tipocampo ==
               'CHECKBOX-EVIDENCIA'
           ? Container()
           : IconButton(
               onPressed: () async {
                 PantallaDeCarga.loadingI(context, true);
                 String tipoCampo =
-                    listaCambios.elementAt(index).campo.tipocampo;
-                String campoNombre = listaCambios.elementAt(index).campo.campo;
-                String valor = listaCambios.elementAt(index).valoranterior;
+                    listaCambios.elementAt(index).campo!.tipocampo!;
+                String campoNombre =
+                    listaCambios.elementAt(index).campo!.campo!;
+                String valor = listaCambios.elementAt(index).valoranterior!;
                 List<int> ids = registroProvider
-                    .obtenerAgrupacionInd(listaCambios.elementAt(index).campo);
+                    .obtenerAgrupacionInd(listaCambios.elementAt(index).campo!);
                 int indAgrupacion = ids[0];
                 int indCampo = ids[1];
                 if (tipoCampo != 'FIRMA' &&
@@ -65,9 +66,9 @@ class TablaHistorico extends DataTableSource {
                       registroProvider.actualizarCampoCalendario(
                           registroProvider.listaAgrupaciones
                               .elementAt(indAgrupacion)
-                              .campos
+                              .campos!
                               .elementAt(indCampo)
-                              .nombreCampo,
+                              .nombreCampo!,
                           picked);
                       break;
                     default:
@@ -84,25 +85,25 @@ class TablaHistorico extends DataTableSource {
                         registroProvider.firmas[registroProvider
                             .listaAgrupaciones
                             .elementAt(indAgrupacion)
-                            .campos
+                            .campos!
                             .elementAt(indCampo)
-                            .nombreCampo] = await _descargarFirma(valor);
+                            .nombreCampo!] = await _descargarFirma(valor);
                         registroProvider.comprobarFirmasActualizarDato(
-                            listaCambios.elementAt(index).campo.campo, true);
+                            listaCambios.elementAt(index).campo!.campo!, true);
                         break;
                       case 'FOTO':
                         registroProvider.evidencia[registroProvider
                             .listaAgrupaciones
                             .elementAt(indAgrupacion)
-                            .campos
+                            .campos!
                             .elementAt(indCampo)
-                            .nombreCampo] = await _descargarEvidencia(valor);
+                            .nombreCampo!] = await _descargarEvidencia(valor);
                         registroProvider.comprobarFotos[registroProvider
                             .listaAgrupaciones
                             .elementAt(indAgrupacion)
-                            .campos
+                            .campos!
                             .elementAt(indCampo)
-                            .nombreCampo] = true;
+                            .nombreCampo!] = true;
 
                         break;
                       case 'CHECKBOX-EVIDENCIA':

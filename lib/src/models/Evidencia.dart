@@ -13,11 +13,11 @@ class Evidencia {
     this.idInventario,
   });
 
-  int idEvidencia;
-  String nombreEvidencia;
-  List<int> evidencia;
-  int idCampo;
-  int idInventario;
+  int? idEvidencia;
+  String? nombreEvidencia;
+  List<int>? evidencia;
+  int? idCampo;
+  int? idInventario;
 
   factory Evidencia.fromJson(Map<String, dynamic> json) => Evidencia(
         idEvidencia: json["idEvidencia"],
@@ -30,7 +30,7 @@ class Evidencia {
   Map<String, dynamic> toJson() => {
         "idEvidencia": idEvidencia,
         "nombreEvidencia": nombreEvidencia,
-        "evidencia": List<dynamic>.from(evidencia.map((x) => x)),
+        "evidencia": List<dynamic>.from(evidencia!.map((x) => x)),
         "camposProyecto": {'idcamposproyecto': idCampo},
         "inventario": {'idinventario': idInventario},
       };

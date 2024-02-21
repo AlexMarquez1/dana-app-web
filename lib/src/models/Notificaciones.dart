@@ -19,13 +19,13 @@ class Notificaciones {
     this.imagenes,
   });
 
-  int id;
-  String titulo;
-  String contenido;
-  Map<String, String> data;
-  String image;
-  List<Usuario> token;
-  List<FotoEvidencia> imagenes;
+  int? id;
+  String? titulo;
+  String? contenido;
+  Map<String, String>? data;
+  String? image;
+  List<Usuario>? token;
+  List<FotoEvidencia>? imagenes;
 
   factory Notificaciones.fromJson(Map<String, dynamic> js) => Notificaciones(
         id: js["id"],
@@ -43,7 +43,7 @@ class Notificaciones {
         "contenido": contenido,
         "data": json.encode(data),
         "image": image,
-        "token": List<Usuario>.from(token.map((x) => x)),
-        "imagenes": List<FotoEvidencia>.from(imagenes.map((x) => x)),
+        "token": List<Usuario>.from(token!.map((x) => x)),
+        "imagenes": List<FotoEvidencia>.from(imagenes!.map((x) => x)),
       };
 }

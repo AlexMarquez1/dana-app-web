@@ -16,11 +16,11 @@ class Pendiente {
     this.agrupacion,
   });
 
-  int idpendiente;
-  Inventario inventario;
-  String motivo;
-  String descripcion;
-  String agrupacion;
+  int? idpendiente;
+  Inventario? inventario;
+  String? motivo;
+  String? descripcion;
+  String? agrupacion;
 
   factory Pendiente.fromJson(Map<String, dynamic> json) => Pendiente(
         idpendiente: json["idpendiente"],
@@ -32,7 +32,7 @@ class Pendiente {
 
   Map<String, dynamic> toJson() => {
         "idpendiente": idpendiente,
-        "inventario": inventario.toJson(),
+        "inventario": inventario!.toJson(),
         "motivo": motivo,
         "descripcion": descripcion,
         "agrupacion": agrupacion,

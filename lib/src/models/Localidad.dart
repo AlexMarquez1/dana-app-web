@@ -7,13 +7,13 @@ Localidad localidadFromJson(String str) => Localidad.fromJson(json.decode(str));
 String localidadToJson(Localidad data) => json.encode(data.toJson());
 
 class Localidad {
-  int idlocalidad;
-  String nombre;
-  String ubicacion;
-  String encargado;
-  String telefonocontacto;
-  String correocontacto;
-  ClienteAplicacion clienteAplicacion;
+  int? idlocalidad;
+  String? nombre;
+  String? ubicacion;
+  String? encargado;
+  String? telefonocontacto;
+  String? correocontacto;
+  ClienteAplicacion? clienteAplicacion;
 
   Localidad({
     this.idlocalidad,
@@ -44,6 +44,6 @@ class Localidad {
         "encargado": encargado,
         "telefonocontacto": telefonocontacto,
         "correocontacto": correocontacto,
-        "clienteAplicacion": clienteAplicacion.toJson(),
+        "clienteAplicacion": clienteAplicacion!.toJson(),
       };
 }

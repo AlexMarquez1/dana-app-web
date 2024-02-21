@@ -6,10 +6,10 @@ ClienteAplicacion clienteFromJson(String str) =>
 String clienteToJson(ClienteAplicacion data) => json.encode(data.toJson());
 
 class ClienteAplicacion {
-  int idcliente;
-  String cliente;
-  String urllogo;
-  String estatus;
+  int? idcliente;
+  String? cliente;
+  String? urllogo;
+  String? estatus;
 
   ClienteAplicacion({
     this.idcliente,

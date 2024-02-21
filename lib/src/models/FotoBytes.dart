@@ -15,13 +15,13 @@ class FotoBytes {
     this.coordenadas,
   });
 
-  int idfoto;
-  String nombrefoto;
-  List<int> bytes;
+  int? idfoto;
+  String? nombrefoto;
+  List<int>? bytes;
   // Usuario usuario;
-  Inventario inventario;
-  int idCampoProyecto;
-  String coordenadas;
+  Inventario? inventario;
+  int? idCampoProyecto;
+  String? coordenadas;
 
   factory FotoBytes.fromJson(Map<String, dynamic> json) => FotoBytes(
         idfoto: json["idEvidencia"],
@@ -38,7 +38,7 @@ class FotoBytes {
         "nombreEvidencia": nombrefoto,
         "evidencia": bytes,
         // "usuario": usuario.toJson(),
-        "inventario": inventario.toJson(),
+        "inventario": inventario!.toJson(),
         "camposProyecto": {'idcamposproyecto': idCampoProyecto},
         "coordenadas": coordenadas,
       };

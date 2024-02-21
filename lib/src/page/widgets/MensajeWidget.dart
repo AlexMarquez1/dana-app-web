@@ -4,20 +4,20 @@ import 'package:flutter/material.dart';
 class MensajeWidget extends StatelessWidget {
   Function(AnimationController) entrada;
   Function(AnimationController) salida;
-  Function fnSalida;
+  Function() fnSalida;
   String titulo;
   String contenido;
   Color color;
   IconData icono;
   MensajeWidget({
-    Key key,
-    @required this.entrada,
-    @required this.salida,
-    @required this.fnSalida,
-    @required this.titulo,
-    @required this.contenido,
-    @required this.color,
-    @required this.icono,
+    Key? key,
+    required this.entrada,
+    required this.salida,
+    required this.fnSalida,
+    required this.titulo,
+    required this.contenido,
+    required this.color,
+    required this.icono,
   }) : super(key: key);
 
   @override
@@ -40,7 +40,7 @@ class MensajeWidget extends StatelessWidget {
       child: Stack(children: [
         Card(
           shape:
-              Border(bottom: BorderSide(color: Colors.grey[300], width: 10.0)),
+              Border(bottom: BorderSide(color: Colors.grey[300]!, width: 10.0)),
           elevation: 10.0,
           color: color,
           child: Padding(

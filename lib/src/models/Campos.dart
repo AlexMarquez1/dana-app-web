@@ -26,22 +26,22 @@ class Campos {
     this.controladorRestriccion,
   });
 
-  int idCampo;
-  String agrupacion;
-  String nombreCampo;
-  String validarDuplicidad;
-  String tipoCampo;
-  String restriccion;
-  String editable;
-  String alerta;
-  int longitud;
-  String valor;
-  String pordefecto;
-  String valorTipoCampo;
-  TextEditingController controladorNombreCampo;
-  TextEditingController controladorRestriccion;
-  TextEditingController controladorLongitud;
-  TextEditingController valorController;
+  int? idCampo;
+  String? agrupacion;
+  String? nombreCampo;
+  String? validarDuplicidad;
+  String? tipoCampo;
+  String? restriccion;
+  String? editable;
+  String? alerta;
+  int? longitud;
+  String? valor;
+  String? pordefecto;
+  String? valorTipoCampo;
+  TextEditingController? controladorNombreCampo;
+  TextEditingController? controladorRestriccion;
+  TextEditingController? controladorLongitud;
+  TextEditingController? valorController;
 
   factory Campos.fromJson(Map<String, dynamic> json) {
     TextEditingController controller = TextEditingController();
@@ -73,6 +73,6 @@ class Campos {
         "restriccion": restriccion,
         "alerta": alerta,
         "longitud": longitud,
-        "valor": valorController.text,
+        "valor": valorController!.text,
       };
 }

@@ -12,7 +12,6 @@ import 'package:app_isae_desarrollo/src/models/Estatus.dart';
 import 'package:app_isae_desarrollo/src/models/Evidencia.dart';
 import 'package:app_isae_desarrollo/src/models/Firma.dart';
 import 'package:app_isae_desarrollo/src/models/FirmaDocumento.dart';
-import 'package:app_isae_desarrollo/src/models/FotoBytes.dart';
 import 'package:app_isae_desarrollo/src/models/FotoEvidencia.dart';
 import 'package:app_isae_desarrollo/src/models/HistorialCambios.dart';
 import 'package:app_isae_desarrollo/src/models/Inventario.dart';
@@ -32,7 +31,7 @@ Future<String> crearProyecto(String api, List<Agrupaciones> lista,
     String nombreProyecto, String tipoProyecto) async {
   String respuesta = 'Error';
 
-  String url = api + '/crear/proyecto/$nombreProyecto/$tipoProyecto';
+  Uri url = Uri.parse(api + '/crear/proyecto/$nombreProyecto/$tipoProyecto');
   var body = json.encode(lista);
 
   var response = await http.post(url,
@@ -53,7 +52,7 @@ Future<String> crearProyecto(String api, List<Agrupaciones> lista,
 
 Future<List<Usuario>> obtenerUsuariosConToken(String api) async {
   List<Usuario> usuario = [];
-  String url = api + '/obtener/usuarios/token';
+  Uri url = Uri.parse(api + '/obtener/usuarios/token');
   var response = await http.get(
     url,
     headers: {"Content-Type": "application/json"},
@@ -74,11 +73,10 @@ Future<List<Usuario>> obtenerUsuariosConToken(String api) async {
 Future<List<String>> actualizarFolioRegsitro(
     String api, Inventario registro) async {
   List<String> lista = [];
-  String url = api + '/actualizar/folio/registro';
+  Uri url = Uri.parse(api + '/actualizar/folio/registro');
 
   var body = json.encode(registro.toJson());
-  var uri = Uri.parse(url);
-  var response = await http.post(uri,
+  var response = await http.post(url,
       headers: {"Content-Type": "application/json"}, body: body);
   print('Respuesta: ${response.statusCode}');
   if (response.statusCode < 200 || response.statusCode >= 400 || json == null) {
@@ -95,7 +93,7 @@ Future<List<String>> actualizarFolioRegsitro(
 Future<String> eliminarProyecto(String api, Proyecto proyecto) async {
   String respuesta = 'Error';
 
-  String url = api + '/eliminar/proyectos';
+  Uri url = Uri.parse(api + '/eliminar/proyectos');
 
   var body = json.encode(proyecto.toJson());
 
@@ -116,10 +114,10 @@ Future<String> eliminarProyecto(String api, Proyecto proyecto) async {
 Future<String> comprobarValoresDuplicado(
     String api, List<Campos> valores, int idProyecto, int idInventario) async {
   String datos = '';
-  String url = api + '/validar/valores/duplicados/$idProyecto/$idInventario';
+  Uri url =
+      Uri.parse(api + '/validar/valores/duplicados/$idProyecto/$idInventario');
   var body = json.encode({'campos': valores}['campos']);
-  var uri = Uri.parse(url);
-  var response = await http.post(uri,
+  var response = await http.post(url,
       headers: {"Content-Type": "application/json"}, body: body);
 
   if (response.statusCode < 200 || response.statusCode > 400 || json == null) {
@@ -133,7 +131,7 @@ Future<String> comprobarValoresDuplicado(
 
 Future<String> crearUsuario(String api, Usuario usuario) async {
   String respuesta = 'Error';
-  String url = api + '/crear/usuario';
+  Uri url = Uri.parse(api + '/crear/usuario');
   var body = json.encode(usuario.toJson());
 
   var response = await http.post(url,
@@ -153,7 +151,7 @@ Future<String> crearUsuario(String api, Usuario usuario) async {
 
 Future<String> editarUsuario(String api, Usuario usuario) async {
   String respuesta = 'Error';
-  String url = api + '/editar/usuario';
+  Uri url = Uri.parse(api + '/editar/usuario');
   var body = json.encode(usuario.toJson());
 
   var response = await http.post(url,
@@ -173,7 +171,7 @@ Future<String> editarUsuario(String api, Usuario usuario) async {
 
 Future<String> editarPassword(String api, Usuario usuario) async {
   String respuesta = 'Error';
-  String url = api + '/editar/password';
+  Uri url = Uri.parse(api + '/editar/password');
   var body = json.encode(usuario.toJson());
 
   var response = await http.post(url,
@@ -193,7 +191,7 @@ Future<String> editarPassword(String api, Usuario usuario) async {
 
 Future<String> eliminarUsuario(String api, Usuario usuario) async {
   String respuesta = 'Error';
-  String url = api + '/eliminar/usuario';
+  Uri url = Uri.parse(api + '/eliminar/usuario');
   var body = json.encode(usuario.toJson());
 
   var response = await http.post(url,
@@ -213,7 +211,7 @@ Future<String> eliminarUsuario(String api, Usuario usuario) async {
 
 Future<List<String>> obtenerTipoProyectos(String api) async {
   List<String> lista = [];
-  String url = api + '/obtener/tipoproyecto';
+  Uri url = Uri.parse(api + '/obtener/tipoproyecto');
 
   var response =
       await http.get(url, headers: {"Content-Type": "application/json"});
@@ -232,7 +230,7 @@ Future<List<String>> obtenerTipoProyectos(String api) async {
 
 Future<List<Proyecto>> obtenerProyectos(String api) async {
   List<Proyecto> lista = [];
-  String url = api + '/obtener/proyectos';
+  Uri url = Uri.parse(api + '/obtener/proyectos');
 
   var response =
       await http.get(url, headers: {"Content-Type": "application/json"});
@@ -256,7 +254,8 @@ Future<List<Proyecto>> obtenerProyectos(String api) async {
 Future<List<Proyecto>> obtenerProyectosAsignados(
     String api, Usuario usuario) async {
   List<Proyecto> lista = [];
-  String url = api + '/obtener/proyectos/asignados/${usuario.idUsuario}';
+  Uri url =
+      Uri.parse(api + '/obtener/proyectos/asignados/${usuario.idUsuario}');
 
   var response =
       await http.get(url, headers: {"Content-Type": "application/json"});
@@ -280,7 +279,7 @@ Future<List<Proyecto>> obtenerProyectosAsignados(
 
 Future<List<Inventario>> obtenerRegistros(String api, int idProyecto) async {
   List<Inventario> lista = [];
-  String url = api + '/obtener/registros/$idProyecto';
+  Uri url = Uri.parse(api + '/obtener/registros/$idProyecto');
 
   var response =
       await http.get(url, headers: {"Content-Type": "application/json"});
@@ -300,7 +299,8 @@ Future<List<Inventario>> obtenerRegistros(String api, int idProyecto) async {
 Future<List<Inventario>> obtenerRegistrosBusqueda(
     String api, int idProyecto, String busqueda) async {
   List<Inventario> lista = [];
-  String url = api + '/obtener/registros/busqueda/$idProyecto/$busqueda';
+  Uri url =
+      Uri.parse(api + '/obtener/registros/busqueda/$idProyecto/$busqueda');
 
   var response =
       await http.get(url, headers: {"Content-Type": "application/json"});
@@ -320,8 +320,8 @@ Future<List<Inventario>> obtenerRegistrosBusqueda(
 Future<List<Inventario>> obtenerRegistrosUsuarioProyecto(
     String api, Usuario usuario, Proyecto proyecto) async {
   List<Inventario> lista = [];
-  String url = api +
-      '/obtener/registros/asignados/usuario/proyecto/${usuario.idUsuario}/${proyecto.idproyecto}';
+  Uri url = Uri.parse(api +
+      '/obtener/registros/asignados/usuario/proyecto/${usuario.idUsuario}/${proyecto.idproyecto}');
 
   var response =
       await http.get(url, headers: {"Content-Type": "application/json"});
@@ -341,7 +341,7 @@ Future<List<Inventario>> obtenerRegistrosUsuarioProyecto(
 Future<List<Inventario>> getRegistrosPorProyecto(
     String api, Proyecto proyecto) async {
   List<Inventario> lista = [];
-  String url = api + '/obtener/registros/proyecto';
+  Uri url = Uri.parse(api + '/obtener/registros/proyecto');
 
   var response = await http.post(url,
       headers: {"Content-Type": "application/json"},
@@ -362,7 +362,7 @@ Future<List<Inventario>> getRegistrosPorProyecto(
 Future<List<String>> obtenerRegistrosAsignados(
     String api, int idusuario) async {
   List<String> lista = [];
-  String url = api + '/obtener/registros/asignados/$idusuario';
+  Uri url = Uri.parse(api + '/obtener/registros/asignados/$idusuario');
   var response =
       await http.get(url, headers: {"Content-Type": "application/json"});
   print('Respuesta: ${response.statusCode}');
@@ -380,7 +380,7 @@ Future<List<String>> obtenerRegistrosAsignados(
 Future<List<String>> asignarProyecto(
     String api, int idUsuario, int idProyecto) async {
   List<String> lista = [];
-  String url = api + '/asignar/proyecto/$idUsuario/$idProyecto';
+  Uri url = Uri.parse(api + '/asignar/proyecto/$idUsuario/$idProyecto');
   var response =
       await http.get(url, headers: {"Content-Type": "application/json"});
   print('Respuesta: ${response.statusCode}');
@@ -398,7 +398,7 @@ Future<List<String>> asignarProyecto(
 Future<Map<String, List<String>>> obtenerDuplicadosPorProyecto(
     String api, int idProyecto) async {
   Map<String, List<String>> respuesta = {};
-  String url = api + '/obtener/duplicados/proyecto/$idProyecto';
+  Uri url = Uri.parse(api + '/obtener/duplicados/proyecto/$idProyecto');
   var response =
       await http.get(url, headers: {"Content-Type": "application/json"});
   print('Respuesta: ${response.statusCode}');
@@ -422,7 +422,7 @@ Future<List<String>> asignarRegistro(
   List<String> lista = [];
   Map datos = {'idRegistros': idRegistros};
   var body = json.encode(datos['idRegistros']);
-  String url = api + '/asignar/registro/$idUsuario';
+  Uri url = Uri.parse(api + '/asignar/registro/$idUsuario');
   var response = await http.post(url,
       headers: {"Content-Type": "application/json"}, body: body);
   print('Respuesta: ${response.statusCode}');
@@ -442,7 +442,7 @@ Future<List<int>> generarDocumentoRegistros(
   List<int> lista = [];
   Map datos = {'listaRegistro': listaRegistro};
   var body = json.encode(datos['listaRegistro']);
-  String url = api + '/generar/documento/registros';
+  Uri url = Uri.parse(api + '/generar/documento/registros');
   var response = await http.post(url,
       headers: {"Content-Type": "application/json"}, body: body);
   print('Respuesta: ${response.statusCode}');
@@ -462,7 +462,7 @@ Future<List<int>> generarDocumentoRegistrosProyecto(
   List<int> lista = [];
   Map datos = {'listaRegistro': listaRegistro};
   var body = json.encode(datos['listaRegistro']);
-  String url = api + '/generar/documento/registros/$idProyecto';
+  Uri url = Uri.parse(api + '/generar/documento/registros/$idProyecto');
   var response = await http.post(url,
       headers: {"Content-Type": "application/json"}, body: body);
   print('Respuesta: ${response.statusCode}');
@@ -479,7 +479,7 @@ Future<List<int>> generarDocumentoRegistrosProyecto(
 
 Future<List<String>> obtenerEstados(String api) async {
   List<String> lista = [];
-  String url = api + '/obtener/estados';
+  Uri url = Uri.parse(api + '/obtener/estados');
   var response =
       await http.get(url, headers: {"Content-Type": "application/json"});
   print('Respuesta: ${response.statusCode}');
@@ -496,7 +496,7 @@ Future<List<String>> obtenerEstados(String api) async {
 
 Future<List<Perfil>> obtenerPerfiles(String api) async {
   List<Perfil> lista = [];
-  String url = api + '/obtener/perfiles';
+  Uri url = Uri.parse(api + '/obtener/perfiles');
   var response =
       await http.get(url, headers: {"Content-Type": "application/json"});
   print('Respuesta: ${response.statusCode}');
@@ -515,7 +515,7 @@ Future<List<Perfil>> obtenerPerfiles(String api) async {
 
 Future<List<Usuario>> obtenerUsuarios(String api) async {
   List<Usuario> lista = [];
-  String url = api + '/obtener/usuarios';
+  Uri url = Uri.parse(api + '/obtener/usuarios');
   var response =
       await http.get(url, headers: {"Content-Type": "application/json"});
   print('Respuesta: ${response.statusCode}');
@@ -534,7 +534,7 @@ Future<List<Usuario>> obtenerUsuarios(String api) async {
 Future<List<Usuario>> obtenerUsuario(String api, Usuario usuario) async {
   List<Usuario> lista = [];
   //https://www.danae.com.mx:8443/web-0.0.1-SNAPSHOT/obtener/usuario
-  String url = api + '/obtener/usuario';
+  Uri url = Uri.parse(api + '/obtener/usuario');
   var body = json.encode(usuario.toJson());
 
   var response = await http.post(url,
@@ -553,12 +553,11 @@ Future<List<Usuario>> obtenerUsuario(String api, Usuario usuario) async {
 
 Future<String> obtenerUrlDocumento(String api, int idInventario) async {
   String respuesta;
-  String url = api + '/obtener/documento/inventario/$idInventario';
-  var uri = Uri.parse(url);
-  var response = await http.get(uri);
+  Uri url = Uri.parse(api + '/obtener/documento/inventario/$idInventario');
+  var response = await http.get(url);
   if (response.statusCode < 200 || response.statusCode > 400 || json == null) {
     print('Error al obtener la informacion');
-    final error = response.statusCode;
+    respuesta = response.statusCode.toString();
   } else {
     respuesta = response.body;
   }
@@ -567,7 +566,7 @@ Future<String> obtenerUrlDocumento(String api, int idInventario) async {
 
 Future<List<String>> asignarPass(String api, Usuario usuario) async {
   List<String> lista = [];
-  String url = api + '/editar/password';
+  Uri url = Uri.parse(api + '/editar/password');
   var body = json.encode(usuario.toJson());
 
   var response = await http.post(url,
@@ -587,7 +586,7 @@ Future<List<String>> asignarPass(String api, Usuario usuario) async {
 Future<List<String>> obtenerCatalogoCamposProyecto(
     String api, Proyecto proyecto) async {
   List<String> lista = [];
-  String url = api + '/obtener/catalogo/campos/proyecto';
+  Uri url = Uri.parse(api + '/obtener/catalogo/campos/proyecto');
   var body = json.encode(proyecto.toJson());
 
   var response = await http.post(url,
@@ -607,7 +606,7 @@ Future<List<String>> obtenerCatalogoCamposProyecto(
 Future<Catalogo> obtenerDatosCatalogoCamposProyecto(
     String api, Proyecto proyecto, String tipoCatalogo) async {
   Catalogo catalogo = Catalogo();
-  String url = api + '/obtener/catalogo/datos/proyecto/$tipoCatalogo';
+  Uri url = Uri.parse(api + '/obtener/catalogo/datos/proyecto/$tipoCatalogo');
   var body = json.encode(proyecto.toJson());
 
   var response = await http.post(url,
@@ -616,7 +615,8 @@ Future<Catalogo> obtenerDatosCatalogoCamposProyecto(
   if (response.statusCode < 200 || response.statusCode > 400 || json == null) {
     print('Error en la consulta');
   } else {
-    var jsonList = json.decode(utf8.decode(response.bodyBytes)) as Map;
+    var jsonList =
+        json.decode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>;
     if (jsonList['tipoCatalogo'] != null) {
       catalogo = Catalogo.fromJson(jsonList);
     }
@@ -627,8 +627,8 @@ Future<Catalogo> obtenerDatosCatalogoCamposProyecto(
 Future<Catalogo> obtenerDatosCatalogoCamposProyectoUsuario(
     String api, Proyecto proyecto, String tipoCatalogo, int idUsuario) async {
   Catalogo catalogo = Catalogo();
-  String url =
-      api + '/obtener/catalogo/datos/proyecto/$tipoCatalogo/$idUsuario';
+  Uri url = Uri.parse(
+      api + '/obtener/catalogo/datos/proyecto/$tipoCatalogo/$idUsuario');
   var body = json.encode(proyecto.toJson());
 
   var response = await http.post(url,
@@ -637,7 +637,8 @@ Future<Catalogo> obtenerDatosCatalogoCamposProyectoUsuario(
   if (response.statusCode < 200 || response.statusCode > 400 || json == null) {
     print('Error en la consulta');
   } else {
-    var jsonList = json.decode(utf8.decode(response.bodyBytes)) as Map;
+    var jsonList =
+        json.decode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>;
     if (jsonList['tipoCatalogo'] != null) {
       catalogo = Catalogo.fromJson(jsonList);
     }
@@ -648,12 +649,12 @@ Future<Catalogo> obtenerDatosCatalogoCamposProyectoUsuario(
 Future<String> nuevoCatalogoUsuario(String api, String tipoCatalogo,
     int idProyecto, int idUsuario, String catalogo) async {
   String datos = '';
-  String url = api +
-      '/nuevo/catalogos/usuario/$tipoCatalogo/$idProyecto/$idUsuario/$catalogo';
-  var uri = Uri.parse(url);
+  Uri url = Uri.parse(api +
+      '/nuevo/catalogos/usuario/$tipoCatalogo/$idProyecto/$idUsuario/$catalogo');
+
   try {
     var response = await http.get(
-      uri,
+      url,
       headers: {"Content-Type": "application/json"},
     );
 
@@ -675,12 +676,12 @@ Future<String> nuevoCatalogoUsuario(String api, String tipoCatalogo,
 Future<String> nuevoCatalogoAutoCompleteUsuario(String api, String tipoCatalogo,
     int idProyecto, int idUsuario, String catalogo) async {
   String datos = '';
-  String url =
-      api + '/nuevo/catalogos/usuario/$tipoCatalogo/$idProyecto/$idUsuario';
-  var uri = Uri.parse(url);
+  Uri url = Uri.parse(
+      api + '/nuevo/catalogos/usuario/$tipoCatalogo/$idProyecto/$idUsuario');
+
   var body = json.encode({'catalogo': catalogo});
   try {
-    var response = await http.post(uri,
+    var response = await http.post(url,
         headers: {"Content-Type": "application/json"}, body: body);
 
     if (response.statusCode < 200 ||
@@ -702,11 +703,11 @@ Future<String> nuevoCatalogoAutoCompleteUsuario(String api, String tipoCatalogo,
 Future<List<FotoEvidencia>> obtenerFotosProyecto(
     String api, int idProyecto, int idInventario) async {
   List<FotoEvidencia> lista = [];
-  String url = api + '/obtener/fotos/proyecto/$idProyecto/$idInventario';
+  Uri url =
+      Uri.parse(api + '/obtener/fotos/proyecto/$idProyecto/$idInventario');
 
-  var uri = Uri.parse(url);
   var response =
-      await http.get(uri, headers: {"Content-Type": "application/json"});
+      await http.get(url, headers: {"Content-Type": "application/json"});
   print('Respuesta: ${response.statusCode}');
   if (response.statusCode < 200 || response.statusCode > 400 || json == null) {
     print('Error en la consulta');
@@ -722,11 +723,10 @@ Future<List<FotoEvidencia>> obtenerFotosProyecto(
 Future<List<HistorialCambios>> obtenerHistorialPorInventario(
     String api, Inventario inventario) async {
   List<HistorialCambios> lista = [];
-  String url = api + '/obtener/historial/registro';
+  Uri url = Uri.parse(api + '/obtener/historial/registro');
 
   var body = json.encode(inventario.toJson());
-  var uri = Uri.parse(url);
-  var response = await http.post(uri,
+  var response = await http.post(url,
       headers: {"Content-Type": "application/json"}, body: body);
   print('Respuesta: ${response.statusCode}');
   if (response.statusCode < 200 || response.statusCode > 400 || json == null) {
@@ -743,12 +743,10 @@ Future<List<HistorialCambios>> obtenerHistorialPorInventario(
 Future<List<FotoEvidencia>> obtenerEvidencias(
     String api, List<int> listaInventarios) async {
   List<FotoEvidencia> lista = [];
-  String url = api + '/obtener/evidencias/inventarios';
+  Uri url = Uri.parse(api + '/obtener/evidencias/inventarios');
   var datos = {'listaInventarios': listaInventarios};
   var body = json.encode(datos['listaInventarios']);
-
-  var uri = Uri.parse(url);
-  var response = await http.post(uri,
+  var response = await http.post(url,
       headers: {"Content-Type": "application/json"}, body: body);
   print('Respuesta: ${response.statusCode}');
   if (response.statusCode < 200 || response.statusCode > 400 || json == null) {
@@ -765,11 +763,10 @@ Future<List<FotoEvidencia>> obtenerEvidencias(
 Future<List<FirmaDocumento>> obtenerFirmaProyecto(
     String api, int idProyecto, int idInventario) async {
   List<FirmaDocumento> lista = [];
-  String url = api + '/obtener/firmas/proyecto/$idProyecto/$idInventario';
-
-  var uri = Uri.parse(url);
+  Uri url =
+      Uri.parse(api + '/obtener/firmas/proyecto/$idProyecto/$idInventario');
   var response =
-      await http.get(uri, headers: {"Content-Type": "application/json"});
+      await http.get(url, headers: {"Content-Type": "application/json"});
   print('Respuesta: ${response.statusCode}');
   if (response.statusCode < 200 || response.statusCode > 400 || json == null) {
     print('Error en la consulta');
@@ -782,11 +779,11 @@ Future<List<FirmaDocumento>> obtenerFirmaProyecto(
   return lista;
 }
 
-Future<Catalogo> obtenerDatosCatalogoCamposProyectoRelacionado(String api,
+Future<Catalogo?> obtenerDatosCatalogoCamposProyectoRelacionado(String api,
     Proyecto proyecto, String tipoCatalogo, String catalogoSeleccionado) async {
-  Catalogo catalogo;
-  String url = api +
-      '/obtener/catalogo/datos/proyecto/relacionado/$tipoCatalogo/$catalogoSeleccionado';
+  Catalogo? catalogo;
+  Uri url = Uri.parse(api +
+      '/obtener/catalogo/datos/proyecto/relacionado/$tipoCatalogo/$catalogoSeleccionado');
   var body = json.encode(proyecto.toJson());
   print(body);
   var response = await http.post(url,
@@ -795,17 +792,18 @@ Future<Catalogo> obtenerDatosCatalogoCamposProyectoRelacionado(String api,
   if (response.statusCode < 200 || response.statusCode > 400 || json == null) {
     print('Error en la consulta');
   } else {
-    var jsonList = json.decode(utf8.decode(response.bodyBytes)) as Map;
+    var jsonList =
+        json.decode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>;
     catalogo = Catalogo.fromJson(jsonList);
   }
   return catalogo;
 }
 
-Future<List<CatalogoRelacionado>> obtenerCatalogosRelacionadoProyecto(
+Future<List<CatalogoRelacionado>?> obtenerCatalogosRelacionadoProyecto(
     String api, Proyecto proyecto) async {
-  List<CatalogoRelacionado> catalogo;
-  String url = api +
-      '/obtener/catalogo/datos/proyecto/relacionado/${proyecto.idproyecto}';
+  List<CatalogoRelacionado>? catalogo;
+  Uri url = Uri.parse(api +
+      '/obtener/catalogo/datos/proyecto/relacionado/${proyecto.idproyecto}');
 
   var response =
       await http.get(url, headers: {"Content-Type": "application/json"});
@@ -822,7 +820,8 @@ Future<List<CatalogoRelacionado>> obtenerCatalogosRelacionadoProyecto(
 Future<List<String>> eliminarCatalogos(
     String api, Proyecto proyecto, String tipoCatalogo) async {
   List<String> lista = [];
-  String url = api + '/eliminar/catalogos/$tipoCatalogo/${proyecto.idproyecto}';
+  Uri url = Uri.parse(
+      api + '/eliminar/catalogos/$tipoCatalogo/${proyecto.idproyecto}');
   var response =
       await http.get(url, headers: {"Content-Type": "application/json"});
   print('Respuesta: ${response.statusCode}');
@@ -840,8 +839,8 @@ Future<List<String>> eliminarCatalogos(
 Future<List<String>> eliminarAsignacionProyecto(
     String api, Proyecto proyecto, Usuario usuario) async {
   List<String> lista = [];
-  String url = api +
-      '/eliminar/asignacion/proyecto/${usuario.idUsuario}/${proyecto.idproyecto}';
+  Uri url = Uri.parse(api +
+      '/eliminar/asignacion/proyecto/${usuario.idUsuario}/${proyecto.idproyecto}');
   var response =
       await http.get(url, headers: {"Content-Type": "application/json"});
   print('Respuesta: ${response.statusCode}');
@@ -859,10 +858,9 @@ Future<List<String>> eliminarAsignacionProyecto(
 Future<List<FirmaDocumento>> obtenerFirmasPorProyecto(
     String api, Proyecto proyecto, Inventario inventario) async {
   List<FirmaDocumento> datos = [];
-  String url = api +
-      '/obtener/campos/firma/proyecto/${proyecto.idproyecto}/${inventario.idinventario}';
-  var uri = Uri.parse(url);
-  var response = await http.get(uri);
+  Uri url = Uri.parse(api +
+      '/obtener/campos/firma/proyecto/${proyecto.idproyecto}/${inventario.idinventario}');
+  var response = await http.get(url);
   if (response.statusCode < 200 || response.statusCode > 400 || json == null) {
     print('Error al obtener la informacion');
     final error = response.statusCode;
@@ -897,13 +895,13 @@ Future<List<Inventario>> registrarAsignarRegistro(
   return lista;
 }
 
-Future<String> actualizarDashboard(
+Future<String?> actualizarDashboard(
     String api, String proyecto, String datoAnterior, String datoNuevo) async {
-  String dato;
-  String url = api + '/actualizar/dashboard/$proyecto/$datoAnterior/$datoNuevo';
-  var uri = Uri.parse(url);
+  String? dato;
+  Uri url = Uri.parse(
+      api + '/actualizar/dashboard/$proyecto/$datoAnterior/$datoNuevo');
   var response =
-      await http.get(uri, headers: {"Content-Type": "application/json"});
+      await http.get(url, headers: {"Content-Type": "application/json"});
   print('Respuesta: ${response.statusCode}');
   if (response.statusCode < 200 || response.statusCode > 400 || json == null) {
     print('Error en la consulta');
@@ -973,7 +971,8 @@ Future<List<FotoEvidencia>> obtenerFotosPorProyecto(
 Future<List<String>> eliminarAsignacionRegistro(
     String api, int idUsuario, int idRegistro) async {
   List<String> lista = [];
-  String url = api + '/eliminar/asignacion/registro/$idUsuario/$idRegistro';
+  Uri url =
+      Uri.parse(api + '/eliminar/asignacion/registro/$idUsuario/$idRegistro');
   var response =
       await http.get(url, headers: {"Content-Type": "application/json"});
   print('Respuesta: ${response.statusCode}');
@@ -992,7 +991,8 @@ Future<List<String>> crearCatalogo(String api, Proyecto proyecto,
     List<String> catalogo, String tipoCatalogo) async {
   List<String> lista = [];
   print('Tipo Catalogo: ' + tipoCatalogo);
-  String url = api + '/crear/catalogo/${proyecto.idproyecto}/$tipoCatalogo';
+  Uri url =
+      Uri.parse(api + '/crear/catalogo/${proyecto.idproyecto}/$tipoCatalogo');
   var body = json.encode(catalogo);
   var response = await http.post(url,
       headers: {"Content-Type": "application/json"}, body: body);
@@ -1011,7 +1011,7 @@ Future<List<String>> crearCatalogo(String api, Proyecto proyecto,
 Future<List<String>> crearCatalogoRelacionado(
     String api, CatalogoRelacionado catalogo, int idProyecto) async {
   List<String> lista = [];
-  String url = api + '/crear/catalogo/relacionado/$idProyecto';
+  Uri url = Uri.parse(api + '/crear/catalogo/relacionado/$idProyecto');
   var body = json.encode(catalogo.toJson());
 
   var response = await http.post(url,
@@ -1031,7 +1031,7 @@ Future<List<String>> crearCatalogoRelacionado(
 Future<List<Inventario>> obtenerValoresCampos(String api, int idProyecto,
     String campo, String busqueda, int idusuario) async {
   List<Inventario> lista = [];
-  String url = api + '/obtener/valores/campos/busqueda';
+  Uri url = Uri.parse(api + '/obtener/valores/campos/busqueda');
   Map<String, String> datos = {
     'campo': campo,
     'busqueda': busqueda,
@@ -1061,7 +1061,7 @@ Future<List<Inventario>> obtenerValoresCamposUsuarios(
     String busqueda,
     List<Usuario> usuarios) async {
   List<Inventario> lista = [];
-  String url = api + '/obtener/valores/campos/busqueda';
+  Uri url = Uri.parse(api + '/obtener/valores/campos/busqueda');
   Map<String, dynamic> datos = {
     'campo': campo,
     'busqueda': busqueda,
@@ -1087,7 +1087,7 @@ Future<List<Inventario>> obtenerValoresCamposUsuarios(
 Future<List<String>> obtenerValoresBusqueda(
     String api, int idProyecto, int idUsuario, String tipoBusqueda) async {
   List<String> lista = [];
-  String url = api + '/obtener/valores/busqueda/$idProyecto/$idUsuario';
+  Uri url = Uri.parse(api + '/obtener/valores/busqueda/$idProyecto/$idUsuario');
   // Map<String, String> datos = {
   //   'tipoBusqueda': tipoBusqueda,
   // };
@@ -1110,7 +1110,7 @@ Future<List<String>> obtenerValoresBusqueda(
 Future<List<String>> registrarInventario(
     String api, String folio, int idProyecto) async {
   List<String> lista = [];
-  String url = api + '/registrar/inventario/$folio/$idProyecto';
+  Uri url = Uri.parse(api + '/registrar/inventario/$folio/$idProyecto');
 
   var response =
       await http.get(url, headers: {"Content-Type": "application/json"});
@@ -1129,7 +1129,8 @@ Future<List<String>> registrarInventario(
 Future<List<EdicionAsignada>> obtenerCamposEdicion(
     String api, int idusuario, int idinventario) async {
   List<EdicionAsignada> lista = [];
-  String url = api + '/obtener/ediciones/usuario/$idusuario/$idinventario';
+  Uri url =
+      Uri.parse(api + '/obtener/ediciones/usuario/$idusuario/$idinventario');
 
   var response =
       await http.get(url, headers: {"Content-Type": "application/json"});
@@ -1147,7 +1148,7 @@ Future<List<EdicionAsignada>> obtenerCamposEdicion(
 
 Future<List<DatosAValidar>> obtenerDatosAValidarPendientes(String api) async {
   List<DatosAValidar> lista = [];
-  String url = api + '/obtener/datosvalidar/pendiente';
+  Uri url = Uri.parse(api + '/obtener/datosvalidar/pendiente');
 
   var response =
       await http.get(url, headers: {"Content-Type": "application/json"});
@@ -1166,7 +1167,7 @@ Future<List<DatosAValidar>> obtenerDatosAValidarPendientes(String api) async {
 Future<List<Map<String, dynamic>>> obtenerTotalRegistrosPorProyecto(
     String api) async {
   List<Map<String, dynamic>> lista = [];
-  String url = api + '/obtener/total/registros/proyectos';
+  Uri url = Uri.parse(api + '/obtener/total/registros/proyectos');
 
   var response =
       await http.get(url, headers: {"Content-Type": "application/json"});
@@ -1184,7 +1185,7 @@ Future<List<Map<String, dynamic>>> obtenerTotalRegistrosPorProyecto(
 
 Future<List<DatosAValidar>> obtenerDatosAValidarAsignados(String api) async {
   List<DatosAValidar> lista = [];
-  String url = api + '/obtener/match/datos/issste';
+  Uri url = Uri.parse(api + '/obtener/match/datos/issste');
 
   var response =
       await http.get(url, headers: {"Content-Type": "application/json"});
@@ -1211,7 +1212,7 @@ Future<List<DatosAValidar>> obtenerDatosAValidarAsignados(String api) async {
 Future<String> obtenerTotalValoresAValidar(
     String api, String tipoDeDato) async {
   String respuesta = '';
-  String url = api + '/obtener/total/datosavalidar/$tipoDeDato';
+  Uri url = Uri.parse(api + '/obtener/total/datosavalidar/$tipoDeDato');
   print('Obteniendo TotalValores a validar');
   var response =
       await http.get(url, headers: {"Content-Type": "application/json"});
@@ -1226,7 +1227,7 @@ Future<String> obtenerTotalValoresAValidar(
 
 Future<List<String>> obtenerTiposDeDatosAValidar(String api) async {
   List<String> respuesta = [];
-  String url = api + '/obtener/tipo/datosavalidar';
+  Uri url = Uri.parse(api + '/obtener/tipo/datosavalidar');
   print('Obteniendo tipos de datos');
   var response =
       await http.get(url, headers: {"Content-Type": "application/json"});
@@ -1245,7 +1246,7 @@ Future<List<String>> obtenerTiposDeDatosAValidar(String api) async {
 Future<List<String>> crearRegistro(
     String api, List<ValoresCampo> valores) async {
   List<String> lista = [];
-  String url = api + '/registrar/campo/valores';
+  Uri url = Uri.parse(api + '/registrar/campo/valores');
   Map datos = {'valoresCampo': valores};
   var body = json.encode(datos['valoresCampo']);
 
@@ -1266,7 +1267,7 @@ Future<List<String>> crearRegistro(
 Future<List<String>> crearRegistroPlantilla(
     String api, List<List<ValoresCampo>> valores) async {
   List<String> lista = [];
-  String url = api + '/registrar/campo/valores/plantilla';
+  Uri url = Uri.parse(api + '/registrar/campo/valores/plantilla');
 
   Map datos = {'listaValores': valores};
 
@@ -1289,7 +1290,8 @@ Future<List<String>> crearRegistroPlantilla(
 Future<String> leerPantillaExcel(
     String api, List<int> documento, int idUsuario, int idProyecto) async {
   List<String> lista = [];
-  String url = api + '/obtener/excel/datos/proyecto/$idUsuario/$idProyecto';
+  Uri url =
+      Uri.parse(api + '/obtener/excel/datos/proyecto/$idUsuario/$idProyecto');
   String respuesta = '';
   Map datos = {'documento': documento};
 
@@ -1308,7 +1310,7 @@ Future<String> leerPantillaExcel(
 
 Future<String> eliminarRegistro(
     String api, int idInventario, String password) async {
-  String url = api + '/registro/eliminar/id/$idInventario/$password';
+  Uri url = Uri.parse(api + '/registro/eliminar/id/$idInventario/$password');
   String respuesta = '';
 
   var response = await http.get(
@@ -1326,11 +1328,9 @@ Future<String> eliminarRegistro(
 
 Future<String> volverAGenerarDocumento(String api, int idInventario) async {
   String datos = '';
-  String url = api + '/generar/nuevo/documento/$idInventario';
-
-  var uri = Uri.parse(url);
+  Uri url = Uri.parse(api + '/generar/nuevo/documento/$idInventario');
   var response = await http.get(
-    uri,
+    url,
     headers: {"Content-Type": "application/json"},
   );
 
@@ -1346,12 +1346,11 @@ Future<String> volverAGenerarDocumento(String api, int idInventario) async {
 Future<String> volverAGenerarDocumentosSeleccionados(
     String api, int idProyecto, List<int> listaIdInventarios) async {
   String respuesta = '';
-  String url = api + '/generar/nuevo/documento/$idProyecto';
+  Uri url = Uri.parse(api + '/generar/nuevo/documento/$idProyecto');
   Map datos = {'idInventario': listaIdInventarios};
   var body = json.encode(datos['idInventario']);
-  var uri = Uri.parse(url);
   var response = await http.post(
-    uri,
+    url,
     headers: {"Content-Type": "application/json"},
     body: body,
   );
@@ -1368,7 +1367,7 @@ Future<String> volverAGenerarDocumentosSeleccionados(
 Future<List<String>> crearInventarioPlantilla(
     String api, List<Inventario> registros, int idProyecto) async {
   List<String> lista = [];
-  String url = api + '/registrar/registro/plantilla/$idProyecto';
+  Uri url = Uri.parse(api + '/registrar/registro/plantilla/$idProyecto');
 
   Map datos = {'registros': registros};
 
@@ -1392,8 +1391,8 @@ Future<List<List<Agrupaciones>>> obtenerRegistrosDuplicados(
     String api, Proyecto proyecto, String dato) async {
   List<List<Agrupaciones>> lista = [];
   List<Agrupaciones> agrupaciones = [];
-  String url =
-      api + '/obtener/registros/duplicados/proyecto/${proyecto.idproyecto}';
+  Uri url = Uri.parse(
+      api + '/obtener/registros/duplicados/proyecto/${proyecto.idproyecto}');
 
   var response = await http.post(url,
       headers: {"Content-Type": "application/json"}, body: dato);
@@ -1417,7 +1416,7 @@ Future<List<List<Agrupaciones>>> obtenerRegistrosDuplicados(
 Future<List<String>> obtenerFoliosRegistrados(
     String api, List<String> folios, int idProyecto) async {
   List<String> lista = [];
-  String url = api + '/obtener/folios/registrados/$idProyecto';
+  Uri url = Uri.parse(api + '/obtener/folios/registrados/$idProyecto');
 
   Map datos = {'folios': folios};
 
@@ -1460,10 +1459,9 @@ Future<List<FotoEvidencia>> obtenerCheckBoxEvidenciaProyecto(
 Future<Map<dynamic, dynamic>> obtenerDatosRegistroNuevo(
     String api, Proyecto proyecto) async {
   Map<dynamic, dynamic> respuesta = <dynamic, dynamic>{};
-  String url = api + '/obtener/datos/nuevo/registro';
-  var uri = Uri.parse(url);
+  Uri url = Uri.parse(api + '/obtener/datos/nuevo/registro');
   var body = json.encode(proyecto.toJson());
-  var response = await http.post(uri,
+  var response = await http.post(url,
       headers: {"Content-Type": "application/json"}, body: body);
   print('Respuesta: ${response.statusCode}');
   if (response.statusCode < 200 || response.statusCode > 400 || json == null) {
@@ -1481,11 +1479,11 @@ Future<Map<dynamic, dynamic>> obtenerPDFUnidos(
   if (paginas.isEmpty) {
     paginas = '0';
   }
-  String url = api + '/obtener/pdf/seleccionado/${proyecto.proyecto}/$paginas';
-  var uri = Uri.parse(url);
+  Uri url = Uri.parse(
+      api + '/obtener/pdf/seleccionado/${proyecto.proyecto}/$paginas');
   Map<String, dynamic> lista = {'idRegistros': ids};
   var body = json.encode(lista['idRegistros']);
-  var response = await http.post(uri,
+  var response = await http.post(url,
       headers: {"Content-Type": "application/json"}, body: body);
   print('Respuesta: ${response.statusCode}');
   if (response.statusCode < 200 || response.statusCode > 400 || json == null) {
@@ -1500,7 +1498,7 @@ Future<Map<dynamic, dynamic>> obtenerPDFUnidos(
 Future<List<String>> actualizarValoresCampos(
     String api, List<ValoresCampos> valores) async {
   List<String> lista = [];
-  String url = api + '/actualizar/valores/campos';
+  Uri url = Uri.parse(api + '/actualizar/valores/campos');
 
   Map datos = {'valores': valores};
 
@@ -1523,11 +1521,10 @@ Future<List<String>> actualizarValoresCampos(
 Future<List<String>> actualizarValores(
     String api, Map<String, dynamic> datos) async {
   List<String> lista = [];
-  String url = api + '/inventario/actualizar/valores';
+  Uri url = Uri.parse(api + '/inventario/actualizar/valores');
 
   var body = json.encode(datos);
-  var uri = Uri.parse(url);
-  var response = await http.post(uri,
+  var response = await http.post(url,
       headers: {"Content-Type": "application/json"}, body: body);
   print('Respuesta: ${response.statusCode}');
   if (response.statusCode < 200 || response.statusCode >= 400 || json == null) {
@@ -1544,7 +1541,7 @@ Future<List<String>> actualizarValores(
 Future<List<String>> asignarEdicion(
     String api, List<EdicionAsignada> listaEdicionesAsignadas) async {
   List<String> lista = [];
-  String url = api + '/asignar/ediciones';
+  Uri url = Uri.parse(api + '/asignar/ediciones');
 
   Map datos = {'lista': listaEdicionesAsignadas};
 
@@ -1563,7 +1560,7 @@ Future<List<String>> asignarEdicion(
 
 Future<List<String>> actualizarFirmas(String api, Firma firma) async {
   List<String> lista = [];
-  String url = api + '/actualizar/firma/registro';
+  Uri url = Uri.parse(api + '/actualizar/firma/registro');
 
   var body = json.encode(firma.toJson());
 
@@ -1584,7 +1581,7 @@ Future<List<String>> actualizarFirmas(String api, Firma firma) async {
 Future<List<String>> actualizarEvidencia(
     String api, Evidencia evidencia, int idUsuario) async {
   List<String> lista = [];
-  String url = api + '/actualizar/evidencia/registro/$idUsuario';
+  Uri url = Uri.parse(api + '/actualizar/evidencia/registro/$idUsuario');
 
   var body = json.encode(evidencia.toJson());
 
@@ -1604,11 +1601,10 @@ Future<List<String>> actualizarEvidencia(
 
 Future<void> eliminarEvidencia(String api, int idInventario) async {
   List<String> lista = [];
-  String url = api + '/eliminar/evidencia/registro/$idInventario';
-  var uri = Uri.parse(url);
+  Uri url = Uri.parse(api + '/eliminar/evidencia/registro/$idInventario');
 
   var response = await http.get(
-    uri,
+    url,
     headers: {"Content-Type": "application/json"},
   );
   print('Respuesta: ${response.statusCode}');
@@ -1622,10 +1618,9 @@ Future<void> eliminarEvidencia(String api, int idInventario) async {
 
 Future<List<String>> cambiarEstatus(String api, Estatus estatus) async {
   List<String> datos = [];
-  String url = api + '/estatus/cambiarestatus';
+  Uri url = Uri.parse(api + '/estatus/cambiarestatus');
   var body = json.encode(estatus.toJson());
-  var uri = Uri.parse(url);
-  var response = await http.post(uri,
+  var response = await http.post(url,
       headers: {"Content-Type": "application/json"}, body: body);
 
   if (response.statusCode < 200 || response.statusCode > 400 || json == null) {
@@ -1644,16 +1639,16 @@ Future<List<String>> cambiarEstatus(String api, Estatus estatus) async {
   return datos;
 }
 
-Future<Pendiente> obtenerPendienteActual(String api, int idInventario) async {
-  Pendiente respuesta;
-  String url = api + '/obtener/pendiente/$idInventario';
-  var uri = Uri.parse(url);
-  var response = await http.get(uri);
+Future<Pendiente?> obtenerPendienteActual(String api, int idInventario) async {
+  Pendiente? respuesta;
+  Uri url = Uri.parse(api + '/obtener/pendiente/$idInventario');
+  var response = await http.get(url);
   if (response.statusCode < 200 || response.statusCode > 400 || json == null) {
     print('Error al obtener la informacion');
     final error = response.statusCode;
   } else {
-    var jsonList = json.decode(utf8.decode(response.bodyBytes)) as Map;
+    var jsonList =
+        json.decode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>;
     respuesta = Pendiente.fromJson(jsonList);
   }
   return respuesta;
@@ -1661,7 +1656,7 @@ Future<Pendiente> obtenerPendienteActual(String api, int idInventario) async {
 
 Future<List<String>> obtenerUltimoIdFolio(String api) async {
   List<String> lista = [];
-  String url = api + '/obtener/id/ultimo/folio';
+  Uri url = Uri.parse(api + '/obtener/id/ultimo/folio');
 
   var response =
       await http.get(url, headers: {"Content-Type": "application/json"});
@@ -1680,7 +1675,7 @@ Future<List<String>> obtenerUltimoIdFolio(String api) async {
 Future<List<String>> obtenerCamposProyectoBusqueda(
     String api, int idProyecto) async {
   List<String> lista = [];
-  String url = api + '/obtener/campos/busqueda/proyecto/$idProyecto';
+  Uri url = Uri.parse(api + '/obtener/campos/busqueda/proyecto/$idProyecto');
 
   var response =
       await http.get(url, headers: {"Content-Type": "application/json"});
@@ -1699,8 +1694,8 @@ Future<List<String>> obtenerCamposProyectoBusqueda(
 Future<List<String>> obtenerDatosProyectoBusqueda(
     String api, int idProyecto, String tipoBusqueda) async {
   List<String> lista = [];
-  String url =
-      api + '/obtener/datos/busqueda/proyecto/$idProyecto/$tipoBusqueda';
+  Uri url = Uri.parse(
+      api + '/obtener/datos/busqueda/proyecto/$idProyecto/$tipoBusqueda');
 
   var response =
       await http.get(url, headers: {"Content-Type": "application/json"});
@@ -1717,10 +1712,10 @@ Future<List<String>> obtenerDatosProyectoBusqueda(
   return lista;
 }
 
-Future<CatalogoRelacionado> obtenerCatalogoRelacionado(
+Future<CatalogoRelacionado?> obtenerCatalogoRelacionado(
     String api, CatalogoRelacionado datos, int idProyecto) async {
-  CatalogoRelacionado catalogo;
-  String url = api + '/obtener/catalogorelacionado/$idProyecto';
+  CatalogoRelacionado? catalogo;
+  Uri url = Uri.parse(api + '/obtener/catalogorelacionado/$idProyecto');
   var body = json.encode(datos.toJson());
   var response = await http.post(url,
       headers: {"Content-Type": "application/json"}, body: body);
@@ -1728,16 +1723,17 @@ Future<CatalogoRelacionado> obtenerCatalogoRelacionado(
   if (response.statusCode < 200 || response.statusCode > 400 || json == null) {
     print('Error en la consulta');
   } else {
-    var jsonList = json.decode(utf8.decode(response.bodyBytes)) as Map;
+    var jsonList =
+        json.decode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>;
     catalogo = CatalogoRelacionado.fromJson(jsonList);
   }
   return catalogo;
 }
 
-Future<String> mandarNotificacion(
+Future<String?> mandarNotificacion(
     String api, Notificaciones notificaciones) async {
-  String respuesta;
-  String url = api + '/nueva/notificacion';
+  String? respuesta;
+  Uri url = Uri.parse(api + '/nueva/notificacion');
   var body = json.encode(notificaciones.toJson());
   var response = await http.post(url,
       headers: {"Content-Type": "application/json"}, body: body);
@@ -1753,7 +1749,7 @@ Future<String> mandarNotificacion(
 Future<Uint8List> obtenerPdf(
     String api, List<Agrupaciones> lista, int idInventario) async {
   List<int> listaByte = [];
-  String url = api + '/obtener/documento/pdf/$idInventario';
+  Uri url = Uri.parse(api + '/obtener/documento/pdf/$idInventario');
   Map datos = {
     'lista': lista,
   };
@@ -1776,7 +1772,7 @@ Future<Uint8List> obtenerPdf(
 Future<List<Agrupaciones>> obtenerCamposProyecto(
     String api, int idProyecto) async {
   List<Agrupaciones> agrupaciones = [];
-  String url = api + '/obtener/campos/proyecto/$idProyecto';
+  Uri url = Uri.parse(api + '/obtener/campos/proyecto/$idProyecto');
   var response =
       await http.get(url, headers: {"Content-Type": "application/json"});
   print('Respuesta: ${response.statusCode}');
@@ -1794,7 +1790,7 @@ Future<List<Agrupaciones>> obtenerCamposProyecto(
 Future<List<Agrupaciones>> obtenerDatosCamposRegistro(
     String api, int idProyecto, int idRegistro) async {
   List<Agrupaciones> agrupaciones = [];
-  String url = api + '/obtener/datos/registro/$idRegistro/$idProyecto';
+  Uri url = Uri.parse(api + '/obtener/datos/registro/$idRegistro/$idProyecto');
   var response =
       await http.get(url, headers: {"Content-Type": "application/json"});
   print('Respuesta: ${response.statusCode}');
@@ -1813,7 +1809,8 @@ Future<List<Agrupaciones>> obtenerDatosCamposRegistro(
 Future<Map<String, Catalogo>> obtenerCatalogosProyecto(
     String api, Proyecto proyecto) async {
   Map<String, Catalogo> catalogos = Map<String, Catalogo>();
-  String url = api + '/obtener/catalogos/proyecto/${proyecto.idproyecto}';
+  Uri url =
+      Uri.parse(api + '/obtener/catalogos/proyecto/${proyecto.idproyecto}');
   var response =
       await http.get(url, headers: {"Content-Type": "application/json"});
   print('Respuesta: ${response.statusCode}');
@@ -1833,7 +1830,8 @@ Future<Map<String, Catalogo>> obtenerCatalogosProyecto(
 Future<Map<String, Catalogo>> obtenerCatalogosProyectoUsuario(
     String api, Proyecto proyecto, int idUsuario) async {
   Map<String, Catalogo> catalogos = Map<String, Catalogo>();
-  String url = api + '/obtener/catalogos/proyecto/${proyecto.idproyecto}';
+  Uri url =
+      Uri.parse(api + '/obtener/catalogos/proyecto/${proyecto.idproyecto}');
   var response =
       await http.get(url, headers: {"Content-Type": "application/json"});
   print('Respuesta: ${response.statusCode}');
@@ -1856,10 +1854,10 @@ Future<Map<String, Catalogo>> obtenerCatalogosProyectoUsuario(
 Future<List<String>> obtenerCheckBoxProyecto(
     String api, Proyecto proyecto) async {
   List<String> respuesta = [];
-  String url = api + '/obtener/campos/checkbox/proyecto/${proyecto.idproyecto}';
-  var uri = Uri.parse(url);
+  Uri url = Uri.parse(
+      api + '/obtener/campos/checkbox/proyecto/${proyecto.idproyecto}');
   var response =
-      await http.get(uri, headers: {"Content-Type": "application/json"});
+      await http.get(url, headers: {"Content-Type": "application/json"});
   print('Respuesta: ${response.statusCode}');
   if (response.statusCode < 200 || response.statusCode > 400 || json == null) {
     print('Error en la consulta');
@@ -1873,7 +1871,7 @@ Future<List<String>> obtenerCheckBoxProyecto(
 }
 
 Future<http.Response> descargarAsistencia(String api) async {
-  String url = api + '/asistencia/generarReporte';
+  Uri url = Uri.parse(api + '/asistencia/generarReporte');
 
   var response =
       await http.get(url, headers: {"Content-Type": "application/json"});
@@ -1887,7 +1885,8 @@ Future<http.Response> descargarAsistencia(String api) async {
 Future<List<Usuario>> obtenerUsuariosAsistencia(
     String api, String fechaInicio, String fechaFinal) async {
   List<Usuario> lista = [];
-  String url = api + '/obtener/usuarios/asistencia/$fechaInicio/$fechaFinal';
+  Uri url =
+      Uri.parse(api + '/obtener/usuarios/asistencia/$fechaInicio/$fechaFinal');
 
   var response =
       await http.get(url, headers: {"Content-Type": "application/json"});
@@ -1906,7 +1905,8 @@ Future<List<Usuario>> obtenerUsuariosAsistencia(
 Future<Uint8List> obtenerFirmasRegistroBytes(
     String api, int idInventario, int idCampo) async {
   List<int> lista = [];
-  String url = api + '/obtener/firmas/documento/byte/$idInventario/$idCampo';
+  Uri url =
+      Uri.parse(api + '/obtener/firmas/documento/byte/$idInventario/$idCampo');
 
   var response =
       await http.get(url, headers: {"Content-Type": "application/json"});
@@ -1925,8 +1925,8 @@ Future<Uint8List> obtenerFirmasRegistroBytes(
 Future<Uint8List> obtenerEvidenciaRegistroBytes(
     String api, int idInventario, int idCampo, int idUsuario) async {
   List<int> lista = [];
-  String url = api +
-      '/obtener/evidencia/documento/byte/$idInventario/$idCampo/$idUsuario';
+  Uri url = Uri.parse(api +
+      '/obtener/evidencia/documento/byte/$idInventario/$idCampo/$idUsuario');
 
   var response =
       await http.get(url, headers: {"Content-Type": "application/json"});
@@ -1945,8 +1945,8 @@ Future<Uint8List> obtenerEvidenciaRegistroBytes(
 Future<List<FotoEvidencia>> obtenerEvidenciaBytes(String api, String idProyecto,
     String idInventario, String idUsuario) async {
   List<FotoEvidencia> lista = [];
-  String url = api +
-      '/obtener/busqueda/evidencia/byte/$idProyecto/$idInventario/$idUsuario';
+  Uri url = Uri.parse(api +
+      '/obtener/busqueda/evidencia/byte/$idProyecto/$idInventario/$idUsuario');
 
   var response =
       await http.get(url, headers: {"Content-Type": "application/json"});
@@ -1965,7 +1965,7 @@ Future<List<FotoEvidencia>> obtenerEvidenciaBytes(String api, String idProyecto,
 Future<List<FirmaDocumento>> obtenerFirmasRegistro(
     String api, int idInventario, int idCampo) async {
   List<FirmaDocumento> lista = [];
-  String url = api + '/obtener/firmas/documento/$idInventario/$idCampo';
+  Uri url = Uri.parse(api + '/obtener/firmas/documento/$idInventario/$idCampo');
 
   var response =
       await http.get(url, headers: {"Content-Type": "application/json"});
@@ -1984,8 +1984,8 @@ Future<List<FirmaDocumento>> obtenerFirmasRegistro(
 Future<List<Asistencia>> obtenerAsistencia(
     String api, Usuario usuario, String fechaInicio, String fechaFin) async {
   List<Asistencia> asistencia = [];
-  String url =
-      api + '/obtener/asistencia/${usuario.idUsuario}/$fechaInicio/$fechaFin';
+  Uri url = Uri.parse(
+      api + '/obtener/asistencia/${usuario.idUsuario}/$fechaInicio/$fechaFin');
   var response =
       await http.get(url, headers: {"Content-Type": "application/json"});
   print('Respuesta: ${response.statusCode}');
@@ -2001,7 +2001,7 @@ Future<List<Asistencia>> obtenerAsistencia(
 }
 
 Future<http.Response> generarReporte(String api, List<String> dias) async {
-  String url = api + '/asistencia/generarReporte';
+  Uri url = Uri.parse(api + '/asistencia/generarReporte');
 
   Map datos = {'dias': dias};
 
@@ -2023,7 +2023,7 @@ Future<List<Inventario>> obtenerRegistrosDashboard(
     String api, List<String> proyectos) async {
   List<Inventario> lista = [];
 
-  String url = api + '/obtener/registros/dashboard';
+  Uri url = Uri.parse(api + '/obtener/registros/dashboard');
   Map datos = {
     'proyectos': proyectos,
   };
@@ -2049,7 +2049,7 @@ Future<List<Cliente>> obtenerClientesPorUsuario(
     String api, int idclienteaplicacion) async {
   List<Cliente> lista = [];
 
-  String url = api + '/obtener/clientes/usuario/$idclienteaplicacion';
+  Uri url = Uri.parse(api + '/obtener/clientes/usuario/$idclienteaplicacion');
 
   var response = await http.get(
     url,
@@ -2070,10 +2070,10 @@ Future<List<Cliente>> obtenerClientesPorUsuario(
 }
 
 Future<List<Proyecto>> obtenerProyecrtosPorCliente(
-    String api, Cliente clienteSeleccionado) async {
+    String api, Cliente? clienteSeleccionado) async {
   List<Proyecto> lista = [];
 
-  String url = api + '/obtener/proyectos/cliente';
+  Uri url = Uri.parse(api + '/obtener/proyectos/cliente');
 
   var response = await http.post(
     url,
@@ -2097,7 +2097,7 @@ Future<List<Proyecto>> obtenerProyecrtosPorCliente(
 Future<List<String>> nuevoCliente(String api, Cliente cliente) async {
   List<String> lista = [];
 
-  String url = api + '/nuevo/cliente';
+  Uri url = Uri.parse(api + '/nuevo/cliente');
 
   var response = await http.post(
     url,

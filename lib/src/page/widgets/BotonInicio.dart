@@ -11,7 +11,7 @@ import 'package:provider/provider.dart';
 class BotonInicio extends StatefulWidget {
   IconData icono;
   String etiqueta;
-  BotonInicio({Key key, @required this.icono, @required this.etiqueta})
+  BotonInicio({Key? key, required this.icono, required this.etiqueta})
       : super(key: key);
 
   @override
@@ -91,11 +91,20 @@ class _BotonInicioState extends State<BotonInicio> {
 
                     // Navigator.of(context).pushNamed('/clientes',
                     //     arguments: registroProvider.listaClientes);
-                    PantallaDeCarga.loadingI(context, true);
-                    List<Proyecto> listaProyectosPorCliente =
-                        await obtenerProyecrtosPorCliente(
-                            ApiDefinition.ipServer,
-                            registroProvider.usuario.vistacliente);
+                    List<Proyecto>? listaProyectosPorCliente;
+                    if (registroProvider.usuario.vistacliente != null) {
+                      listaProyectosPorCliente =
+                          await obtenerProyecrtosPorCliente(
+                              ApiDefinition.ipServer,
+                              registroProvider.usuario.vistacliente);
+                    } else {
+                      listaProyectosPorCliente =
+                          await obtenerProyecrtosPorCliente(
+                              ApiDefinition.ipServer,
+                              registroProvider.listaClientes.elementAt(0));
+                      VariablesGlobales.usuario.vistacliente =
+                          registroProvider.listaClientes.elementAt(0);
+                    }
                     print(
                         'Cantidad de proyectos: ${listaProyectosPorCliente.length}');
                     PantallaDeCarga.loadingI(context, false);

@@ -1,12 +1,8 @@
 import 'dart:math';
 
 import 'package:app_isae_desarrollo/src/page/widgets/DrawerWidget.dart';
-import 'package:app_isae_desarrollo/src/page/widgets/Tarjetas.dart';
 import 'package:app_isae_desarrollo/src/page/widgets/appBar.dart';
 import 'package:app_isae_desarrollo/src/services/APIWebService/ApiDefinitions.dart';
-import 'package:app_isae_desarrollo/src/utils/VariablesGlobales.dart';
-import 'package:d_chart/d_chart.dart';
-import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
 import '../services/APIWebService/Consultas.dart';
@@ -96,38 +92,38 @@ class DashBoardPage extends StatelessWidget {
                 _devolverColor(item['domain']));
           }),
         _tarjetaDatos('Total', 1233, actualizar, Colors.black),
-        Transform.scale(
-          scale: 2,
-          child: Container(
-            width: 560.0,
-            height: 300.0,
-            child: AspectRatio(
-              aspectRatio: 1,
-              child: PieChart(
-                PieChartData(
-                    pieTouchData: PieTouchData(
-                        touchCallback: (FlTouchEvent event, pieTouchResponse) {
-                      actualizar(() {
-                        if (!event.isInterestedForInteractions ||
-                            pieTouchResponse == null ||
-                            pieTouchResponse.touchedSection == null) {
-                          touchedIndex = -1;
-                          return;
-                        }
-                        touchedIndex =
-                            pieTouchResponse.touchedSection.touchedSectionIndex;
-                      });
-                    }),
-                    borderData: FlBorderData(
-                      show: false,
-                    ),
-                    sectionsSpace: 0,
-                    centerSpaceRadius: 40,
-                    sections: showingSections(datos)),
-              ),
-            ),
-          ),
-        ),
+        // Transform.scale(
+        //   scale: 2,
+        //   child: Container(
+        //     width: 560.0,
+        //     height: 300.0,
+        //     child: AspectRatio(
+        //       aspectRatio: 1,
+        //       child: PieChart(
+        //         PieChartData(
+        //             pieTouchData: PieTouchData(
+        //                 touchCallback: (FlTouchEvent event, pieTouchResponse) {
+        //               actualizar(() {
+        //                 if (!event.isInterestedForInteractions ||
+        //                     pieTouchResponse == null ||
+        //                     pieTouchResponse.touchedSection == null) {
+        //                   touchedIndex = -1;
+        //                   return;
+        //                 }
+        //                 touchedIndex =
+        //                     pieTouchResponse.touchedSection.touchedSectionIndex;
+        //               });
+        //             }),
+        //             borderData: FlBorderData(
+        //               show: false,
+        //             ),
+        //             sectionsSpace: 0,
+        //             centerSpaceRadius: 40,
+        //             sections: showingSections(datos)),
+        //       ),
+        //     ),
+        //   ),
+        // ),
       ],
     );
   }
@@ -157,121 +153,121 @@ class DashBoardPage extends StatelessWidget {
     return respuesta;
   }
 
-  List<PieChartSectionData> showingSections(List<Map<String, dynamic>> lista) {
-    return List.generate(lista.length, (i) {
-      final isTouched = i == touchedIndex;
-      final fontSize = isTouched ? 25.0 : 16.0;
-      final radius = isTouched ? 60.0 : 50.0;
-      switch (i) {
-        case 0:
-          return PieChartSectionData(
-            color: _devolverColor(lista.elementAt(i)['domain']),
-            value: lista.elementAt(i)['measure'],
-            title: lista.elementAt(i)['measure'].toString(),
-            radius: radius,
-            titleStyle: TextStyle(
-                fontSize: fontSize,
-                fontWeight: FontWeight.bold,
-                color: const Color(0xffffffff)),
-          );
-        case 1:
-          return PieChartSectionData(
-            color: _devolverColor(lista.elementAt(i)['domain']),
-            value: lista.elementAt(i)['measure'],
-            title: lista.elementAt(i)['measure'].toString(),
-            radius: radius,
-            titleStyle: TextStyle(
-                fontSize: fontSize,
-                fontWeight: FontWeight.bold,
-                color: const Color(0xffffffff)),
-          );
-        case 2:
-          return PieChartSectionData(
-            color: _devolverColor(lista.elementAt(i)['domain']),
-            value: lista.elementAt(i)['measure'],
-            title: lista.elementAt(i)['measure'].toString(),
-            radius: radius,
-            titleStyle: TextStyle(
-                fontSize: fontSize,
-                fontWeight: FontWeight.bold,
-                color: const Color(0xffffffff)),
-          );
-        case 3:
-          return PieChartSectionData(
-            color: _devolverColor(lista.elementAt(i)['domain']),
-            value: lista.elementAt(i)['measure'],
-            title: lista.elementAt(i)['measure'].toString(),
-            radius: radius,
-            titleStyle: TextStyle(
-                fontSize: fontSize,
-                fontWeight: FontWeight.bold,
-                color: const Color(0xffffffff)),
-          );
-        case 4:
-          return PieChartSectionData(
-            color: _devolverColor(lista.elementAt(i)['domain']),
-            value: lista.elementAt(i)['measure'],
-            title: lista.elementAt(i)['measure'].toString(),
-            radius: radius,
-            titleStyle: TextStyle(
-                fontSize: fontSize,
-                fontWeight: FontWeight.bold,
-                color: const Color(0xffffffff)),
-          );
-        default:
-          throw Error();
-      }
-    });
-  }
+  // List<PieChartSectionData> showingSections(List<Map<String, dynamic>> lista) {
+  //   return List.generate(lista.length, (i) {
+  //     final isTouched = i == touchedIndex;
+  //     final fontSize = isTouched ? 25.0 : 16.0;
+  //     final radius = isTouched ? 60.0 : 50.0;
+  //     switch (i) {
+  //       case 0:
+  //         return PieChartSectionData(
+  //           color: _devolverColor(lista.elementAt(i)['domain']),
+  //           value: lista.elementAt(i)['measure'],
+  //           title: lista.elementAt(i)['measure'].toString(),
+  //           radius: radius,
+  //           titleStyle: TextStyle(
+  //               fontSize: fontSize,
+  //               fontWeight: FontWeight.bold,
+  //               color: const Color(0xffffffff)),
+  //         );
+  //       case 1:
+  //         return PieChartSectionData(
+  //           color: _devolverColor(lista.elementAt(i)['domain']),
+  //           value: lista.elementAt(i)['measure'],
+  //           title: lista.elementAt(i)['measure'].toString(),
+  //           radius: radius,
+  //           titleStyle: TextStyle(
+  //               fontSize: fontSize,
+  //               fontWeight: FontWeight.bold,
+  //               color: const Color(0xffffffff)),
+  //         );
+  //       case 2:
+  //         return PieChartSectionData(
+  //           color: _devolverColor(lista.elementAt(i)['domain']),
+  //           value: lista.elementAt(i)['measure'],
+  //           title: lista.elementAt(i)['measure'].toString(),
+  //           radius: radius,
+  //           titleStyle: TextStyle(
+  //               fontSize: fontSize,
+  //               fontWeight: FontWeight.bold,
+  //               color: const Color(0xffffffff)),
+  //         );
+  //       case 3:
+  //         return PieChartSectionData(
+  //           color: _devolverColor(lista.elementAt(i)['domain']),
+  //           value: lista.elementAt(i)['measure'],
+  //           title: lista.elementAt(i)['measure'].toString(),
+  //           radius: radius,
+  //           titleStyle: TextStyle(
+  //               fontSize: fontSize,
+  //               fontWeight: FontWeight.bold,
+  //               color: const Color(0xffffffff)),
+  //         );
+  //       case 4:
+  //         return PieChartSectionData(
+  //           color: _devolverColor(lista.elementAt(i)['domain']),
+  //           value: lista.elementAt(i)['measure'],
+  //           title: lista.elementAt(i)['measure'].toString(),
+  //           radius: radius,
+  //           titleStyle: TextStyle(
+  //               fontSize: fontSize,
+  //               fontWeight: FontWeight.bold,
+  //               color: const Color(0xffffffff)),
+  //         );
+  //       default:
+  //         throw Error();
+  //     }
+  //   });
+  // }
 
   Widget _graficaPorProyectos(
       BuildContext context, List<Map<String, dynamic>> datos) {
     Size size = MediaQuery.of(context).size;
     return Row(
       children: [
-        Container(
-          width: 560.0,
-          height: 300.0,
-          child: DChartPie(
-            labelFontSize: 15,
-            strokeWidth: 5,
-            data: datos,
-            fillColor: (pieData, index) {
-              return Color.fromRGBO(36, 90, 149, 1);
-            },
-            animate: true,
-            pieLabel: (barValue, index) {
-              return "${barValue['domain'].toString()}: ${barValue['measure']}";
-            },
-            labelPosition: PieLabelPosition.outside,
-          ),
-          // DChartBar(
-          //   data: [
-          //     {
-          //       'id': 'Bar',
-          //       'data': [
-          //         {'domain': '2020', 'measure': 3},
-          //         {'domain': '2021', 'measure': 4},
-          //         {'domain': '2022', 'measure': 6},
-          //         {'domain': '2023', 'measure': 0.3},
-          //       ],
-          //     },
-          //   ],
-          //   domainLabelPaddingToAxisLine: 16,
-          //   axisLineTick: 2,
-          //   axisLinePointTick: 2,
-          //   axisLinePointWidth: 10,
-          //   axisLineColor: Colors.green,
-          //   measureLabelPaddingToAxisLine: 10,
-          //   barColor: (barData, index, id) => Colors.green,
-          //   showBarValue: true,
-          //   animate: true,
-          //   measureLabelColor: Colors.black,
-          //   barValue: (barValue, index) {
-          //     return barValue['measure'].toString();
-          //   },
-          // ),
-        ),
+        // Container(
+        //   width: 560.0,
+        //   height: 300.0,
+        //   child: DChartPie(
+        //     labelFontSize: 15,
+        //     strokeWidth: 5,
+        //     data: datos,
+        //     fillColor: (pieData, index) {
+        //       return Color.fromRGBO(36, 90, 149, 1);
+        //     },
+        //     animate: true,
+        //     pieLabel: (barValue, index) {
+        //       return "${barValue['domain'].toString()}: ${barValue['measure']}";
+        //     },
+        //     labelPosition: PieLabelPosition.outside,
+        //   ),
+        //   // DChartBar(
+        //   //   data: [
+        //   //     {
+        //   //       'id': 'Bar',
+        //   //       'data': [
+        //   //         {'domain': '2020', 'measure': 3},
+        //   //         {'domain': '2021', 'measure': 4},
+        //   //         {'domain': '2022', 'measure': 6},
+        //   //         {'domain': '2023', 'measure': 0.3},
+        //   //       ],
+        //   //     },
+        //   //   ],
+        //   //   domainLabelPaddingToAxisLine: 16,
+        //   //   axisLineTick: 2,
+        //   //   axisLinePointTick: 2,
+        //   //   axisLinePointWidth: 10,
+        //   //   axisLineColor: Colors.green,
+        //   //   measureLabelPaddingToAxisLine: 10,
+        //   //   barColor: (barData, index, id) => Colors.green,
+        //   //   showBarValue: true,
+        //   //   animate: true,
+        //   //   measureLabelColor: Colors.black,
+        //   //   barValue: (barValue, index) {
+        //   //     return barValue['measure'].toString();
+        //   //   },
+        //   // ),
+        // ),
         Container(
           width: size.width * 0.45,
           height: 500.0,

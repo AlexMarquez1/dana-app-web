@@ -11,8 +11,8 @@ class ValoresPdf {
     this.valor,
   });
 
-  String nombreCampo;
-  String valor;
+  String? nombreCampo;
+  String? valor;
 
   factory ValoresPdf.fromJson(Map<String, dynamic> json) => ValoresPdf(
         nombreCampo: json["nombreCampo"],

@@ -21,14 +21,14 @@ class FotoEvidencia {
     this.coordenadas,
   });
 
-  int idfoto;
-  String nombrefoto;
-  String url;
-  Usuario usuario;
-  Inventario inventario;
-  int idCampoProyecto;
-  String coordenadas;
-  String campoNombre;
+  int? idfoto;
+  String? nombrefoto;
+  String? url;
+  Usuario? usuario;
+  Inventario? inventario;
+  int? idCampoProyecto;
+  String? coordenadas;
+  String? campoNombre;
 
   factory FotoEvidencia.fromJson(Map<String, dynamic> json) => FotoEvidencia(
         idfoto: json["idfoto"] ?? 0,
@@ -45,8 +45,8 @@ class FotoEvidencia {
         "idfoto": idfoto,
         "nombrefoto": nombrefoto,
         "url": url,
-        "usuario": usuario.toJson(),
-        "inventario": inventario.toJson(),
+        "usuario": usuario?.toJson(),
+        "inventario": inventario?.toJson(),
         "campoProyecto": {'idcamposproyecto': idCampoProyecto},
         "coordenadas": coordenadas,
       };

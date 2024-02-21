@@ -6,12 +6,11 @@ import '../../models/Usuario.dart';
 class TablaUsuarios extends StatelessWidget {
   List<Usuario> listaUsuarios;
   Function accion;
-  TablaUsuarios(
-      {Key key, @required this.listaUsuarios, @required this.accion}) {
+  TablaUsuarios({Key? key, required this.listaUsuarios, required this.accion}) {
     _data = DatosUsuarios(data: listaUsuarios, accion: accion);
   }
 
-  DatosUsuarios _data;
+  late DatosUsuarios _data;
 
   int _sortColumnIndex = 0;
   bool _sortAscending = true;
@@ -43,19 +42,19 @@ class TablaUsuarios extends StatelessWidget {
                   DataColumn(
                       label: Text('ID'),
                       onSort: (int columnIndex, bool ascending) => _sort<num>(
-                          (Usuario d) => d.idUsuario,
+                          (Usuario d) => d.idUsuario!,
                           columnIndex,
                           ascending,
                           actualizar)),
                   DataColumn(
                       label: Text('Nombre'),
                       onSort: (int columnIndex, bool ascending) =>
-                          _sort<String>((Usuario d) => d.nombre, columnIndex,
+                          _sort<String>((Usuario d) => d.nombre!, columnIndex,
                               ascending, actualizar)),
                   DataColumn(
                       label: Text('Usuario'),
                       onSort: (int columnIndex, bool ascending) =>
-                          _sort<String>((Usuario d) => d.usuario, columnIndex,
+                          _sort<String>((Usuario d) => d.usuario!, columnIndex,
                               ascending, actualizar)),
                 ],
                 columnSpacing: 100,

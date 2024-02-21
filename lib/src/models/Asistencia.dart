@@ -17,12 +17,12 @@ class Asistencia {
     this.coordenadasFoto,
   });
 
-  Usuario usuario;
-  String horaDeEntrada;
-  String horaDeSalida;
-  String dia;
-  String urlFoto;
-  String coordenadasFoto;
+  Usuario? usuario;
+  String? horaDeEntrada;
+  String? horaDeSalida;
+  String? dia;
+  String? urlFoto;
+  String? coordenadasFoto;
 
   factory Asistencia.fromJson(Map<String, dynamic> json) => Asistencia(
         usuario: Usuario.fromJson(json["usuario"]),
@@ -34,7 +34,7 @@ class Asistencia {
       );
 
   Map<String, dynamic> toJson() => {
-        "Usuario": usuario.toJson(),
+        "Usuario": usuario!.toJson(),
         "horaDeEntrada": horaDeEntrada,
         "horaDeSalida": horaDeSalida,
         "dia": dia,

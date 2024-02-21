@@ -16,10 +16,10 @@ class CatalogoRelacionado {
     this.catalogoHijo,
   });
 
-  String tipoCatalogoPadre;
-  String catalogoPadre;
-  String tipoCatalogoHijo;
-  List<String> catalogoHijo;
+  String? tipoCatalogoPadre;
+  String? catalogoPadre;
+  String? tipoCatalogoHijo;
+  List<String>? catalogoHijo;
 
   factory CatalogoRelacionado.fromJson(Map<String, dynamic> json) =>
       CatalogoRelacionado(
@@ -35,6 +35,6 @@ class CatalogoRelacionado {
         "tipoCatalogoPadre": tipoCatalogoPadre,
         "catalogoPadre": catalogoPadre,
         "tipoCatalogoHijo": tipoCatalogoHijo,
-        "catalogoHijo": List<String>.from(catalogoHijo.map((x) => x)),
+        "catalogoHijo": List<String>.from(catalogoHijo!.map((x) => x)),
       };
 }

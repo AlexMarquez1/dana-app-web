@@ -56,7 +56,7 @@ class Dialogos {
   }
 
   static advertencia(
-      BuildContext context, String mensaje, Function btnAceptar) {
+      BuildContext context, String mensaje, Function() btnAceptar) {
     return showDialog(
         context: context,
         builder: (context) {

@@ -19,12 +19,12 @@ import 'package:http/http.dart' as http;
 
 class VerEvidencia extends StatelessWidget {
   Inventario inventario;
-  VerEvidencia({Key key, @required this.inventario}) : super(key: key);
+  VerEvidencia({Key? key, required this.inventario}) : super(key: key);
 
-  List<FirmaDocumento> listaFirmas;
-  List<FotoEvidencia> listaFotos;
-  List<FotoEvidencia> listaEvidencias;
-  String urlDocumento;
+  late List<FirmaDocumento> listaFirmas;
+  late List<FotoEvidencia> listaFotos;
+  late List<FotoEvidencia> listaEvidencias;
+  late String urlDocumento;
 
   @override
   Widget build(BuildContext context) {
@@ -33,18 +33,18 @@ class VerEvidencia extends StatelessWidget {
           PantallaDeCarga.loadingI(context, true);
           List<FirmaDocumento> listaFirmas = await obtenerFirmaProyecto(
               ApiDefinition.ipServer,
-              inventario.proyecto.idproyecto,
-              inventario.idinventario);
+              inventario.proyecto!.idproyecto!,
+              inventario.idinventario!);
 
           List<FotoEvidencia> listaFotos = await obtenerFotosProyecto(
               ApiDefinition.ipServer,
-              inventario.proyecto.idproyecto,
-              inventario.idinventario);
+              inventario.proyecto!.idproyecto!,
+              inventario.idinventario!);
 
           List<FotoEvidencia> listaEvidencias =
               await obtenerCheckBoxEvidenciaProyecto(
                   ApiDefinition.ipServer,
-                  inventario.proyecto,
+                  inventario.proyecto!,
                   Inventario(
                     idinventario: inventario.idinventario,
                     estatus: inventario.estatus,
@@ -54,7 +54,7 @@ class VerEvidencia extends StatelessWidget {
                   ));
 
           String urlDocumento = await obtenerUrlDocumento(
-              ApiDefinition.ipServer, inventario.idinventario);
+              ApiDefinition.ipServer, inventario.idinventario!);
 
           PantallaDeCarga.loadingI(context, false);
 
@@ -96,7 +96,7 @@ class VerEvidencia extends StatelessWidget {
                         PantallaDeCarga.loadingI(context, true);
                         List<Uint8List> archivos = [];
                         for (FotoEvidencia evidencia in listaEvidencias) {
-                          archivos.add(await _obtenerArchivo(evidencia.url));
+                          archivos.add(await _obtenerArchivo(evidencia.url!));
                         }
                         await _downloadFilesAsZIP(
                             context, archivos, listaEvidencias);
@@ -121,7 +121,7 @@ class VerEvidencia extends StatelessWidget {
                   for (FotoEvidencia foto in listaFotos)
                     _mostrarEvidencia(foto),
                   for (FotoEvidencia evidencia in listaEvidencias)
-                    evidencia.url.isNotEmpty
+                    evidencia.url!.isNotEmpty
                         ? _mostrarEvidencia(evidencia)
                         : Container(),
                   for (FirmaDocumento firma in listaFirmas)
@@ -167,7 +167,7 @@ class VerEvidencia extends StatelessWidget {
           backgroundColor: Color.fromARGB(255, 61, 113, 158),
           child: IconButton(
               onPressed: () async {
-                Uint8List bytes = await _obtenerArchivo(evidencia.url);
+                Uint8List bytes = await _obtenerArchivo(evidencia.url!);
                 _downloadFile('${evidencia.nombrefoto}', bytes);
               },
               icon: Icon(Icons.download_for_offline, color: Colors.white)),
@@ -198,7 +198,7 @@ class VerEvidencia extends StatelessWidget {
     int i = 0;
     for (Uint8List archivo in archivos) {
       ArchiveFile archiveFiles = ArchiveFile.stream(
-        '${evidencias.elementAt(i).inventario.folio}/${evidencias.elementAt(i).nombrefoto.replaceAll(' ', '')}',
+        '${evidencias.elementAt(i).inventario!.folio}/${evidencias.elementAt(i).nombrefoto!.replaceAll(' ', '')}',
         archivo.length,
         InputStream(archivo,
             byteOrder: LITTLE_ENDIAN, start: 0, length: archivo.length),
@@ -210,9 +210,9 @@ class VerEvidencia extends StatelessWidget {
     var outputStream = OutputStream(
       byteOrder: LITTLE_ENDIAN,
     );
-    var bytes = encoder.encode(archive,
+    List<int>? bytes = encoder.encode(archive,
         level: Deflate.BEST_COMPRESSION, output: outputStream);
-    _downloadFile("Evidencia.zip", bytes);
+    _downloadFile("Evidencia.zip", Uint8List.fromList(bytes!));
   }
 
   _downloadFile(String fileName, Uint8List bytes) {

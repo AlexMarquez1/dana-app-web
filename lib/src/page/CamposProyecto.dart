@@ -15,13 +15,12 @@ import 'package:app_isae_desarrollo/src/utils/UpperCaseTextFormatterCustom.dart'
 import 'package:drag_and_drop_lists/drag_and_drop_item.dart';
 import 'package:drag_and_drop_lists/drag_and_drop_list_expansion.dart';
 import 'package:drag_and_drop_lists/drag_and_drop_lists.dart';
-import 'package:firebase/firebase.dart';
 // import 'package:firebase_db_web_unofficial/firebasedbwebunofficial.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class CamposProyecto extends StatefulWidget {
-  CamposProyecto({Key key}) : super(key: key);
+  CamposProyecto({Key? key}) : super(key: key);
 
   @override
   State<CamposProyecto> createState() => _CamposProyectoState();
@@ -42,18 +41,19 @@ class _CamposProyectoState extends State<CamposProyecto> {
       new Map<String, AnimationController>();
 
   String _nombreProyecto = '';
-  String _tipoProyectoSeleccionado;
+  String? _tipoProyectoSeleccionado;
 
   @override
   Widget build(BuildContext context) {
-    _argumentos = ModalRoute.of(context).settings.arguments;
+    _argumentos =
+        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
     _listaAgrupaciones = _argumentos['listaAgrupaciones'];
     _nombreProyecto = _argumentos['nombreProyecto'];
     _tipoProyectoSeleccionado = _argumentos['tipoProyecto'];
     if (_expanded.isEmpty) {
       for (Agrupaciones agrupacion in _listaAgrupaciones) {
-        for (Campos campo in agrupacion.campos) {
-          _expanded[campo.nombreCampo] = false;
+        for (Campos campo in agrupacion.campos!) {
+          _expanded[campo.nombreCampo!] = false;
         }
       }
     }
@@ -187,14 +187,18 @@ class _CamposProyectoState extends State<CamposProyecto> {
           // setState(() {});
         },
         contentsWhenEmpty: Text('Vacio'),
-        canDrag: _listaAgrupaciones.elementAt(i).campos.isEmpty
+        canDrag: _listaAgrupaciones.elementAt(i).campos!.isEmpty
             ? true
-            : _listaAgrupaciones.elementAt(i).campos.elementAt(0).nombreCampo ==
+            : _listaAgrupaciones
+                        .elementAt(i)
+                        .campos!
+                        .elementAt(0)
+                        .nombreCampo ==
                     'FOLIO'
                 ? false
                 : true,
         initiallyExpanded: false,
-        listKey: new Key(_listaAgrupaciones.elementAt(i).agrupacion),
+        listKey: new Key(_listaAgrupaciones.elementAt(i).agrupacion!),
         backgroundColor: Colors.white,
         title: Container(
           child: Row(
@@ -206,7 +210,7 @@ class _CamposProyectoState extends State<CamposProyecto> {
                   children: [
                     Text(_listaAgrupaciones
                         .elementAt(i)
-                        .agrupacion
+                        .agrupacion!
                         .toUpperCase()),
                     SizedBox(
                       width: 20.0,
@@ -214,7 +218,7 @@ class _CamposProyectoState extends State<CamposProyecto> {
                     GestureDetector(
                         onTap: () {
                           Dialogos.advertencia(context,
-                              'Quieres agregar un nuevo campo a ${_listaAgrupaciones.elementAt(i).agrupacion.toUpperCase()}',
+                              'Quieres agregar un nuevo campo a ${_listaAgrupaciones.elementAt(i).agrupacion!.toUpperCase()}',
                               () {
                             TextEditingController controllerCampoNombre =
                                 new TextEditingController();
@@ -227,11 +231,11 @@ class _CamposProyectoState extends State<CamposProyecto> {
                             controladorRestriccion.text = 'N/A';
                             controladorLongitud.text = '100';
 
-                            _listaAgrupaciones.elementAt(i).campos.add(Campos(
+                            _listaAgrupaciones.elementAt(i).campos!.add(Campos(
                                 idCampo: 0,
                                 agrupacion: _listaAgrupaciones
                                     .elementAt(i)
-                                    .agrupacion
+                                    .agrupacion!
                                     .toUpperCase(),
                                 nombreCampo:
                                     'NUEVO CAMPO ${_nuevosCampos.length}',
@@ -265,12 +269,12 @@ class _CamposProyectoState extends State<CamposProyecto> {
         ),
         children: <DragAndDropItem>[
           for (int j = 0;
-              j < _listaAgrupaciones.elementAt(i).campos.length;
+              j < _listaAgrupaciones.elementAt(i).campos!.length;
               j++)
             DragAndDropItem(
                 canDrag: _listaAgrupaciones
                             .elementAt(i)
-                            .campos
+                            .campos!
                             .elementAt(j)
                             .nombreCampo ==
                         'FOLIO'
@@ -278,8 +282,8 @@ class _CamposProyectoState extends State<CamposProyecto> {
                     : true,
                 child: Container(
                   child: _crearCampo(
-                      _listaAgrupaciones.elementAt(i).campos.elementAt(j),
-                      _listaAgrupaciones.elementAt(i).agrupacion),
+                      _listaAgrupaciones.elementAt(i).campos!.elementAt(j),
+                      _listaAgrupaciones.elementAt(i).agrupacion!),
                 )),
         ],
       ));
@@ -295,10 +299,12 @@ class _CamposProyectoState extends State<CamposProyecto> {
       int oldItemIndex, int oldListIndex, int newItemIndex, int newListIndex) {
     setState(() {
       Campos campoMovido =
-          _listaAgrupaciones[oldListIndex].campos.removeAt(oldItemIndex);
-      _listaAgrupaciones[newListIndex].campos.insert(newItemIndex, campoMovido);
-      var movedItem = _campos[oldListIndex].children.removeAt(oldItemIndex);
-      _campos[newListIndex].children.insert(newItemIndex, movedItem);
+          _listaAgrupaciones[oldListIndex].campos!.removeAt(oldItemIndex);
+      _listaAgrupaciones[newListIndex]
+          .campos!
+          .insert(newItemIndex, campoMovido);
+      var movedItem = _campos[oldListIndex].children!.removeAt(oldItemIndex);
+      _campos[newListIndex].children!.insert(newItemIndex, movedItem);
     });
   }
 
@@ -322,13 +328,13 @@ class _CamposProyectoState extends State<CamposProyecto> {
                 Column(
                   children: [
                     _etiquetaCampo('CAMPO:'),
-                    _txtCampo(campo.controladorNombreCampo),
+                    _txtCampo(campo.controladorNombreCampo!),
                   ],
                 ),
                 Column(
                   children: [
                     _etiquetaCampo('tipo campo:'),
-                    _tipoCampo(campo),
+                    // _tipoCampo(campo),
                   ],
                 ),
               ],
@@ -345,13 +351,13 @@ class _CamposProyectoState extends State<CamposProyecto> {
                     Column(
                       children: [
                         _etiquetaCampo('restriccion:'),
-                        _txtCampo(campo.controladorRestriccion),
+                        _txtCampo(campo.controladorRestriccion!),
                       ],
                     ),
                     Column(
                       children: [
                         _etiquetaCampo('tamaño:'),
-                        _numCampo(campo.controladorLongitud),
+                        _numCampo(campo.controladorLongitud!),
                       ],
                     ),
                   ],
@@ -370,12 +376,12 @@ class _CamposProyectoState extends State<CamposProyecto> {
           child: Row(
             children: [
               _etiquetaCampo('tipo campo:'),
-              _tipoCampo(campo),
+              // _tipoCampo(campo),
               // SizedBox(
               //   width: 20.0,
               // ),
               _etiquetaCampo('CAMPO:'),
-              _txtCampo(campo.controladorNombreCampo),
+              _txtCampo(campo.controladorNombreCampo!),
               SizedBox(
                 width: 20.0,
               ),
@@ -390,7 +396,7 @@ class _CamposProyectoState extends State<CamposProyecto> {
                       campo.tipoCampo == 'CHECKBOX' ||
                       campo.tipoCampo == 'CALENDARIO'
                   ? Container()
-                  : _txtCampo(campo.controladorRestriccion),
+                  : _txtCampo(campo.controladorRestriccion!),
               SizedBox(
                 width: 30.0,
               ),
@@ -405,7 +411,7 @@ class _CamposProyectoState extends State<CamposProyecto> {
                       campo.tipoCampo == 'CHECKBOX' ||
                       campo.tipoCampo == 'CALENDARIO'
                   ? Container()
-                  : _numCampo(campo.controladorLongitud),
+                  : _numCampo(campo.controladorLongitud!),
             ],
           ),
         ),
@@ -467,7 +473,7 @@ class _CamposProyectoState extends State<CamposProyecto> {
   Widget _tarjetaCampos(Campos campo, String agrupacion) {
     return FadeOutLeft(
       controller: (controller) =>
-          _animateController[campo.nombreCampo] = controller,
+          _animateController[campo.nombreCampo!] = controller,
       animate: false,
       child: TarjetaNuevoCampo(
         campo: campo,
@@ -477,9 +483,9 @@ class _CamposProyectoState extends State<CamposProyecto> {
           print('Campo a eliminar: ${campo.nombreCampo}');
           for (Agrupaciones agrupaciones in _listaAgrupaciones) {
             if (agrupaciones.agrupacion == agrupacion) {
-              for (int i = 0; i < agrupaciones.campos.length; i++) {
+              for (int i = 0; i < agrupaciones.campos!.length; i++) {
                 if (campo.nombreCampo ==
-                    agrupaciones.campos.elementAt(i).nombreCampo) {
+                    agrupaciones.campos!.elementAt(i).nombreCampo) {
                   showDialog(
                     context: context,
                     builder: (context) {
@@ -503,7 +509,7 @@ class _CamposProyectoState extends State<CamposProyecto> {
                             child: Container(
                               margin: EdgeInsets.only(left: 10.0, right: 10.0),
                               child: Text(
-                                  'Estas seguro de eliminar el campo: ${campo.nombreCampo.toUpperCase()}'),
+                                  'Estas seguro de eliminar el campo: ${campo.nombreCampo!.toUpperCase()}'),
                             ),
                           ),
                           Row(
@@ -515,9 +521,9 @@ class _CamposProyectoState extends State<CamposProyecto> {
                                 child: ElevatedButton(
                                   onPressed: () async {
                                     Navigator.of(context).pop();
-                                    await _animateController[campo.nombreCampo]
+                                    await _animateController[campo.nombreCampo]!
                                         .forward();
-                                    agrupaciones.campos.removeAt(i);
+                                    agrupaciones.campos!.removeAt(i);
                                     setState(() {});
                                   },
                                   child: Text('Si'),
@@ -552,133 +558,133 @@ class _CamposProyectoState extends State<CamposProyecto> {
   }
 
   //TODO: EN DADO CASO QUE NO SE ALMACENE EL TIPO DE CAMPO COMPROBAR ESTE METODO
-  Widget _tipoCampo(Campos campo) {
-    List<String> tipos = [
-      'NUMERICO',
-      'ALFANUMERICO',
-      'CORREO',
-      'ALFABETICO',
-      'CATALOGO',
-      'FIRMA',
-      'FOTO',
-      'CALENDARIO',
-      'CHECKBOX',
-    ];
-    String seleccion = 'ALFANUMERICO';
+  // Widget _tipoCampo(Campos campo) {
+  //   List<String> tipos = [
+  //     'NUMERICO',
+  //     'ALFANUMERICO',
+  //     'CORREO',
+  //     'ALFABETICO',
+  //     'CATALOGO',
+  //     'FIRMA',
+  //     'FOTO',
+  //     'CALENDARIO',
+  //     'CHECKBOX',
+  //   ];
+  //   String seleccion = 'ALFANUMERICO';
 
-    switch (campo.tipoCampo.toUpperCase()) {
-      case 'NUMERICO':
-        seleccion = tipos.elementAt(0);
-        break;
-      case 'ALFANUMERICO':
-        seleccion = tipos.elementAt(1);
-        break;
-      case 'CORREO':
-        seleccion = tipos.elementAt(2);
-        break;
-      case 'ALFABETICO':
-        seleccion = tipos.elementAt(3);
-        break;
-      case 'CATALOGO':
-        seleccion = tipos.elementAt(4);
-        break;
-      case 'FIRMA':
-        seleccion = tipos.elementAt(5);
-        break;
-      case 'FOTO':
-        seleccion = tipos.elementAt(6);
-        break;
-      case 'CALENDARIO':
-        seleccion = tipos.elementAt(7);
-        break;
-      case 'CHECKBOX':
-        seleccion = tipos.elementAt(8);
-        break;
-      default:
-        seleccion = 'ALFANUMERICO';
-        break;
-    }
-    // return TipoCampo(
-    //   tipoSeleccionado: seleccion,
-    //   accion: (String valor) {
-    //     setState(() {
-    //       for (int i = 0; i < _listaAgrupaciones.length; i++) {
-    //         for (int j = 0;
-    //             j < _listaAgrupaciones.elementAt(i).campos.length;
-    //             j++) {
-    //           if (_listaAgrupaciones
-    //                   .elementAt(i)
-    //                   .campos
-    //                   .elementAt(j)
-    //                   .nombreCampo ==
-    //               campo.nombreCampo) {
-    //             _listaAgrupaciones.elementAt(i).campos.elementAt(j).tipoCampo =
-    //                 valor;
-    //             if (_listaAgrupaciones
-    //                         .elementAt(i)
-    //                         .campos
-    //                         .elementAt(j)
-    //                         .tipoCampo ==
-    //                     'FIRMA' ||
-    //                 _listaAgrupaciones
-    //                         .elementAt(i)
-    //                         .campos
-    //                         .elementAt(j)
-    //                         .tipoCampo ==
-    //                     'CATALOGO') {
-    //               _listaAgrupaciones
-    //                   .elementAt(i)
-    //                   .campos
-    //                   .elementAt(j)
-    //                   .controladorRestriccion = new TextEditingController();
-    //               _listaAgrupaciones
-    //                   .elementAt(i)
-    //                   .campos
-    //                   .elementAt(j)
-    //                   .controladorLongitud = new TextEditingController();
-    //             } else {
-    //               TextEditingController controladorRestriccion =
-    //                   new TextEditingController();
-    //               TextEditingController controladorLongitud =
-    //                   new TextEditingController();
-    //               controladorRestriccion.text = 'N/A';
-    //               controladorLongitud.text = '100';
-    //               _listaAgrupaciones
-    //                   .elementAt(i)
-    //                   .campos
-    //                   .elementAt(j)
-    //                   .controladorRestriccion = controladorRestriccion;
-    //               _listaAgrupaciones
-    //                   .elementAt(i)
-    //                   .campos
-    //                   .elementAt(j)
-    //                   .controladorLongitud = controladorLongitud;
-    //             }
-    //           }
-    //         }
-    //       }
-    //     });
-    //   },
-    // );
-  }
+  //   switch (campo.tipoCampo!.toUpperCase()) {
+  //     case 'NUMERICO':
+  //       seleccion = tipos.elementAt(0);
+  //       break;
+  //     case 'ALFANUMERICO':
+  //       seleccion = tipos.elementAt(1);
+  //       break;
+  //     case 'CORREO':
+  //       seleccion = tipos.elementAt(2);
+  //       break;
+  //     case 'ALFABETICO':
+  //       seleccion = tipos.elementAt(3);
+  //       break;
+  //     case 'CATALOGO':
+  //       seleccion = tipos.elementAt(4);
+  //       break;
+  //     case 'FIRMA':
+  //       seleccion = tipos.elementAt(5);
+  //       break;
+  //     case 'FOTO':
+  //       seleccion = tipos.elementAt(6);
+  //       break;
+  //     case 'CALENDARIO':
+  //       seleccion = tipos.elementAt(7);
+  //       break;
+  //     case 'CHECKBOX':
+  //       seleccion = tipos.elementAt(8);
+  //       break;
+  //     default:
+  //       seleccion = 'ALFANUMERICO';
+  //       break;
+  //   }
+  //   return TipoCampo(
+  //     tipoSeleccionado: seleccion,
+  //     accion: (String valor) {
+  //       setState(() {
+  //         for (int i = 0; i < _listaAgrupaciones.length; i++) {
+  //           for (int j = 0;
+  //               j < _listaAgrupaciones.elementAt(i).campos!.length;
+  //               j++) {
+  //             if (_listaAgrupaciones
+  //                     .elementAt(i)
+  //                     .campos!
+  //                     .elementAt(j)
+  //                     .nombreCampo ==
+  //                 campo.nombreCampo) {
+  //               _listaAgrupaciones.elementAt(i).campos!.elementAt(j).tipoCampo =
+  //                   valor;
+  //               if (_listaAgrupaciones
+  //                           .elementAt(i)
+  //                           .campos!
+  //                           .elementAt(j)
+  //                           .tipoCampo ==
+  //                       'FIRMA' ||
+  //                   _listaAgrupaciones
+  //                           .elementAt(i)
+  //                           .campos!
+  //                           .elementAt(j)
+  //                           .tipoCampo ==
+  //                       'CATALOGO') {
+  //                 _listaAgrupaciones
+  //                     .elementAt(i)
+  //                     .campos!
+  //                     .elementAt(j)
+  //                     .controladorRestriccion = new TextEditingController();
+  //                 _listaAgrupaciones
+  //                     .elementAt(i)
+  //                     .campos!
+  //                     .elementAt(j)
+  //                     .controladorLongitud = new TextEditingController();
+  //               } else {
+  //                 TextEditingController controladorRestriccion =
+  //                     new TextEditingController();
+  //                 TextEditingController controladorLongitud =
+  //                     new TextEditingController();
+  //                 controladorRestriccion.text = 'N/A';
+  //                 controladorLongitud.text = '100';
+  //                 _listaAgrupaciones
+  //                     .elementAt(i)
+  //                     .campos!
+  //                     .elementAt(j)
+  //                     .controladorRestriccion = controladorRestriccion;
+  //                 _listaAgrupaciones
+  //                     .elementAt(i)
+  //                     .campos!
+  //                     .elementAt(j)
+  //                     .controladorLongitud = controladorLongitud;
+  //               }
+  //             }
+  //           }
+  //         }
+  //       });
+  //     },
+  //   );
+  // }
 
   void _crearProyecto() async {
     Navigator.of(context).pop();
     PantallaDeCarga.loadingI(context, true);
     List<Agrupaciones> nuevaLista = _actualizarDatos(_listaAgrupaciones);
     await crearProyecto(ApiDefinition.ipServer, nuevaLista, _nombreProyecto,
-        _tipoProyectoSeleccionado);
+        _tipoProyectoSeleccionado!);
 
-    Database db = database();
-    DatabaseReference ref = db.ref('TotalDatos');
+    // Database db = database();
+    // DatabaseReference ref = db.ref('TotalDatos');
 
-    await ref.child(_nombreProyecto).set({
-      'NUEVO': Random().nextInt(100),
-      'ASIGNADO': Random().nextInt(100),
-      'PENDIENTE': Random().nextInt(100),
-      'EN PROCESO': Random().nextInt(100),
-      'CERRADO': Random().nextInt(100),
-    });
+    // await ref.child(_nombreProyecto).set({
+    //   'NUEVO': Random().nextInt(100),
+    //   'ASIGNADO': Random().nextInt(100),
+    //   'PENDIENTE': Random().nextInt(100),
+    //   'EN PROCESO': Random().nextInt(100),
+    //   'CERRADO': Random().nextInt(100),
+    // });
 
     // FirebaseDatabaseWeb.instance
     //     .reference()
@@ -706,47 +712,47 @@ class _CamposProyectoState extends State<CamposProyecto> {
     for (Agrupaciones item in agrupaciones) {
       lista.add(Agrupaciones(agrupacion: item.agrupacion, campos: []));
       respuesta.add(Agrupaciones(agrupacion: item.agrupacion, campos: []));
-      for (Campos campo in item.campos) {
-        lista.last.campos.add(Campos(
+      for (Campos campo in item.campos!) {
+        lista.last.campos!.add(Campos(
           idCampo: campo.idCampo,
           agrupacion: campo.agrupacion,
-          nombreCampo: campo.controladorNombreCampo.text,
+          nombreCampo: campo.controladorNombreCampo!.text,
           tipoCampo: campo.tipoCampo,
           restriccion:
               campo.tipoCampo == 'FIRMA' || campo.tipoCampo == 'CATALOGO'
                   ? 'N/A'
-                  : campo.controladorRestriccion.text,
+                  : campo.controladorRestriccion!.text,
           longitud: campo.tipoCampo == 'FIRMA' || campo.tipoCampo == 'CATALOGO'
               ? 100
-              : int.parse(campo.controladorLongitud.text),
+              : int.parse(campo.controladorLongitud!.text),
           controladorNombreCampo: campo.controladorNombreCampo,
           valorTipoCampo: campo.valorTipoCampo,
           controladorRestriccion: campo.controladorRestriccion,
           controladorLongitud: campo.controladorLongitud,
-          valor: campo.valorController.text,
+          valor: campo.valorController!.text,
         ));
-        respuesta.last.campos.add(Campos(
+        respuesta.last.campos!.add(Campos(
           idCampo: campo.idCampo,
           agrupacion: campo.agrupacion,
-          nombreCampo: campo.controladorNombreCampo.text,
+          nombreCampo: campo.controladorNombreCampo!.text,
           tipoCampo: campo.tipoCampo,
           restriccion:
               campo.tipoCampo == 'FIRMA' || campo.tipoCampo == 'CATALOGO'
                   ? 'N/A'
-                  : campo.controladorRestriccion.text,
+                  : campo.controladorRestriccion!.text,
           longitud: campo.tipoCampo == 'FIRMA' || campo.tipoCampo == 'CATALOGO'
               ? 100
-              : int.parse(campo.controladorLongitud.text),
+              : int.parse(campo.controladorLongitud!.text),
           controladorNombreCampo: campo.controladorNombreCampo,
           valorTipoCampo: campo.valorTipoCampo,
           controladorRestriccion: campo.controladorRestriccion,
           controladorLongitud: campo.controladorLongitud,
-          valor: campo.valorController.text,
+          valor: campo.valorController!.text,
         ));
       }
     }
     for (int i = 0; i < lista.length; i++) {
-      if (lista.elementAt(i).campos.isEmpty) {
+      if (lista.elementAt(i).campos!.isEmpty) {
         respuesta.removeAt(i);
       }
     }

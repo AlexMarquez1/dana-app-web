@@ -10,14 +10,14 @@ class DetallesImagenEvidencia extends StatefulWidget {
   String nombreEvidencia;
   double anchoImagen;
   double altoImagen;
-  Function eliminar;
+  Function() eliminar;
   DetallesImagenEvidencia({
-    Key key,
-    @required this.evidencia,
-    @required this.nombreEvidencia,
-    @required this.anchoImagen,
-    @required this.altoImagen,
-    @required this.eliminar,
+    Key? key,
+    required this.evidencia,
+    required this.nombreEvidencia,
+    required this.anchoImagen,
+    required this.altoImagen,
+    required this.eliminar,
   }) : super(key: key);
 
   @override

@@ -13,9 +13,9 @@ class Catalogo {
     this.catalogo,
   });
 
-  String tipoCatalogo;
-  Proyecto proyecto;
-  List<String> catalogo;
+  String? tipoCatalogo;
+  Proyecto? proyecto;
+  List<String>? catalogo;
 
   factory Catalogo.fromJson(Map<String, dynamic> json) => Catalogo(
         tipoCatalogo: json["tipoCatalogo"] ?? '',
@@ -29,7 +29,7 @@ class Catalogo {
 
   Map<String, dynamic> toJson() => {
         "tipoCatalogo": tipoCatalogo,
-        "proyecto": proyecto.toJson(),
-        "catalogo": List<String>.from(catalogo.map((x) => x)),
+        "proyecto": proyecto!.toJson(),
+        "catalogo": List<String>.from(catalogo!.map((x) => x)),
       };
 }

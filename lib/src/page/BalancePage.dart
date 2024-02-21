@@ -12,10 +12,10 @@ import 'package:loading_animations/loading_animations.dart';
 import '../models/Agrupaciones.dart';
 
 class BalancePage extends StatelessWidget {
-  BalancePage({Key key}) : super(key: key);
+  BalancePage({Key? key}) : super(key: key);
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  String _opcionSeleccionada;
+  String? _opcionSeleccionada;
   String _totalDatosAValidar = '';
   List<String> _listaOpciones = [];
   List<DatosAValidar> _listaSinRegistrar = [];
@@ -87,7 +87,7 @@ class BalancePage extends StatelessWidget {
                                                 ApiDefinition.ipServer,
                                                 _opcionSeleccionada == null
                                                     ? _listaOpciones.first
-                                                    : _opcionSeleccionada),
+                                                    : _opcionSeleccionada!),
                                             builder: (BuildContext context,
                                                 AsyncSnapshot snapshot) {
                                               if (snapshot.hasData) {
@@ -131,7 +131,7 @@ class BalancePage extends StatelessWidget {
           value: _opcionSeleccionada == null
               ? _listaOpciones.first
               : _opcionSeleccionada,
-          onChanged: (value) {
+          onChanged: (String? value) {
             _opcionSeleccionada = value;
             _totalDatosAValidar = '';
             actualizar(() {});
@@ -257,7 +257,7 @@ class BalancePage extends StatelessWidget {
                             fontWeight: FontWeight.bold),
                       ),
                       Expanded(child: Container()),
-                      lista.elementAt(ind).inventario.idinventario != null
+                      lista.elementAt(ind).inventario!.idinventario != null
                           ? IconButton(
                               onPressed: () async {
                                 PantallaDeCarga.loadingI(context, true);
@@ -265,14 +265,20 @@ class BalancePage extends StatelessWidget {
                                     await obtenerDatosCamposRegistro(
                                         ApiDefinition.ipServer,
                                         lista
+                                                    .elementAt(ind)
+                                                    .inventario!
+                                                    .proyecto ==
+                                                null
+                                            ? 0
+                                            : lista
                                                 .elementAt(ind)
-                                                .inventario
-                                                .proyecto ??
-                                            0,
+                                                .inventario!
+                                                .proyecto!
+                                                .idproyecto!,
                                         lista
                                             .elementAt(ind)
-                                            .inventario
-                                            .idinventario);
+                                            .inventario!
+                                            .idinventario!);
                                 PantallaDeCarga.loadingI(context, false);
                                 await showDialog(
                                     barrierDismissible: false,

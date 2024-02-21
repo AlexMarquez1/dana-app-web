@@ -13,11 +13,11 @@ class Firma {
     this.idInventario,
   });
 
-  int idFirma;
-  String nombreFirma;
-  List<int> firma;
-  int idCampo;
-  int idInventario;
+  int? idFirma;
+  String? nombreFirma;
+  List<int>? firma;
+  int? idCampo;
+  int? idInventario;
 
   factory Firma.fromJson(Map<String, dynamic> json) => Firma(
         idFirma: json["idFirma"],
@@ -30,7 +30,7 @@ class Firma {
   Map<String, dynamic> toJson() => {
         "idFirma": idFirma,
         "nombreFirma": nombreFirma,
-        "firma": List<dynamic>.from(firma.map((x) => x)),
+        "firma": List<dynamic>.from(firma!.map((x) => x)),
         "camposProyecto": {'idcamposproyecto': idCampo},
         "inventario": {'idinventario': idInventario},
       };

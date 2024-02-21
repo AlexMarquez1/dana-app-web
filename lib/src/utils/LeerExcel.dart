@@ -54,11 +54,11 @@ class LeerExcel {
 
     for (var table in excel.tables.keys) {
       print(table); //sheet Name
-      print(excel.tables[table].maxCols);
-      print(excel.tables[table].maxRows);
-      for (List<Data> row in excel.tables[table].rows) {
+      print(excel.tables[table]!.maxCols);
+      print(excel.tables[table]!.maxRows);
+      for (List<Data?> row in excel.tables[table]!.rows) {
         String contenidoFila = '';
-        for (Data fila in row) {
+        for (Data? fila in row) {
           contenidoFila += fila == null ? ',' : fila.value.toString() + ',';
         }
         contenidoFila = contenidoFila.substring(0, contenidoFila.length - 1);
@@ -82,15 +82,15 @@ class LeerExcel {
     bool camposCorrectos = false;
 
     print(hoja);
-    print(excel.tables[hoja].maxCols);
-    print(excel.tables[hoja].maxRows);
+    print(excel.tables[hoja]!.maxCols);
+    print(excel.tables[hoja]!.maxRows);
 
-    if (excel.tables[hoja].maxCols == campos.length) {
+    if (excel.tables[hoja]!.maxCols == campos.length) {
       print('misma cantidad de campos');
 
-      for (int i = 0; i < excel.tables[hoja].rows.first.length; i++) {
+      for (int i = 0; i < excel.tables[hoja]!.rows.first.length; i++) {
         if (campos.elementAt(i) ==
-            excel.tables[hoja].rows.first.elementAt(i).value) {
+            excel.tables[hoja]!.rows.first.elementAt(i)!.value) {
           camposCorrectos = true;
         } else {
           camposCorrectos = false;
@@ -103,33 +103,42 @@ class LeerExcel {
     print('camposCorrectos: $camposCorrectos');
     if (camposCorrectos) {
       respuesta['respuesta'] = 'correcto';
-      for (int i = 1; i < excel.tables[hoja].rows.length; i++) {
+      for (int i = 1; i < excel.tables[hoja]!.rows.length; i++) {
         valores = [];
-        folios.add(excel.tables[hoja].rows.elementAt(i).elementAt(0).value !=
-                null
-            ? excel.tables[hoja].rows.elementAt(i).elementAt(0).value.toString()
-            : 'Nuevo Registro');
-
-        print(excel.tables[hoja].rows.elementAt(i).elementAt(0).value != null
-            ? excel.tables[hoja].rows.elementAt(i).elementAt(0).value.toString()
-            : 'Nuevo Registro');
-        for (int j = 0; j < excel.tables[hoja].rows.elementAt(i).length; j++) {
-          if (excel.tables[hoja].rows.elementAt(i).elementAt(j).value != null) {
-            if (excel.tables[hoja].rows
+        folios.add(
+            excel.tables[hoja]!.rows.elementAt(i).elementAt(0)!.value != null
+                ? excel.tables[hoja]!.rows
                     .elementAt(i)
-                    .elementAt(j)
+                    .elementAt(0)!
+                    .value
+                    .toString()
+                : 'Nuevo Registro');
+
+        print(excel.tables[hoja]!.rows.elementAt(i).elementAt(0)!.value != null
+            ? excel.tables[hoja]!.rows
+                .elementAt(i)
+                .elementAt(0)!
+                .value
+                .toString()
+            : 'Nuevo Registro');
+        for (int j = 0; j < excel.tables[hoja]!.rows.elementAt(i).length; j++) {
+          if (excel.tables[hoja]!.rows.elementAt(i).elementAt(j)!.value !=
+              null) {
+            if (excel.tables[hoja]!.rows
+                    .elementAt(i)
+                    .elementAt(j)!
                     .value
                     .toString()
                     .split('-')
                     .length >=
                 3) {
               String fechaObtenida =
-                  '${excel.tables[hoja].rows.elementAt(i).elementAt(j).value.toString().split('-')[2].substring(0, 2)}/${excel.tables[hoja].rows.elementAt(i).elementAt(j).value.toString().split('-')[1]}/${excel.tables[hoja].rows.elementAt(i).elementAt(j).value.toString().split('-')[0]}';
+                  '${excel.tables[hoja]!.rows.elementAt(i).elementAt(j)!.value.toString().split('-')[2].substring(0, 2)}/${excel.tables[hoja]!.rows.elementAt(i).elementAt(j)!.value.toString().split('-')[1]}/${excel.tables[hoja]!.rows.elementAt(i).elementAt(j)!.value.toString().split('-')[0]}';
               valores.add(
                 ValoresCampo(
                   idCampo: idCampos.elementAt(j),
                   valor:
-                      excel.tables[hoja].rows.elementAt(i).elementAt(j) != null
+                      excel.tables[hoja]!.rows.elementAt(i).elementAt(j) != null
                           ? fechaObtenida
                           : '-',
                 ),
@@ -139,10 +148,10 @@ class LeerExcel {
                 ValoresCampo(
                   idCampo: idCampos.elementAt(j),
                   valor:
-                      excel.tables[hoja].rows.elementAt(i).elementAt(j) != null
-                          ? excel.tables[hoja].rows
+                      excel.tables[hoja]!.rows.elementAt(i).elementAt(j) != null
+                          ? excel.tables[hoja]!.rows
                               .elementAt(i)
-                              .elementAt(j)
+                              .elementAt(j)!
                               .value
                               .toString()
                           : '-',
@@ -153,13 +162,14 @@ class LeerExcel {
             valores.add(
               ValoresCampo(
                 idCampo: idCampos.elementAt(j),
-                valor: excel.tables[hoja].rows.elementAt(i).elementAt(j) != null
-                    ? excel.tables[hoja].rows
-                        .elementAt(i)
-                        .elementAt(j)
-                        .value
-                        .toString()
-                    : '-',
+                valor:
+                    excel.tables[hoja]!.rows.elementAt(i).elementAt(j) != null
+                        ? excel.tables[hoja]!.rows
+                            .elementAt(i)
+                            .elementAt(j)!
+                            .value
+                            .toString()
+                        : '-',
               ),
             );
           }

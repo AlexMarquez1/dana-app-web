@@ -18,27 +18,25 @@ import 'package:app_isae_desarrollo/src/providers/evidenciaSeleccionadaProvider.
 import 'package:app_isae_desarrollo/src/providers/notificacionProbider.dart';
 import 'package:app_isae_desarrollo/src/providers/registroProvider.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:responsive_framework/responsive_framework.dart';
-import 'package:firebase/firebase.dart';
 
 void main() {
-  if (apps.isEmpty) {
-    initializeApp(
-      apiKey: "AIzaSyDYsaRLxNsjG-N2sMi5NAruxN0h6QzfkFA",
-      authDomain: "isae-de6da.firebaseapp.com",
-      databaseURL: "https://isae-de6da.firebaseio.com",
-      projectId: "isae-de6da",
-      appId: "1:972087423452:web:2a371fa79ca495c6f75f19",
-      storageBucket: "isae-de6da.appspot.com",
-    );
-  }
+  // if (apps.isEmpty) {
+  //   initializeApp(
+  //     apiKey: "AIzaSyDYsaRLxNsjG-N2sMi5NAruxN0h6QzfkFA",
+  //     authDomain: "isae-de6da.firebaseapp.com",
+  //     databaseURL: "https://isae-de6da.firebaseio.com",
+  //     projectId: "isae-de6da",
+  //     appId: "1:972087423452:web:2a371fa79ca495c6f75f19",
+  //     storageBucket: "isae-de6da.appspot.com",
+  //   );
+  // }
   runApp(AppState());
 }
 
 class AppState extends StatelessWidget {
-  const AppState({Key key}) : super(key: key);
+  const AppState({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -70,14 +68,14 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      localizationsDelegates: [GlobalMaterialLocalizations.delegate],
+      // localizationsDelegates: [GlobalMaterialLocalizations.delegate],
       supportedLocales: [
         const Locale('en', 'US'),
       ],
       debugShowCheckedModeBanner: false,
       title: 'Isae app',
       builder: (context, widget) => ResponsiveWrapper.builder(
-        BouncingScrollWrapper.builder(context, widget),
+        BouncingScrollWrapper.builder(context, widget!),
         //maxWidth: 1200,
         minWidth: 700,
         defaultScale: true,

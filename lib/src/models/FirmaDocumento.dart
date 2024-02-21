@@ -15,12 +15,12 @@ class FirmaDocumento {
     this.inventario,
   });
 
-  int idfirma;
-  String nombrefirma;
-  String url;
-  int longitud;
-  int camposProyecto;
-  int inventario;
+  int? idfirma;
+  String? nombrefirma;
+  String? url;
+  int? longitud;
+  int? camposProyecto;
+  int? inventario;
 
   factory FirmaDocumento.fromJson(Map<String, dynamic> json) => FirmaDocumento(
         idfirma: json["idfirma"] ?? 0,

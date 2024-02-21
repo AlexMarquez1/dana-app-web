@@ -12,14 +12,14 @@ String historialCambiosToJson(HistorialCambios data) =>
     json.encode(data.toJson());
 
 class HistorialCambios {
-  int idhistorial;
-  Inventario inventario;
-  Usuario usuario;
-  CamposProyecto campo;
-  String valoranterior;
-  String valornuevo;
-  String fechacambio;
-  String horacambio;
+  int? idhistorial;
+  Inventario? inventario;
+  Usuario? usuario;
+  CamposProyecto? campo;
+  String? valoranterior;
+  String? valornuevo;
+  String? fechacambio;
+  String? horacambio;
 
   HistorialCambios({
     this.idhistorial,
@@ -46,9 +46,9 @@ class HistorialCambios {
 
   Map<String, dynamic> toJson() => {
         "idhistorial": idhistorial,
-        "inventario": inventario.toJson(),
-        "usuario": usuario.toJson(),
-        "campo": campo.toJson(),
+        "inventario": inventario!.toJson(),
+        "usuario": usuario!.toJson(),
+        "campo": campo!.toJson(),
         "valoranterior": valoranterior,
         "valornuevo": valornuevo,
         "fechacambio": fechacambio,

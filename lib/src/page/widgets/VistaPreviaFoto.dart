@@ -4,11 +4,11 @@ import 'package:flutter/material.dart';
 
 class VistaPreviaFoto extends StatelessWidget {
   String urlImagen;
-  Uint8List bytes;
+  Uint8List? bytes;
   VistaPreviaFoto({
-    Key key,
+    Key? key,
     this.bytes,
-    @required this.urlImagen,
+    required this.urlImagen,
   }) : super(key: key);
 
   @override
@@ -43,7 +43,7 @@ class VistaPreviaFoto extends StatelessWidget {
                       : Container(
                           color: Colors.white,
                           margin: EdgeInsets.only(top: 50.0),
-                          child: Image.memory(bytes),
+                          child: Image.memory(bytes!),
                         ),
                   SizedBox(
                     height: 20.0,

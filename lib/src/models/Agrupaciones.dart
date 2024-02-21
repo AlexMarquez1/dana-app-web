@@ -15,9 +15,9 @@ class Agrupaciones {
     this.idInventario,
   });
 
-  String agrupacion;
-  int idInventario;
-  List<Campos> campos;
+  String? agrupacion;
+  int? idInventario;
+  List<Campos>? campos;
 
   factory Agrupaciones.fromJson(Map<String, dynamic> json) {
     Agrupaciones agrupacion;
@@ -37,6 +37,6 @@ class Agrupaciones {
 
   Map<String, dynamic> toJson() => {
         "agrupacion": agrupacion,
-        "campos": List<Campos>.from(campos.map((x) => x)),
+        "campos": List<Campos>.from(campos!.map((x) => x)),
       };
 }

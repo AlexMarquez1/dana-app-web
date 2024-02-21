@@ -13,10 +13,10 @@ class ValoresCampos {
     this.valor,
   });
 
-  String idvalor;
-  int idcampoproyecto;
-  int idinventario;
-  String valor;
+  String? idvalor;
+  int? idcampoproyecto;
+  int? idinventario;
+  String? valor;
 
   factory ValoresCampos.fromJson(Map<String, dynamic> json) => ValoresCampos(
         idvalor: json["idvalor"],

@@ -17,13 +17,13 @@ class Cliente {
     this.clienteAplicacion,
   });
 
-  int idcliente;
-  String cliente;
-  String telefono;
-  String direccion;
-  String urllogo;
-  String estatus;
-  ClienteAplicacion clienteAplicacion;
+  int? idcliente;
+  String? cliente;
+  String? telefono;
+  String? direccion;
+  String? urllogo;
+  String? estatus;
+  ClienteAplicacion? clienteAplicacion;
 
   factory Cliente.fromJson(Map<String, dynamic> json) => Cliente(
         idcliente: json["idcliente"] ?? 0,

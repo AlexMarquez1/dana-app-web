@@ -32,17 +32,17 @@ class EditarRegistro extends StatelessWidget {
   Inventario inventarioSeleccionado;
   RegistroProvider registroProvider;
   ScrollController _scrollController = ScrollController();
-  StateSetter actualizar;
-  bool nuevo = false;
+  StateSetter? actualizar;
+  bool? nuevo = false;
   EditarRegistro({
-    @required this.size,
-    @required this.proyecto,
-    @required this.formKeyRegistro,
-    @required this.usuarioSeleccionado,
-    @required this.inventarioSeleccionado,
-    @required this.registroProvider,
-    @required this.actualizar,
-    @required this.nuevo,
+    required this.size,
+    required this.proyecto,
+    required this.formKeyRegistro,
+    required this.usuarioSeleccionado,
+    required this.inventarioSeleccionado,
+    required this.registroProvider,
+    this.actualizar,
+    this.nuevo,
   }) : super();
 
   @override
@@ -60,7 +60,7 @@ class EditarRegistro extends StatelessWidget {
                   return _cargarCampos(context, 'fila', proyecto, setState);
                 }),
         ),
-        VariablesGlobales.usuario.perfil.idperfil != "4"
+        VariablesGlobales.usuario.perfil!.idperfil != "4"
             ? _condicionesPemexBorrado(context)
             : Container(),
       ],
@@ -79,7 +79,7 @@ class EditarRegistro extends StatelessWidget {
       //     .valor);
       if (registroProvider.listaAgrupaciones
                       .elementAt(1)
-                      .campos
+                      .campos!
                       .elementAt(20)
                       .valor ==
                   'ENTREGADO A STE' &&
@@ -89,7 +89,7 @@ class EditarRegistro extends StatelessWidget {
       } else {
         if (registroProvider.listaAgrupaciones
                 .elementAt(1)
-                .campos
+                .campos!
                 .elementAt(20)
                 .valor !=
             'ENTREGADO A STE') {
@@ -111,7 +111,7 @@ class EditarRegistro extends StatelessWidget {
           Container(
             padding: EdgeInsets.only(top: 10.0, right: 10.0),
             alignment: Alignment.centerRight,
-            child: nuevo
+            child: nuevo!
                 ? ElevatedButton(
                     onPressed: () async {
                       String respuestaDuplicados =
@@ -119,8 +119,8 @@ class EditarRegistro extends StatelessWidget {
                       print('Respuesta duplicados: $respuestaDuplicados');
                       if (respuestaDuplicados == 'SIN DUPLICADOS') {
                         if (usuarioSeleccionado != null) {
-                          if (formKeyRegistro.currentState.validate()) {
-                            formKeyRegistro.currentState.save();
+                          if (formKeyRegistro.currentState!.validate()) {
+                            formKeyRegistro.currentState!.save();
                             print('Todos los campos tienen informacion');
                             _mensaje(
                                 context,
@@ -131,16 +131,16 @@ class EditarRegistro extends StatelessWidget {
                                     : VariablesGlobales.usuario);
                           } else {
                             print(
-                                'Id Campo Folio: ${registroProvider.listaAgrupaciones.elementAt(0).campos.elementAt(0).idCampo} ');
+                                'Id Campo Folio: ${registroProvider.listaAgrupaciones.elementAt(0).campos!.elementAt(0).idCampo} ');
                             if (registroProvider.listaAgrupaciones
                                 .elementAt(0)
-                                .campos
+                                .campos!
                                 .elementAt(0)
-                                .valorController
+                                .valorController!
                                 .text
                                 .isNotEmpty) {
                               print('Folio con informacion');
-                              formKeyRegistro.currentState.save();
+                              formKeyRegistro.currentState!.save();
                               _mensaje(
                                   context,
                                   '¿Estas seguro de crear un registro con uno o mas campos vacios?',
@@ -168,7 +168,7 @@ class EditarRegistro extends StatelessWidget {
                 : ElevatedButton(
                     onPressed: () async {
                       PantallaDeCarga.loadingI(context, true);
-                      formKeyRegistro.currentState.save();
+                      formKeyRegistro.currentState!.save();
                       List<ValoresCampos> valores = [];
                       String respuestaDuplicados = '';
 
@@ -177,23 +177,23 @@ class EditarRegistro extends StatelessWidget {
                       if (respuestaDuplicados == 'SIN DUPLICADOS') {
                         for (Agrupaciones agrupaciones
                             in registroProvider.listaAgrupaciones) {
-                          for (Campos item in agrupaciones.campos) {
+                          for (Campos item in agrupaciones.campos!) {
                             try {
                               valores.add(ValoresCampos(
-                                valor: item.valorController.text,
+                                valor: item.valorController!.text,
                                 idcampoproyecto: item.idCampo,
                                 idinventario:
                                     inventarioSeleccionado.idinventario,
                               ));
 
                               if (item.tipoCampo == 'CATALOGO-INPUT') {
-                                if (item.valorController.text.isNotEmpty) {
+                                if (item.valorController!.text.isNotEmpty) {
                                   await nuevoCatalogoAutoCompleteUsuario(
                                       ApiDefinition.ipServer,
-                                      item.nombreCampo,
-                                      proyecto.idproyecto,
-                                      usuarioSeleccionado.idUsuario,
-                                      item.valorController.text);
+                                      item.nombreCampo!,
+                                      proyecto.idproyecto!,
+                                      usuarioSeleccionado.idUsuario!,
+                                      item.valorController!.text);
                                 }
                               }
                             } catch (e) {
@@ -218,13 +218,13 @@ class EditarRegistro extends StatelessWidget {
                               _guardarFirmas(inventarioSeleccionado);
 
                           mandarDatos['fotos'] = _guardarEvidencia(
-                              inventarioSeleccionado.idinventario);
+                              inventarioSeleccionado.idinventario!);
 
                           mandarDatos['estatus'] =
                               inventarioSeleccionado.estatus;
 
                           mandarDatos['evidencias'] = _guardarEvidencias(
-                              inventarioSeleccionado.idinventario);
+                              inventarioSeleccionado.idinventario!);
 
                           PantallaDeCarga.loadingI(context, true);
 
@@ -250,10 +250,10 @@ class EditarRegistro extends StatelessWidget {
                           //     inventarioSeleccionado.idinventario);
                           // await _guardarEvidencia(
                           //     inventarioSeleccionado.idinventario);
-                          actualizar(() {});
+                          actualizar!(() {});
                           //Genera al documento tras una actualizacion de datos
                           await volverAGenerarDocumento(ApiDefinition.ipServer,
-                              inventarioSeleccionado.idinventario);
+                              inventarioSeleccionado.idinventario!);
                           Future.delayed(Duration(seconds: 5), () {
                             PantallaDeCarga.loadingI(context, false);
                             Navigator.pop(context);
@@ -281,8 +281,8 @@ class EditarRegistro extends StatelessWidget {
                 child: Text('Cancelar'),
               )),
           Expanded(child: Container()),
-          VariablesGlobales.usuario.perfil.idperfil == '1' ||
-                  VariablesGlobales.usuario.perfil.idperfil == '2'
+          VariablesGlobales.usuario.perfil!.idperfil == '1' ||
+                  VariablesGlobales.usuario.perfil!.idperfil == '2'
               ? Container(
                   padding: EdgeInsets.only(top: 10.0, right: 10.0),
                   alignment: Alignment.centerRight,
@@ -416,34 +416,34 @@ class EditarRegistro extends StatelessWidget {
                                     ApiDefinition.ipServer,
                                     registroProvider.listaAgrupaciones
                                         .elementAt(0)
-                                        .campos
+                                        .campos!
                                         .elementAt(0)
-                                        .valorController
+                                        .valorController!
                                         .text,
-                                    proyecto.idproyecto);
+                                    proyecto.idproyecto!);
                             if (idInventario.first != 'existe') {
                               if (idInventario.elementAt(0) != 'NULL') {
                                 List<ValoresCampo> listaValores = [];
                                 for (Agrupaciones agrupaciones
                                     in registroProvider.listaAgrupaciones) {
-                                  for (Campos campo in agrupaciones.campos) {
+                                  for (Campos campo in agrupaciones.campos!) {
                                     listaValores.add(ValoresCampo(
                                         idCampo: campo.idCampo,
                                         idInventario:
                                             int.parse(idInventario.first),
-                                        valor: campo.valorController.text));
+                                        valor: campo.valorController!.text));
 
                                     if (campo.tipoCampo == 'CATALOGO-INPUT') {
-                                      if (campo.valorController.text
+                                      if (campo.valorController!.text
                                               .isNotEmpty &&
-                                          campo.valorController.text.length >
+                                          campo.valorController!.text.length >
                                               2) {
                                         await nuevoCatalogoAutoCompleteUsuario(
                                             ApiDefinition.ipServer,
-                                            campo.nombreCampo,
-                                            proyecto.idproyecto,
-                                            usuario.idUsuario,
-                                            campo.valorController.text);
+                                            campo.nombreCampo!,
+                                            proyecto.idproyecto!,
+                                            usuario.idUsuario!,
+                                            campo.valorController!.text);
                                       }
                                     }
                                   }
@@ -454,12 +454,12 @@ class EditarRegistro extends StatelessWidget {
                                 if (usuarioSeleccionado != null) {
                                   await asignarRegistro(
                                       ApiDefinition.ipServer,
-                                      usuarioSeleccionado.idUsuario,
+                                      usuarioSeleccionado.idUsuario!,
                                       idInventario);
                                 } else {
                                   await asignarRegistro(
                                       ApiDefinition.ipServer,
-                                      VariablesGlobales.usuario.idUsuario,
+                                      VariablesGlobales.usuario.idUsuario!,
                                       idInventario);
                                 }
                                 List<Firma> listaFirmas = _guardarFirmas(
@@ -482,14 +482,14 @@ class EditarRegistro extends StatelessWidget {
                                   await actualizarEvidencia(
                                       ApiDefinition.ipServer,
                                       element,
-                                      VariablesGlobales.usuario.idUsuario);
+                                      VariablesGlobales.usuario.idUsuario!);
                                 });
 
                                 listaEvidencias.forEach((element) async {
                                   await actualizarEvidencia(
                                       ApiDefinition.ipServer,
                                       element,
-                                      VariablesGlobales.usuario.idUsuario);
+                                      VariablesGlobales.usuario.idUsuario!);
                                 });
                               } else {
                                 print('Error al obtener el id del inventario');
@@ -605,12 +605,12 @@ class EditarRegistro extends StatelessWidget {
                 isAscending = false;
                 // sort the product list in Ascending, order by Price
                 historial.sort((historialA, historialB) =>
-                    historialB.fechacambio.compareTo(historialA.fechacambio));
+                    historialB.fechacambio!.compareTo(historialA.fechacambio!));
               } else {
                 isAscending = true;
                 // sort the product list in Descending, order by Price
                 historial.sort((historialA, historialB) =>
-                    historialA.fechacambio.compareTo(historialB.fechacambio));
+                    historialA.fechacambio!.compareTo(historialB.fechacambio!));
               }
             });
           },
@@ -649,8 +649,8 @@ class EditarRegistro extends StatelessWidget {
       respuesta = await comprobarValoresDuplicado(
           ApiDefinition.ipServer,
           datosABuscar,
-          registroProvider.inventario.proyecto.idproyecto,
-          registroProvider.inventario.idinventario);
+          registroProvider.inventario.proyecto!.idproyecto!,
+          registroProvider.inventario.idinventario!);
     } else {
       respuesta = 'SIN DUPLICADOS';
     }
@@ -678,7 +678,7 @@ class EditarRegistro extends StatelessWidget {
     }
     if (datosABuscar.isNotEmpty) {
       respuesta = await comprobarValoresDuplicado(
-          ApiDefinition.ipServer, datosABuscar, proyecto.idproyecto, 0);
+          ApiDefinition.ipServer, datosABuscar, proyecto.idproyecto!, 0);
     } else {
       respuesta = 'SIN DUPLICADOS';
     }
@@ -734,11 +734,11 @@ class EditarRegistro extends StatelessWidget {
   List<Firma> _guardarFirmas(Inventario registro) {
     List<Firma> lista = [];
     for (String firma in registroProvider.firmas.keys) {
-      if (registroProvider.comprobarFirmas[firma]) {
+      if (registroProvider.comprobarFirmas[firma]!) {
         List<int> firmaInt = [];
-        Uint8List byte = registroProvider.firmas[firma].buffer.asUint8List(
-            registroProvider.firmas[firma].offsetInBytes,
-            registroProvider.firmas[firma].lengthInBytes);
+        Uint8List byte = registroProvider.firmas[firma]!.buffer.asUint8List(
+            registroProvider.firmas[firma]!.offsetInBytes,
+            registroProvider.firmas[firma]!.lengthInBytes);
         firmaInt = byte.cast<int>();
 
         Firma datosFirma = Firma(
@@ -782,9 +782,9 @@ class EditarRegistro extends StatelessWidget {
   List<Evidencia> _guardarEvidencia(int idRegistro) {
     List<Evidencia> lista = [];
     for (String evidencia in registroProvider.evidencia.keys) {
-      if (registroProvider.comprobarFotos[evidencia]) {
+      if (registroProvider.comprobarFotos[evidencia]!) {
         List<int> evidenciaInt = [];
-        Uint8List byte = registroProvider.evidencia[evidencia];
+        Uint8List byte = registroProvider.evidencia[evidencia]!;
         evidenciaInt = byte.cast<int>();
 
         Evidencia fotoEvidencia = Evidencia(
@@ -825,9 +825,9 @@ class EditarRegistro extends StatelessWidget {
   int _obtenerIdCampo(String campoARecuperar) {
     int respuesta = 0;
     for (Agrupaciones agrupacion in registroProvider.listaAgrupaciones) {
-      for (Campos campo in agrupacion.campos) {
+      for (Campos campo in agrupacion.campos!) {
         if (campoARecuperar == campo.nombreCampo) {
-          respuesta = campo.idCampo;
+          respuesta = campo.idCampo!;
           break;
         }
       }
@@ -844,7 +844,7 @@ class EditarRegistro extends StatelessWidget {
             i <
                 registroProvider.listaAgrupaciones
                     .elementAt(indAgrupacion)
-                    .campos
+                    .campos!
                     .length;
             i++)
           Padding(
@@ -854,7 +854,7 @@ class EditarRegistro extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 _nombreCampo(
-                    '${registroProvider.listaAgrupaciones.elementAt(indAgrupacion).campos.elementAt(i).nombreCampo}'),
+                    '${registroProvider.listaAgrupaciones.elementAt(indAgrupacion).campos!.elementAt(i).nombreCampo}'),
                 SizedBox(
                   width: 10.0,
                 ),
@@ -883,7 +883,7 @@ class EditarRegistro extends StatelessWidget {
             i <
                 registroProvider.listaAgrupaciones
                     .elementAt(indAgrupacion)
-                    .campos
+                    .campos!
                     .length;
             i++)
           Padding(
@@ -893,7 +893,7 @@ class EditarRegistro extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 _nombreCampo(
-                    '${registroProvider.listaAgrupaciones.elementAt(indAgrupacion).campos.elementAt(i).nombreCampo}'),
+                    '${registroProvider.listaAgrupaciones.elementAt(indAgrupacion).campos!.elementAt(i).nombreCampo}'),
                 TipoDeCampos(
                     indAgrupacion: indAgrupacion,
                     indCampo: i,

@@ -6,7 +6,7 @@ import 'package:app_isae_desarrollo/src/utils/VariablesGlobales.dart';
 import 'package:flutter/material.dart';
 
 class InicioPage extends StatefulWidget {
-  const InicioPage({Key key}) : super(key: key);
+  const InicioPage({Key? key}) : super(key: key);
 
   @override
   _InicioPageState createState() => _InicioPageState();
@@ -42,7 +42,7 @@ class _InicioPageState extends State<InicioPage> {
                 alignment: WrapAlignment.center,
                 crossAxisAlignment: WrapCrossAlignment.center,
                 children:
-                    _ordenarInicio(VariablesGlobales.usuario.perfil.perfil),
+                    _ordenarInicio(VariablesGlobales.usuario.perfil!.perfil!),
               ),
             ),
           ],

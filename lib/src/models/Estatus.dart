@@ -17,11 +17,11 @@ class Estatus {
     this.inventario,
   });
 
-  String estatus;
-  String agrupacion;
-  String motivo;
-  String descripcion;
-  Inventario inventario;
+  String? estatus;
+  String? agrupacion;
+  String? motivo;
+  String? descripcion;
+  Inventario? inventario;
 
   factory Estatus.fromJson(Map<String, dynamic> json) => Estatus(
         estatus: json["estatus"],
@@ -35,7 +35,7 @@ class Estatus {
         "estatus": estatus,
         "agrupacion": agrupacion,
         "motivo": motivo,
-        "inventario": inventario.toJson(),
+        "inventario": inventario!.toJson(),
         "descripcion": descripcion,
       };
 }

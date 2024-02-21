@@ -4,13 +4,13 @@ class TarjetaInformacion extends StatelessWidget {
   double width;
   String titulo;
   Widget contenido;
-  Function click;
+  Function() click;
   TarjetaInformacion(
       {key,
-      @required this.width,
+      required this.width,
       this.titulo = '',
-      this.contenido,
-      this.click});
+      required this.contenido,
+      required this.click});
   final colorPrincipal = Colors.white38;
 
   @override

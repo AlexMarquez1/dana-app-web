@@ -18,10 +18,10 @@ class EdicionAsignada {
     this.inventario,
   });
 
-  int idedicion;
-  CamposProyecto camposProyecto;
-  Usuario usuario;
-  Inventario inventario;
+  int? idedicion;
+  CamposProyecto? camposProyecto;
+  Usuario? usuario;
+  Inventario? inventario;
 
   factory EdicionAsignada.fromJson(Map<String, dynamic> json) =>
       EdicionAsignada(
@@ -33,8 +33,8 @@ class EdicionAsignada {
 
   Map<String, dynamic> toJson() => {
         "idedicion": idedicion,
-        "camposProyecto": camposProyecto.toJson(),
-        "usuario": usuario.toJson(),
-        "inventario": inventario.toJson(),
+        "camposProyecto": camposProyecto!.toJson(),
+        "usuario": usuario!.toJson(),
+        "inventario": inventario!.toJson(),
       };
 }

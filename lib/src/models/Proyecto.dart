@@ -12,10 +12,10 @@ class Proyecto {
     this.fechacreacion,
   });
 
-  int idproyecto;
-  String proyecto;
-  String descripcion;
-  String fechacreacion;
+  int? idproyecto;
+  String? proyecto;
+  String? descripcion;
+  String? fechacreacion;
 
   factory Proyecto.fromJson(Map<String, dynamic> json) => Proyecto(
         idproyecto: json["idproyecto"] ?? 0,

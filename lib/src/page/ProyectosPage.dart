@@ -1,19 +1,13 @@
 import 'dart:convert';
-import 'dart:html' as html;
 import 'dart:io';
-import 'dart:ui' as ui;
-import 'dart:typed_data';
 import 'dart:math';
-
+import 'dart:html' as html;
 import 'package:app_isae_desarrollo/src/models/Agrupaciones.dart';
 import 'package:app_isae_desarrollo/src/models/Campos.dart';
 import 'package:app_isae_desarrollo/src/models/Catalogo.dart';
 import 'package:app_isae_desarrollo/src/models/Evidencia.dart';
 import 'package:app_isae_desarrollo/src/models/Firma.dart';
-import 'package:app_isae_desarrollo/src/models/FirmaDocumento.dart';
-import 'package:app_isae_desarrollo/src/models/Inventario.dart';
 import 'package:app_isae_desarrollo/src/models/Proyecto.dart';
-import 'package:app_isae_desarrollo/src/models/TotalDatos.dart';
 import 'package:app_isae_desarrollo/src/models/ValoresCampo.dart';
 import 'package:app_isae_desarrollo/src/page/widgets/Dialogos.dart';
 import 'package:app_isae_desarrollo/src/page/widgets/DrawerWidget.dart';
@@ -27,16 +21,12 @@ import 'package:app_isae_desarrollo/src/services/APIWebService/Consultas.dart';
 import 'package:app_isae_desarrollo/src/utils/LeerExcel.dart';
 import 'package:app_isae_desarrollo/src/utils/UpperCaseTextFormatterCustom.dart';
 import 'package:app_isae_desarrollo/src/utils/VariablesGlobales.dart';
-import 'package:checkbox_formfield/checkbox_list_tile_formfield.dart';
 import 'package:csv/csv.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:firebase/firebase.dart';
 // import 'package:firebase_db_web_unofficial/DatabaseSnapshot.dart';
 // import 'package:firebase_db_web_unofficial/firebasedbwebunofficial.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_signature_pad/flutter_signature_pad.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../models/CamposProyecto.dart';
@@ -46,14 +36,14 @@ class ProyectosPage extends StatelessWidget {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final _formKeyRegistro = GlobalKey<FormState>();
   final _formKeyEliminarProyecto = GlobalKey<FormState>();
-  RegistroProvider _registroProvider;
+  RegistroProvider? _registroProvider;
 
   List<Agrupaciones> _listaAgrupaciones = [];
   TextEditingController _nombreProyectoController = TextEditingController();
   TextEditingController _passwordEliminarProyectoController =
       new TextEditingController();
   TextEditingController _controllerUsuarios = TextEditingController();
-  String _tipoProyectoSeleccionado;
+  String? _tipoProyectoSeleccionado;
   List<String> _listaTipoProyectos = [];
   List<Proyecto> _listaProyectos = [];
   List<Usuario> _listaUsuario = [];
@@ -62,7 +52,7 @@ class ProyectosPage extends StatelessWidget {
   Map<String, int> _idCampofirma = new Map<String, int>();
   Map<String, int> _idCampoEvidencia = new Map<String, int>();
 
-  Usuario _usuarioSeleccionado;
+  Usuario? _usuarioSeleccionado;
 
   @override
   Widget build(BuildContext context) {
@@ -141,7 +131,7 @@ class ProyectosPage extends StatelessWidget {
   Widget _obtenerColumna(BuildContext context, Size sizePantalla) {
     return Column(
       children: [
-        VariablesGlobales.usuario.perfil.perfil == 'Super Admin'
+        VariablesGlobales.usuario.perfil!.perfil == 'Super Admin'
             ? Container(
                 width: sizePantalla.width * 0.7,
                 margin: EdgeInsets.symmetric(horizontal: 15.0),
@@ -272,7 +262,7 @@ class ProyectosPage extends StatelessWidget {
             border: OutlineInputBorder(),
           ),
           value: _tipoProyectoSeleccionado,
-          onChanged: (valor) {
+          onChanged: (String? valor) {
             _tipoProyectoSeleccionado = valor;
             actualizar(() {});
           },
@@ -293,7 +283,7 @@ class ProyectosPage extends StatelessWidget {
       builder: (BuildContext context, AsyncSnapshot<List<String>> snapShot) {
         if (snapShot.hasData) {
           List<String> lista = [];
-          for (String tipo in snapShot.data) {
+          for (String tipo in snapShot.data!) {
             lista.add(tipo);
           }
           _listaTipoProyectos = lista;
@@ -314,7 +304,7 @@ class ProyectosPage extends StatelessWidget {
     } else if (_tipoProyectoSeleccionado == null) {
       Dialogos.error(context, 'Selecciona el tipo de proyecto');
     } else {
-      FilePickerResult result = await FilePicker.platform.pickFiles(
+      FilePickerResult? result = await FilePicker.platform.pickFiles(
         type: FileType.custom,
         allowedExtensions: ['xlsx', 'xls'],
       );
@@ -325,13 +315,13 @@ class ProyectosPage extends StatelessWidget {
         String fileName;
         List<String> listaObtenida = [];
         if (result.files.first.bytes == null) {
-          File archivo = new File(lectura.path);
+          File archivo = new File(lectura.path!);
           fileBytes = await archivo.readAsBytes();
           fileName = lectura.name;
           // listaObtenida = LeerExcel.leerArchivoCSV(fileBytes);
           listaObtenida = LeerExcel.leerCamposExcel(fileBytes);
         } else {
-          fileBytes = lectura.bytes;
+          fileBytes = lectura.bytes!;
           fileName = lectura.name;
           // listaObtenida = LeerExcel.leerArchivoCSV(fileBytes);
           listaObtenida = LeerExcel.leerCamposExcel(fileBytes);
@@ -392,7 +382,7 @@ class ProyectosPage extends StatelessWidget {
                       listaObtenida.elementAt(i).split(',')[3].toUpperCase();
                   controllerLongitud.text =
                       listaObtenida.elementAt(i).split(',')[4];
-                  campos[listaObtenida.elementAt(i).split(',')[2]].add(Campos(
+                  campos[listaObtenida.elementAt(i).split(',')[2]]!.add(Campos(
                       idCampo: 0,
                       agrupacion: listaObtenida
                           .elementAt(i)
@@ -521,7 +511,7 @@ class ProyectosPage extends StatelessWidget {
                   DataColumn(label: Text('Proyecto'.toUpperCase())),
                   DataColumn(label: Text('Descripcion'.toUpperCase())),
                   DataColumn(label: Text('Fecha'.toUpperCase())),
-                  VariablesGlobales.usuario.perfil.perfil == 'Super Admin'
+                  VariablesGlobales.usuario.perfil!.perfil == 'Super Admin'
                       ? DataColumn(label: Text('Eliminar'.toUpperCase()))
                       : DataColumn(label: Text('')),
                 ],
@@ -531,17 +521,17 @@ class ProyectosPage extends StatelessWidget {
                               PantallaDeCarga.loadingI(context, true);
                               _usuarioSeleccionado = null;
                               _listaUsuario = await _obtenerUsuarios();
-                              await _registroProvider.nuevoRegistro(
+                              await _registroProvider!.nuevoRegistro(
                                 proyecto,
                               );
                               PantallaDeCarga.loadingI(context, false);
                               _mostrarCampos(context, proyecto);
                             },
                             cells: [
-                              DataCell(Text(proyecto.proyecto)),
-                              DataCell(Text(proyecto.descripcion)),
-                              DataCell(Text(proyecto.fechacreacion)),
-                              VariablesGlobales.usuario.perfil.perfil ==
+                              DataCell(Text(proyecto.proyecto!)),
+                              DataCell(Text(proyecto.descripcion!)),
+                              DataCell(Text(proyecto.fechacreacion!)),
+                              VariablesGlobales.usuario.perfil!.perfil ==
                                       'Super Admin'
                                   ? DataCell(IconButton(
                                       onPressed: () async {
@@ -618,8 +608,8 @@ class ProyectosPage extends StatelessWidget {
                               decoration: InputDecoration(
                                   border: OutlineInputBorder(),
                                   hintText: 'Contraseña'),
-                              validator: (String valor) {
-                                if (valor.isNotEmpty) {
+                              validator: (String? valor) {
+                                if (valor!.isNotEmpty) {
                                   return null;
                                 } else {
                                   return 'Ingresa la contraseña para poder eliminar el proyecto';
@@ -637,7 +627,7 @@ class ProyectosPage extends StatelessWidget {
                               width: 100.0,
                               child: ElevatedButton(
                                 onPressed: () {
-                                  if (_formKeyEliminarProyecto.currentState
+                                  if (_formKeyEliminarProyecto.currentState!
                                       .validate()) {
                                     print(
                                         'Contraseña: ${_passwordEliminarProyectoController.text}');
@@ -722,8 +712,8 @@ class ProyectosPage extends StatelessWidget {
                     SizedBox(
                       width: 20.0,
                     ),
-                    VariablesGlobales.usuario.perfil.idperfil == '1' ||
-                            VariablesGlobales.usuario.perfil.idperfil == '2'
+                    VariablesGlobales.usuario.perfil!.idperfil == '1' ||
+                            VariablesGlobales.usuario.perfil!.idperfil == '2'
                         ? Row(
                             children: [
                               Text('SELECCIONA USUARIO:'),
@@ -750,9 +740,9 @@ class ProyectosPage extends StatelessWidget {
                           List<List<dynamic>> csvList = [];
 
                           for (Agrupaciones item
-                              in _registroProvider.listaAgrupaciones) {
-                            for (Campos campo in item.campos) {
-                              campos.add(campo.nombreCampo);
+                              in _registroProvider!.listaAgrupaciones) {
+                            for (Campos campo in item.campos!) {
+                              campos.add(campo.nombreCampo!);
                             }
                           }
                           csvList.add(campos);
@@ -778,7 +768,7 @@ class ProyectosPage extends StatelessWidget {
                       child: IconButton(
                         onPressed: () async {
                           if (_usuarioSeleccionado != null) {
-                            FilePickerResult result =
+                            FilePickerResult? result =
                                 await FilePicker.platform.pickFiles(
                               type: FileType.custom,
                               allowedExtensions: ['xlsx', 'xls'],
@@ -794,7 +784,7 @@ class ProyectosPage extends StatelessWidget {
                               String respuesta;
                               List<int> listaBytes;
                               if (result.files.first.bytes == null) {
-                                File archivo = new File(lectura.path);
+                                File archivo = new File(lectura.path!);
                                 fileBytes = await archivo.readAsBytes();
                                 fileName = lectura.name;
                                 // listaObtenida =
@@ -806,11 +796,11 @@ class ProyectosPage extends StatelessWidget {
                                 respuesta = await leerPantillaExcel(
                                   ApiDefinition.ipServer,
                                   listaBytes,
-                                  _usuarioSeleccionado.idUsuario,
-                                  proyecto.idproyecto,
+                                  _usuarioSeleccionado!.idUsuario!,
+                                  proyecto.idproyecto!,
                                 );
                               } else {
-                                fileBytes = lectura.bytes;
+                                fileBytes = lectura.bytes!;
                                 fileName = lectura.name;
                                 // listaObtenida =
                                 //     LeerExcel.leerPlantillaDatosProyecto(
@@ -821,8 +811,8 @@ class ProyectosPage extends StatelessWidget {
                                 respuesta = await leerPantillaExcel(
                                   ApiDefinition.ipServer,
                                   listaBytes,
-                                  _usuarioSeleccionado.idUsuario,
-                                  proyecto.idproyecto,
+                                  _usuarioSeleccionado!.idUsuario!,
+                                  proyecto.idproyecto!,
                                 );
                               }
                               List<String> res = respuesta.split('>');
@@ -1027,31 +1017,31 @@ class ProyectosPage extends StatelessWidget {
                             print('Respuesta duplicados: $respuestaDuplicados');
                             if (respuestaDuplicados == 'SIN DUPLICADOS') {
                               if (_usuarioSeleccionado != null) {
-                                if (_formKeyRegistro.currentState.validate()) {
-                                  _formKeyRegistro.currentState.save();
+                                if (_formKeyRegistro.currentState!.validate()) {
+                                  _formKeyRegistro.currentState!.save();
                                   print('Todos los campos tienen informacion');
                                   _mensaje(
                                       context,
                                       '¿Estas seguro de crear un registro?',
                                       proyecto,
-                                      _usuarioSeleccionado);
+                                      _usuarioSeleccionado!);
                                 } else {
                                   print(
-                                      'Id Campo Folio: ${_registroProvider.listaAgrupaciones.elementAt(0).campos.elementAt(0).idCampo} ');
-                                  if (_registroProvider.listaAgrupaciones
+                                      'Id Campo Folio: ${_registroProvider!.listaAgrupaciones.elementAt(0).campos!.elementAt(0).idCampo} ');
+                                  if (_registroProvider!.listaAgrupaciones
                                       .elementAt(0)
-                                      .campos
+                                      .campos!
                                       .elementAt(0)
-                                      .valorController
+                                      .valorController!
                                       .text
                                       .isNotEmpty) {
                                     print('Folio con informacion');
-                                    _formKeyRegistro.currentState.save();
+                                    _formKeyRegistro.currentState!.save();
                                     _mensaje(
                                         context,
                                         '¿Estas seguro de crear un registro con uno o mas campos vacios?',
                                         proyecto,
-                                        _usuarioSeleccionado);
+                                        _usuarioSeleccionado!);
                                   } else {
                                     Dialogos.error(context,
                                         'Existen uno o mas campos sin informacion, revisalo y vuelve a intentar');
@@ -1093,10 +1083,10 @@ class ProyectosPage extends StatelessWidget {
   Future<String> _validarDuplicidad(Proyecto proyecto) async {
     String respuesta = '';
     List<Campos> datosABuscar = [];
-    for (Campos campo in _registroProvider.camposAValidar) {
+    for (Campos campo in _registroProvider!.camposAValidar) {
       print('Campo a comprobar: ${campo.nombreCampo}');
       Campos aux = campo;
-      campo.valor = _registroProvider.obtenerValorPorCampo(CamposProyecto(
+      campo.valor = _registroProvider!.obtenerValorPorCampo(CamposProyecto(
           idcamposproyecto: campo.idCampo,
           alerta: '',
           campo: '',
@@ -1111,7 +1101,7 @@ class ProyectosPage extends StatelessWidget {
     }
     if (datosABuscar.isNotEmpty) {
       respuesta = await comprobarValoresDuplicado(
-          ApiDefinition.ipServer, datosABuscar, proyecto.idproyecto, 0);
+          ApiDefinition.ipServer, datosABuscar, proyecto.idproyecto!, 0);
     } else {
       respuesta = 'SIN DUPLICADOS';
     }
@@ -1120,7 +1110,7 @@ class ProyectosPage extends StatelessWidget {
 
   Widget _usuario() {
     _usuarioSeleccionado = VariablesGlobales.usuario;
-    return Text(_usuarioSeleccionado.usuario);
+    return Text(_usuarioSeleccionado!.usuario!);
   }
 
   Widget _comboUsuario(StateSetter state, Proyecto proyecto) {
@@ -1133,10 +1123,10 @@ class ProyectosPage extends StatelessWidget {
           Usuario usuarioSeleccionado, StateSetter actualizar) async {
         _usuarioSeleccionado = usuarioSeleccionado;
         Map<String, Catalogo> catalogos = await obtenerCatalogosProyectoUsuario(
-            ApiDefinition.ipServer, proyecto, usuarioSeleccionado.idUsuario);
+            ApiDefinition.ipServer, proyecto, usuarioSeleccionado.idUsuario!);
         catalogos.forEach((key, value) {
           if (value.catalogo != null) {
-            _registroProvider.actualizarCatalogos(key, value);
+            _registroProvider!.actualizarCatalogos(key, value);
           }
         });
         // _registroProvider.catalogos = catalogos;
@@ -1216,36 +1206,36 @@ class ProyectosPage extends StatelessWidget {
                             List<String> idInventario =
                                 await registrarInventario(
                                     ApiDefinition.ipServer,
-                                    _registroProvider.listaAgrupaciones
+                                    _registroProvider!.listaAgrupaciones
                                         .elementAt(0)
-                                        .campos
+                                        .campos!
                                         .elementAt(0)
-                                        .valorController
+                                        .valorController!
                                         .text,
-                                    proyecto.idproyecto);
+                                    proyecto.idproyecto!);
                             if (idInventario.first != 'existe') {
                               if (idInventario.elementAt(0) != 'NULL') {
                                 List<ValoresCampo> listaValores = [];
                                 for (Agrupaciones agrupaciones
-                                    in _registroProvider.listaAgrupaciones) {
-                                  for (Campos campo in agrupaciones.campos) {
+                                    in _registroProvider!.listaAgrupaciones) {
+                                  for (Campos campo in agrupaciones.campos!) {
                                     listaValores.add(ValoresCampo(
                                         idCampo: campo.idCampo,
                                         idInventario:
                                             int.parse(idInventario.first),
-                                        valor: campo.valorController.text));
+                                        valor: campo.valorController!.text));
 
                                     if (campo.tipoCampo == 'CATALOGO-INPUT') {
-                                      if (campo.valorController.text
+                                      if (campo.valorController!.text
                                               .isNotEmpty &&
-                                          campo.valorController.text.length >
+                                          campo.valorController!.text.length >
                                               2) {
                                         await nuevoCatalogoAutoCompleteUsuario(
                                             ApiDefinition.ipServer,
-                                            campo.nombreCampo,
-                                            proyecto.idproyecto,
-                                            usuario.idUsuario,
-                                            campo.valorController.text);
+                                            campo.nombreCampo!,
+                                            proyecto.idproyecto!,
+                                            usuario.idUsuario!,
+                                            campo.valorController!.text);
                                       }
                                     }
                                   }
@@ -1255,7 +1245,7 @@ class ProyectosPage extends StatelessWidget {
                                     ApiDefinition.ipServer, listaValores);
                                 await asignarRegistro(
                                     ApiDefinition.ipServer,
-                                    _usuarioSeleccionado.idUsuario,
+                                    _usuarioSeleccionado!.idUsuario!,
                                     idInventario);
                                 await _guardarFirmas(
                                     int.parse(idInventario.first));
@@ -1264,16 +1254,16 @@ class ProyectosPage extends StatelessWidget {
                                 await _guardarEvidencias(
                                     int.parse(idInventario.first));
 
-                                Database db = database();
-                                DatabaseReference ref = db.ref('TotalDatos');
+                                // Database db = database();
+                                // DatabaseReference ref = db.ref('TotalDatos');
 
-                                await ref.child(proyecto.proyecto).set({
-                                  'NUEVO': Random().nextInt(100),
-                                  'ASIGNADO': Random().nextInt(100),
-                                  'PENDIENTE': Random().nextInt(100),
-                                  'EN PROCESO': Random().nextInt(100),
-                                  'CERRADO': Random().nextInt(100),
-                                });
+                                // await ref.child(proyecto.proyecto).set({
+                                //   'NUEVO': Random().nextInt(100),
+                                //   'ASIGNADO': Random().nextInt(100),
+                                //   'PENDIENTE': Random().nextInt(100),
+                                //   'EN PROCESO': Random().nextInt(100),
+                                //   'CERRADO': Random().nextInt(100),
+                                // });
 
                                 // DatabaseSnapshot snap =
                                 //     await FirebaseDatabaseWeb.instance
@@ -1290,7 +1280,6 @@ class ProyectosPage extends StatelessWidget {
                                 //     .child('TotalDatos')
                                 //     .child(proyecto.proyecto)
                                 //     .update(datos.toJson());
-
                               } else {
                                 print('Error al obtener el id del inventario');
                               }
@@ -1326,12 +1315,12 @@ class ProyectosPage extends StatelessWidget {
   }
 
   _guardarFirmas(int idRegistro) async {
-    for (String firma in _registroProvider.comprobarFirmas.keys) {
-      if (_registroProvider.comprobarFirmas[firma]) {
+    for (String firma in _registroProvider!.comprobarFirmas.keys) {
+      if (_registroProvider!.comprobarFirmas[firma]!) {
         List<int> firmaInt = [];
-        Uint8List byte = _registroProvider.firmas[firma].buffer.asUint8List(
-            _registroProvider.firmas[firma].offsetInBytes,
-            _registroProvider.firmas[firma].lengthInBytes);
+        Uint8List byte = _registroProvider!.firmas[firma]!.buffer.asUint8List(
+            _registroProvider!.firmas[firma]!.offsetInBytes,
+            _registroProvider!.firmas[firma]!.lengthInBytes);
         firmaInt = byte.cast<int>();
 
         Firma datosFirma = Firma(
@@ -1346,10 +1335,10 @@ class ProyectosPage extends StatelessWidget {
   }
 
   _guardarEvidencia(int idRegistro) async {
-    for (String evidencia in _registroProvider.comprobarFotos.keys) {
-      if (_registroProvider.comprobarFotos[evidencia]) {
+    for (String evidencia in _registroProvider!.comprobarFotos.keys) {
+      if (_registroProvider!.comprobarFotos[evidencia]!) {
         List<int> evidenciaInt = [];
-        Uint8List byte = _registroProvider.evidencia[evidencia];
+        Uint8List byte = _registroProvider!.evidencia[evidencia]!;
         evidenciaInt = byte.cast<int>();
 
         Evidencia datosFirma = Evidencia(
@@ -1359,14 +1348,14 @@ class ProyectosPage extends StatelessWidget {
           nombreEvidencia: evidencia,
         );
         await actualizarEvidencia(ApiDefinition.ipServer, datosFirma,
-            VariablesGlobales.usuario.idUsuario);
+            VariablesGlobales.usuario.idUsuario!);
       }
     }
   }
 
   Future<void> _guardarEvidencias(int idRegistro) async {
-    if (_registroProvider.evidenciaCheckList.isNotEmpty) {
-      _registroProvider.evidenciaCheckList.forEach((key, value) {
+    if (_registroProvider!.evidenciaCheckList.isNotEmpty) {
+      _registroProvider!.evidenciaCheckList.forEach((key, value) {
         value.forEach((nombre, valor) async {
           List<int> evidenciaArray = valor.cast<int>();
 
@@ -1379,7 +1368,7 @@ class ProyectosPage extends StatelessWidget {
           );
 
           await actualizarEvidencia(ApiDefinition.ipServer, fotoEvidencia,
-              VariablesGlobales.usuario.idUsuario);
+              VariablesGlobales.usuario.idUsuario!);
         });
       });
     }
@@ -1387,10 +1376,10 @@ class ProyectosPage extends StatelessWidget {
 
   int _obtenerIdCampo(String campoARecuperar) {
     int respuesta = 0;
-    for (Agrupaciones agrupacion in _registroProvider.listaAgrupaciones) {
-      for (Campos campo in agrupacion.campos) {
+    for (Agrupaciones agrupacion in _registroProvider!.listaAgrupaciones) {
+      for (Campos campo in agrupacion.campos!) {
         if (campoARecuperar == campo.nombreCampo) {
-          respuesta = campo.idCampo;
+          respuesta = campo.idCampo!;
           break;
         }
       }
@@ -1409,7 +1398,7 @@ class ProyectosPage extends StatelessWidget {
             : MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height - 300,
         child: ListView.builder(
-          itemCount: _registroProvider.listaAgrupaciones.length,
+          itemCount: _registroProvider!.listaAgrupaciones.length,
           itemBuilder: (BuildContext context, int index) {
             return Card(
               //color: Color.fromRGBO(36, 90, 149, 1),
@@ -1425,7 +1414,7 @@ class ProyectosPage extends StatelessWidget {
                   //setState(() {});
                 },
                 title: _buildTitle(
-                    '${_registroProvider.listaAgrupaciones.elementAt(index).agrupacion}'),
+                    '${_registroProvider!.listaAgrupaciones.elementAt(index).agrupacion}'),
                 trailing: SizedBox(),
                 children: <Widget>[
                   orientacion == 'fila'
@@ -1496,9 +1485,9 @@ class ProyectosPage extends StatelessWidget {
       children: [
         for (int i = 0;
             i <
-                _registroProvider.listaAgrupaciones
+                _registroProvider!.listaAgrupaciones
                     .elementAt(indAgrupacion)
-                    .campos
+                    .campos!
                     .length;
             i++)
           Padding(
@@ -1508,7 +1497,7 @@ class ProyectosPage extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 _nombreCampo(
-                    '${_registroProvider.listaAgrupaciones.elementAt(indAgrupacion).campos.elementAt(i).nombreCampo}'),
+                    '${_registroProvider!.listaAgrupaciones.elementAt(indAgrupacion).campos!.elementAt(i).nombreCampo}'),
                 TipoDeCampos(
                     indAgrupacion: indAgrupacion,
                     indCampo: i,
@@ -1527,9 +1516,9 @@ class ProyectosPage extends StatelessWidget {
       children: [
         for (int i = 0;
             i <
-                _registroProvider.listaAgrupaciones
+                _registroProvider!.listaAgrupaciones
                     .elementAt(indAgrupacion)
-                    .campos
+                    .campos!
                     .length;
             i++)
           Padding(
@@ -1539,7 +1528,7 @@ class ProyectosPage extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 _nombreCampo(
-                    '${_registroProvider.listaAgrupaciones.elementAt(indAgrupacion).campos.elementAt(i).nombreCampo}'),
+                    '${_registroProvider!.listaAgrupaciones.elementAt(indAgrupacion).campos!.elementAt(i).nombreCampo}'),
                 SizedBox(
                   width: 10.0,
                 ),
@@ -1563,7 +1552,7 @@ class ProyectosPage extends StatelessWidget {
       future: _obtenerProyectos(),
       builder: (BuildContext context, AsyncSnapshot<List<Proyecto>> snapShot) {
         if (snapShot.hasData) {
-          _listaProyectos = snapShot.data;
+          _listaProyectos = snapShot.data!;
           return _tablaProyectos(context);
         } else {
           return Container(

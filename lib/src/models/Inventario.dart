@@ -18,11 +18,11 @@ class Inventario {
     this.proyecto,
   });
 
-  int idinventario;
-  String fechacreacion;
-  String folio;
-  String estatus;
-  Proyecto proyecto;
+  int? idinventario;
+  String? fechacreacion;
+  String? folio;
+  String? estatus;
+  Proyecto? proyecto;
 
   factory Inventario.fromJson(Map<String, dynamic> json) => Inventario(
         idinventario: json["idinventario"] ?? 0,
@@ -37,6 +37,6 @@ class Inventario {
         "fechacreacion": fechacreacion ?? '',
         "folio": folio ?? '',
         "estatus": estatus ?? '',
-        "proyecto": proyecto.toJson(),
+        "proyecto": proyecto!.toJson(),
       };
 }

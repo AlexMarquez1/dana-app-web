@@ -2,7 +2,6 @@ import 'package:app_isae_desarrollo/src/models/Cliente.dart';
 import 'package:app_isae_desarrollo/src/models/ClienteAplicacion.dart';
 import 'package:app_isae_desarrollo/src/models/Perfil.dart';
 import 'package:app_isae_desarrollo/src/models/Usuario.dart';
-import 'package:app_isae_desarrollo/src/page/widgets/Dialogos.dart';
 import 'package:app_isae_desarrollo/src/page/widgets/DrawerWidget.dart';
 import 'package:app_isae_desarrollo/src/page/widgets/PantallaCarga.dart';
 import 'package:app_isae_desarrollo/src/page/widgets/TablaUsuarios.dart';
@@ -217,13 +216,13 @@ class _UsuariosPageState extends State<UsuariosPage> {
       accion: (seleccion, Usuario usuario) {
         if (seleccion) {
           _limpiarCampos();
-          _nombreEditar.text = usuario.nombre;
-          _correoEditar.text = usuario.correo;
-          _telefonoEditar.text = usuario.telefono;
-          _perfilSeleccionado.perfil = usuario.perfil.perfil;
-          _ubicacion.text = usuario.ubicacion;
+          _nombreEditar.text = usuario.nombre!;
+          _correoEditar.text = usuario.correo!;
+          _telefonoEditar.text = usuario.telefono!;
+          _perfilSeleccionado.perfil = usuario.perfil!.perfil;
+          _ubicacion.text = usuario.ubicacion!;
           _usuarioSeleccionado.usuario = usuario.jefeInmediato;
-          _password.text = usuario.password;
+          _password.text = usuario.password!;
           _usuarioSeleccionadoDialogo(usuario);
         }
       },
@@ -235,7 +234,7 @@ class _UsuariosPageState extends State<UsuariosPage> {
       future: _obtenerUsuarios(),
       builder: (BuildContext context, AsyncSnapshot<List<Usuario>> snapshot) {
         if (snapshot.hasData) {
-          _tablaUsuarios = snapshot.data;
+          _tablaUsuarios = snapshot.data!;
           return _tablaConstruida(_tablaUsuarios);
         } else {
           return Container(
@@ -341,7 +340,7 @@ class _UsuariosPageState extends State<UsuariosPage> {
                                 validator: (value) {
                                   bool emailValid = RegExp(
                                           r'^.+@[a-zA-Z]+\.{1}[a-zA-Z]+(\.{0,1}[a-zA-Z]+)$')
-                                      .hasMatch(value);
+                                      .hasMatch(value!);
                                   if (emailValid) {
                                     print(value.split('@')[1]);
                                     return null;
@@ -467,7 +466,7 @@ class _UsuariosPageState extends State<UsuariosPage> {
                     children: [
                       ElevatedButton(
                         onPressed: () {
-                          if (_formKeyEditar.currentState.validate()) {
+                          if (_formKeyEditar.currentState!.validate()) {
                             showDialog(
                                 context: context,
                                 builder: (context) {
@@ -734,7 +733,7 @@ class _UsuariosPageState extends State<UsuariosPage> {
                                   validator: (value) {
                                     bool emailValid = RegExp(
                                             r'^.+@[a-zA-Z]+\.{1}[a-zA-Z]+(\.{0,1}[a-zA-Z]+)$')
-                                        .hasMatch(value);
+                                        .hasMatch(value!);
                                     if (emailValid) {
                                       print(value.split('@')[1]);
                                       return null;
@@ -839,7 +838,7 @@ class _UsuariosPageState extends State<UsuariosPage> {
                 width: box.maxWidth,
                 child: ElevatedButton(
                   onPressed: () async {
-                    if (_formKey.currentState.validate()) {
+                    if (_formKey.currentState!.validate()) {
                       // ScaffoldMessenger.of(context).showSnackBar(
                       //   const SnackBar(content: Text('Prosesando Datos')),
                       // );
@@ -913,7 +912,7 @@ class _UsuariosPageState extends State<UsuariosPage> {
   }
 
   Widget _autoCompletar() {
-    return Autocomplete(
+    return Autocomplete<Object>(
       fieldViewBuilder:
           (context, textEditingController, focusNode, onFieldSubmitted) {
         if (_ubicacion.text.isNotEmpty) {
@@ -1010,7 +1009,7 @@ class _UsuariosPageState extends State<UsuariosPage> {
       future: _obtenerPerfiles(),
       builder: (BuildContext context, AsyncSnapshot<List<Perfil>> snapShot) {
         if (snapShot.hasData) {
-          for (Perfil perfil in snapShot.data) {
+          for (Perfil perfil in snapShot.data!) {
             _listaPerfiles.add(perfil);
           }
           return _perfilSeleccion(_listaPerfiles);
@@ -1045,7 +1044,7 @@ class _UsuariosPageState extends State<UsuariosPage> {
         items: lista.map((item) {
           return DropdownMenuItem(
             value: item.perfil,
-            child: Text(item.perfil),
+            child: Text(item.perfil!),
           );
         }).toList(),
       ),
@@ -1061,7 +1060,7 @@ class _UsuariosPageState extends State<UsuariosPage> {
       future: _obtenerUsuarios(),
       builder: (BuildContext context, AsyncSnapshot<List<Usuario>> snapShot) {
         if (snapShot.hasData) {
-          for (Usuario usuario in snapShot.data) {
+          for (Usuario usuario in snapShot.data!) {
             _listaUsuarios.add(usuario);
           }
           return _usuarioSeleccion(_listaUsuarios);
@@ -1098,7 +1097,7 @@ class _UsuariosPageState extends State<UsuariosPage> {
           return DropdownMenuItem(
             value: item.usuario,
             child: Text(
-              item.usuario,
+              item.usuario!,
               style: TextStyle(fontSize: 15.0),
             ),
           );

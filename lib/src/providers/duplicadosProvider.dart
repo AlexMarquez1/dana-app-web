@@ -4,9 +4,9 @@ import '../models/Agrupaciones.dart';
 import '../models/Proyecto.dart';
 
 class DuplicadosProvider extends ChangeNotifier {
-  Map<String, List<String>> _camposDuplicados;
+  late Map<String, List<String>> _camposDuplicados;
 
-  List<List<Agrupaciones>> _listaAgrupaciones;
+  late List<List<Agrupaciones>> _listaAgrupaciones;
   List<String> _listaBusqueda = [];
 
   int _indDuplicadoSeleccionado = -1;

@@ -14,19 +14,19 @@ class ListaUsuarios extends StatelessWidget {
   StateSetter actualizar;
   List<Usuario> usuariosSeleccionado;
   Function usuarioSeleccionadoAccion;
-  Usuario usuarioSeleccionado;
+  Usuario? usuarioSeleccionado;
   String tipoBusqueda;
   int limiteSeleccion;
   double widthComponente;
   ListaUsuarios({
-    Key key,
-    @required this.controllerUsuarios,
-    @required this.listaUsuarios,
-    @required this.usuariosSeleccionado,
-    @required this.actualizar,
-    @required this.usuarioSeleccionadoAccion,
-    @required this.tipoBusqueda,
-    @required this.limiteSeleccion,
+    Key? key,
+    required this.controllerUsuarios,
+    required this.listaUsuarios,
+    required this.usuariosSeleccionado,
+    required this.actualizar,
+    required this.usuarioSeleccionadoAccion,
+    required this.tipoBusqueda,
+    required this.limiteSeleccion,
     this.usuarioSeleccionado,
     this.widthComponente = 200,
   }) : super(key: key);
@@ -51,16 +51,18 @@ class ListaUsuarios extends StatelessWidget {
             if (query.isNotEmpty) {
               var lowercaseQuery = query.toLowerCase();
               final results = listaUsuarios.where((usuario) {
-                return usuario.usuario
+                return usuario.usuario!
                         .toLowerCase()
                         .contains(query.toLowerCase()) ||
-                    usuario.usuario.toLowerCase().contains(query.toLowerCase());
+                    usuario.usuario!
+                        .toLowerCase()
+                        .contains(query.toLowerCase());
               }).toList(growable: false)
-                ..sort((a, b) => a.usuario
+                ..sort((a, b) => a.usuario!
                     .toLowerCase()
                     .indexOf(lowercaseQuery)
                     .compareTo(
-                        b.usuario.toLowerCase().indexOf(lowercaseQuery)));
+                        b.usuario!.toLowerCase().indexOf(lowercaseQuery)));
               return results;
             }
             return listaUsuarios;
@@ -75,7 +77,7 @@ class ListaUsuarios extends StatelessWidget {
           chipBuilder: (context, state, Usuario usuario) {
             return InputChip(
               key: ObjectKey(usuario.idUsuario),
-              label: Text(usuario.usuario),
+              label: Text(usuario.usuario!),
               // avatar: CircleAvatar(
               //   backgroundImage: NetworkImage(profile.imageUrl),
               // ),
@@ -89,8 +91,8 @@ class ListaUsuarios extends StatelessWidget {
               // leading: CircleAvatar(
               //   backgroundImage: NetworkImage(profile.imageUrl),
               // ),
-              title: Text(usuario.usuario),
-              subtitle: Text(usuario.nombre),
+              title: Text(usuario.usuario!),
+              subtitle: Text(usuario.nombre!),
             );
           },
           optionsViewBuilder: (BuildContext context,
@@ -111,8 +113,8 @@ class ListaUsuarios extends StatelessWidget {
                           print(option.usuario);
                           onSelected(option);
                         },
-                        title: Text(option.usuario),
-                        subtitle: Text(option.nombre),
+                        title: Text(option.usuario!),
+                        subtitle: Text(option.nombre!),
                       );
                     },
                   ),
@@ -171,7 +173,7 @@ class ListaUsuarios extends StatelessWidget {
         );
       },
       displayStringForOption: (Usuario usuarioSeleccionado) {
-        return usuarioSeleccionado.usuario.toUpperCase();
+        return usuarioSeleccionado.usuario!.toUpperCase();
       },
       optionsViewBuilder:
           (BuildContext context, onSelected, Iterable<Usuario> options) {
@@ -190,7 +192,7 @@ class ListaUsuarios extends StatelessWidget {
                     onTap: () async {
                       onSelected(option);
                     },
-                    title: Text(option.usuario),
+                    title: Text(option.usuario!),
                   );
                 },
               ),
@@ -223,7 +225,7 @@ class ListaUsuarios extends StatelessWidget {
             ];
           } else {
             return listaUsuarios.where((Usuario usuario) {
-              return usuario.usuario
+              return usuario.usuario!
                   .toUpperCase()
                   .contains(textEditingValue.text.toUpperCase());
             });
@@ -247,13 +249,13 @@ class ListaUsuarios extends StatelessWidget {
 
   Widget _listaUsuariosCompleta(BuildContext context,
       List<Usuario> listaUsuarios, StateSetter actualizar) {
-    return PopupMenuButton(
+    return PopupMenuButton<String>(
       color: Colors.white,
       icon: const Icon(Icons.keyboard_arrow_down_sharp),
       offset: const Offset(0, 50),
       onSelected: (value) async {
         for (Usuario usuario in listaUsuarios) {
-          if (usuario.usuario.toUpperCase() == value) {
+          if (usuario.usuario!.toUpperCase() == value) {
             controllerUsuarios.text = value;
             usuarioSeleccionado = usuario;
             await usuarioSeleccionadoAccion(
@@ -263,12 +265,12 @@ class ListaUsuarios extends StatelessWidget {
         }
       },
       itemBuilder: (context) {
-        List<PopupMenuEntry<Object>> list = [];
+        List<PopupMenuEntry<String>> list = [];
         for (Usuario usuario in listaUsuarios) {
           list.add(
             PopupMenuItem(
-              child: Text(usuario.usuario.toUpperCase()),
-              value: usuario.usuario.toUpperCase(),
+              child: Text(usuario.usuario!.toUpperCase()),
+              value: usuario.usuario!.toUpperCase(),
             ),
           );
         }

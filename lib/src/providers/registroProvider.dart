@@ -20,28 +20,28 @@ import '../services/APIWebService/Consultas.dart';
 import '../utils/VariablesGlobales.dart';
 
 class RegistroProvider extends ChangeNotifier {
-  Inventario _inventario;
-  List<Agrupaciones> _listaAgrupaciones;
-  int _ind = 0;
-  Map<String, Catalogo> _catalogos;
-  Map<String, ByteData> _firmas;
-  Map<String, Uint8List> _evidencia;
-  Map<String, bool> _comprobarFirmas;
-  Map<String, bool> _comprobarFotos;
-  Map<String, DateTime> _camposCalendario;
-  Map<String, TimeOfDay> _camposHora = {};
-  List<Campos> _camposAValidar = [];
-  Map<String, bool> _checkBox;
-  Map<String, bool> _checkBoxEvidencia;
-  Map<String, bool> _comprobarEvidenciaCheck;
-  Map<String, Map<String, Uint8List>> _evidenciaCheckList;
-  Map<String, GlobalKey<SignatureState>> _keyFirma =
+  late Inventario _inventario;
+  late List<Agrupaciones> _listaAgrupaciones;
+  late int _ind = 0;
+  late Map<String, Catalogo> _catalogos;
+  late Map<String, ByteData> _firmas;
+  late Map<String, Uint8List> _evidencia;
+  late Map<String, bool> _comprobarFirmas;
+  late Map<String, bool> _comprobarFotos;
+  late Map<String, DateTime> _camposCalendario;
+  late Map<String, TimeOfDay> _camposHora = {};
+  late List<Campos> _camposAValidar = [];
+  late Map<String, bool> _checkBox;
+  late Map<String, bool> _checkBoxEvidencia;
+  late Map<String, bool> _comprobarEvidenciaCheck;
+  late Map<String, Map<String, Uint8List>> _evidenciaCheckList;
+  late Map<String, GlobalKey<SignatureState>> _keyFirma =
       new Map<String, GlobalKey<SignatureState>>();
 
   bool _mostrarMasOpciones = false;
 
-  Usuario _usuario;
-  List<Cliente> _listaClientes;
+  late Usuario _usuario;
+  late List<Cliente> _listaClientes;
 
   Usuario get usuario {
     return _usuario;
@@ -92,14 +92,14 @@ class RegistroProvider extends ChangeNotifier {
   void actualizarValor(int indAgrupacion, int indCampo, String nuevoValor) {
     _listaAgrupaciones
         .elementAt(indAgrupacion)
-        .campos
+        .campos!
         .elementAt(indCampo)
         .valor = nuevoValor.toUpperCase();
     _listaAgrupaciones
         .elementAt(indAgrupacion)
-        .campos
+        .campos!
         .elementAt(indCampo)
-        .valorController
+        .valorController!
         .text = nuevoValor.toUpperCase();
     notifyListeners();
   }
@@ -108,7 +108,7 @@ class RegistroProvider extends ChangeNotifier {
       int indAgrupacion, int indCampo, TextEditingController controlador) {
     _listaAgrupaciones
         .elementAt(indAgrupacion)
-        .campos
+        .campos!
         .elementAt(indCampo)
         .valorController = controlador;
     notifyListeners();
@@ -116,16 +116,16 @@ class RegistroProvider extends ChangeNotifier {
 
   void actualizarValorPorCampo(CamposProyecto campo, String valor) {
     for (int i = 0; i < _listaAgrupaciones.length; i++) {
-      for (int j = 0; j < _listaAgrupaciones.elementAt(i).campos.length; j++) {
-        if (_listaAgrupaciones.elementAt(i).campos.elementAt(j).idCampo ==
+      for (int j = 0; j < _listaAgrupaciones.elementAt(i).campos!.length; j++) {
+        if (_listaAgrupaciones.elementAt(i).campos!.elementAt(j).idCampo ==
             campo.idcamposproyecto) {
           _listaAgrupaciones
               .elementAt(i)
-              .campos
+              .campos!
               .elementAt(j)
-              .valorController
+              .valorController!
               .text = valor;
-          _listaAgrupaciones.elementAt(i).campos.elementAt(j).valor = valor;
+          _listaAgrupaciones.elementAt(i).campos!.elementAt(j).valor = valor;
           break;
         }
       }
@@ -136,14 +136,14 @@ class RegistroProvider extends ChangeNotifier {
   String obtenerValorPorCampo(CamposProyecto campo) {
     String respuesta = '';
     for (int i = 0; i < _listaAgrupaciones.length; i++) {
-      for (int j = 0; j < _listaAgrupaciones.elementAt(i).campos.length; j++) {
-        if (_listaAgrupaciones.elementAt(i).campos.elementAt(j).idCampo ==
+      for (int j = 0; j < _listaAgrupaciones.elementAt(i).campos!.length; j++) {
+        if (_listaAgrupaciones.elementAt(i).campos!.elementAt(j).idCampo ==
             campo.idcamposproyecto) {
           respuesta = _listaAgrupaciones
               .elementAt(i)
-              .campos
+              .campos!
               .elementAt(j)
-              .valorController
+              .valorController!
               .text;
           break;
         }
@@ -155,8 +155,8 @@ class RegistroProvider extends ChangeNotifier {
   List<int> obtenerAgrupacionInd(CamposProyecto campo) {
     List<int> respuesta = [];
     for (int i = 0; i < _listaAgrupaciones.length; i++) {
-      for (int j = 0; j < _listaAgrupaciones.elementAt(i).campos.length; j++) {
-        if (_listaAgrupaciones.elementAt(i).campos.elementAt(j).idCampo ==
+      for (int j = 0; j < _listaAgrupaciones.elementAt(i).campos!.length; j++) {
+        if (_listaAgrupaciones.elementAt(i).campos!.elementAt(j).idCampo ==
             campo.idcamposproyecto) {
           respuesta.add(i);
           respuesta.add(j);
@@ -190,12 +190,12 @@ class RegistroProvider extends ChangeNotifier {
   }
 
   void agregarCatalogo(String key, String catalogo) {
-    _catalogos[key].catalogo.add(catalogo);
+    _catalogos[key]!.catalogo!.add(catalogo);
     notifyListeners();
   }
 
   void catalogoVacio(String key) {
-    _catalogos[key].catalogo = [];
+    _catalogos[key]!.catalogo = [];
     notifyListeners();
   }
 
@@ -211,14 +211,14 @@ class RegistroProvider extends ChangeNotifier {
     _firmas = <String, ByteData>{};
     _comprobarFirmas = <String, bool>{};
     List<FirmaDocumento> respuestaFirmas = await obtenerFirmasPorProyecto(
-        ApiDefinition.ipServer, inventario.proyecto, inventario);
+        ApiDefinition.ipServer, inventario.proyecto!, inventario);
     for (FirmaDocumento item in respuestaFirmas) {
-      if (item.url.isEmpty) {
-        _firmas[item.nombrefirma] = ByteData(0);
-        _comprobarFirmas[item.nombrefirma] = false;
+      if (item.url!.isEmpty) {
+        _firmas[item.nombrefirma!] = ByteData(0);
+        _comprobarFirmas[item.nombrefirma!] = false;
       } else {
-        _firmas[item.nombrefirma] = await _descargarFirma(item.url);
-        _comprobarFirmas[item.nombrefirma] = true;
+        _firmas[item.nombrefirma!] = await _descargarFirma(item.url!);
+        _comprobarFirmas[item.nombrefirma!] = true;
       }
     }
     notifyListeners();
@@ -237,14 +237,14 @@ class RegistroProvider extends ChangeNotifier {
     _evidencia = <String, Uint8List>{};
     _comprobarFotos = <String, bool>{};
     List<FotoEvidencia> respuestaFotos = await obtenerFotosPorProyecto(
-        ApiDefinition.ipServer, inventario.proyecto, inventario);
+        ApiDefinition.ipServer, inventario.proyecto!, inventario);
     for (FotoEvidencia item in respuestaFotos) {
-      if (item.url.isEmpty) {
-        _evidencia[item.nombrefoto] = Uint8List(0);
-        _comprobarFotos[item.nombrefoto] = false;
+      if (item.url!.isEmpty) {
+        _evidencia[item.nombrefoto!] = Uint8List(0);
+        _comprobarFotos[item.nombrefoto!] = false;
       } else {
-        _evidencia[item.nombrefoto] = await _descargarEvidencia(item.url);
-        _comprobarFotos[item.nombrefoto] = true;
+        _evidencia[item.nombrefoto!] = await _descargarEvidencia(item.url!);
+        _comprobarFotos[item.nombrefoto!] = true;
       }
     }
     notifyListeners();
@@ -317,23 +317,23 @@ class RegistroProvider extends ChangeNotifier {
 
     List<FotoEvidencia> respuestaCheckBoxEvidencia =
         await obtenerCheckBoxEvidenciaProyecto(
-            ApiDefinition.ipServer, inventario.proyecto, inventario);
+            ApiDefinition.ipServer, inventario.proyecto!, inventario);
 
     for (FotoEvidencia item in respuestaCheckBoxEvidencia) {
-      if (item.url.isEmpty) {
-        _checkBoxEvidencia[item.campoNombre] = false;
-        _comprobarEvidenciaCheck[item.campoNombre] = false;
-        _evidenciaCheckList[item.campoNombre] = <String, Uint8List>{};
+      if (item.url!.isEmpty) {
+        _checkBoxEvidencia[item.campoNombre!] = false;
+        _comprobarEvidenciaCheck[item.campoNombre!] = false;
+        _evidenciaCheckList[item.campoNombre!] = <String, Uint8List>{};
       } else {
-        _checkBoxEvidencia[item.campoNombre] = true;
-        _comprobarEvidenciaCheck[item.campoNombre] = true;
+        _checkBoxEvidencia[item.campoNombre!] = true;
+        _comprobarEvidenciaCheck[item.campoNombre!] = true;
         if (_evidenciaCheckList[item.campoNombre] != null) {
-          _evidenciaCheckList[item.campoNombre][item.nombrefoto] =
-              await _descargarEvidencia(item.url);
+          _evidenciaCheckList[item.campoNombre]![item.nombrefoto!] =
+              await _descargarEvidencia(item.url!);
         } else {
-          _evidenciaCheckList[item.campoNombre] = <String, Uint8List>{};
-          _evidenciaCheckList[item.campoNombre][item.nombrefoto] =
-              await _descargarEvidencia(item.url);
+          _evidenciaCheckList[item.campoNombre!] = <String, Uint8List>{};
+          _evidenciaCheckList[item.campoNombre]![item.nombrefoto!] =
+              await _descargarEvidencia(item.url!);
         }
       }
     }
@@ -357,7 +357,7 @@ class RegistroProvider extends ChangeNotifier {
     _ind = 0;
     _inventario = inventario;
     Map<dynamic, dynamic> respuesta = await obtenerDatosProvider(
-        ApiDefinition.ipServer, inventario.proyecto, inventario, idUsuario);
+        ApiDefinition.ipServer, inventario.proyecto!, inventario, idUsuario);
 
     _listaAgrupaciones = [];
     _catalogos = <String, Catalogo>{};
@@ -412,42 +412,42 @@ class RegistroProvider extends ChangeNotifier {
     _keyFirma = <String, GlobalKey<SignatureState>>{};
 
     for (FirmaDocumento item in respuestaFirmas) {
-      _keyFirma[item.nombrefirma] = GlobalKey<SignatureState>();
-      if (item.url.isEmpty) {
-        _firmas[item.nombrefirma] = ByteData(0);
-        _comprobarFirmas[item.nombrefirma] = false;
+      _keyFirma[item.nombrefirma!] = GlobalKey<SignatureState>();
+      if (item.url!.isEmpty) {
+        _firmas[item.nombrefirma!] = ByteData(0);
+        _comprobarFirmas[item.nombrefirma!] = false;
       } else {
-        _firmas[item.nombrefirma] = await _descargarFirma(item.url);
-        _comprobarFirmas[item.nombrefirma] = true;
+        _firmas[item.nombrefirma!] = await _descargarFirma(item.url!);
+        _comprobarFirmas[item.nombrefirma!] = true;
       }
     }
     for (FotoEvidencia item in respuestaFotos) {
-      if (item.url.isEmpty) {
-        _evidencia[item.nombrefoto] = Uint8List(0);
-        _comprobarFotos[item.nombrefoto] = false;
+      if (item.url!.isEmpty) {
+        _evidencia[item.nombrefoto!] = Uint8List(0);
+        _comprobarFotos[item.nombrefoto!] = false;
       } else {
-        _evidencia[item.nombrefoto] = await _descargarEvidencia(item.url);
-        _comprobarFotos[item.nombrefoto] = true;
+        _evidencia[item.nombrefoto!] = await _descargarEvidencia(item.url!);
+        _comprobarFotos[item.nombrefoto!] = true;
       }
     }
     for (String item in respuestaCheckBox) {
       _checkBox[item] = false;
     }
     for (FotoEvidencia item in respuestaCheckBoxEvidencia) {
-      if (item.url.isEmpty) {
-        _checkBoxEvidencia[item.campoNombre] = false;
-        _comprobarEvidenciaCheck[item.campoNombre] = false;
-        _evidenciaCheckList[item.campoNombre] = <String, Uint8List>{};
+      if (item.url!.isEmpty) {
+        _checkBoxEvidencia[item.campoNombre!] = false;
+        _comprobarEvidenciaCheck[item.campoNombre!] = false;
+        _evidenciaCheckList[item.campoNombre!] = <String, Uint8List>{};
       } else {
-        _checkBoxEvidencia[item.campoNombre] = true;
-        _comprobarEvidenciaCheck[item.campoNombre] = true;
+        _checkBoxEvidencia[item.campoNombre!] = true;
+        _comprobarEvidenciaCheck[item.campoNombre!] = true;
         if (_evidenciaCheckList[item.campoNombre] != null) {
-          _descargarEvidencia(item.url).then((value) =>
-              _evidenciaCheckList[item.campoNombre][item.nombrefoto] = value);
+          _descargarEvidencia(item.url!).then((value) =>
+              _evidenciaCheckList[item.campoNombre]![item.nombrefoto!] = value);
         } else {
-          _evidenciaCheckList[item.campoNombre] = <String, Uint8List>{};
-          _descargarEvidencia(item.url).then((value) =>
-              _evidenciaCheckList[item.campoNombre][item.nombrefoto] = value);
+          _evidenciaCheckList[item.campoNombre!] = <String, Uint8List>{};
+          _descargarEvidencia(item.url!).then((value) =>
+              _evidenciaCheckList[item.campoNombre]![item.nombrefoto!] = value);
         }
       }
     }
@@ -513,21 +513,21 @@ class RegistroProvider extends ChangeNotifier {
     _keyFirma = <String, GlobalKey<SignatureState>>{};
 
     for (FirmaDocumento item in respuestaFirmas) {
-      _firmas[item.nombrefirma] = ByteData(0);
-      _comprobarFirmas[item.nombrefirma] = false;
-      _keyFirma[item.nombrefirma] = GlobalKey<SignatureState>();
+      _firmas[item.nombrefirma!] = ByteData(0);
+      _comprobarFirmas[item.nombrefirma!] = false;
+      _keyFirma[item.nombrefirma!] = GlobalKey<SignatureState>();
     }
     for (FotoEvidencia item in respuestaFotos) {
-      _evidencia[item.nombrefoto] = Uint8List(0);
-      _comprobarFotos[item.nombrefoto] = false;
+      _evidencia[item.nombrefoto!] = Uint8List(0);
+      _comprobarFotos[item.nombrefoto!] = false;
     }
     for (String item in respuestaCheckBox) {
       _checkBox[item] = false;
     }
     for (FotoEvidencia item in respuestaCheckBoxEvidencia) {
-      _checkBoxEvidencia[item.campoNombre] = false;
-      _comprobarEvidenciaCheck[item.campoNombre] = false;
-      _evidenciaCheckList[item.campoNombre] = <String, Uint8List>{};
+      _checkBoxEvidencia[item.campoNombre!] = false;
+      _comprobarEvidenciaCheck[item.campoNombre!] = false;
+      _evidenciaCheckList[item.campoNombre!] = <String, Uint8List>{};
     }
     _acomodarDatos();
     notifyListeners();
@@ -538,27 +538,27 @@ class RegistroProvider extends ChangeNotifier {
     String nombreCampo = '';
     String valor = '';
     for (int i = 0; i < _listaAgrupaciones.length; i++) {
-      for (int j = 0; j < _listaAgrupaciones.elementAt(i).campos.length; j++) {
+      for (int j = 0; j < _listaAgrupaciones.elementAt(i).campos!.length; j++) {
         nombreCampo =
-            _listaAgrupaciones.elementAt(i).campos.elementAt(j).nombreCampo;
-        valor = listaAgrupaciones.elementAt(i).campos.elementAt(j).valor;
+            _listaAgrupaciones.elementAt(i).campos!.elementAt(j).nombreCampo!;
+        valor = listaAgrupaciones.elementAt(i).campos!.elementAt(j).valor!;
         if (_listaAgrupaciones
                 .elementAt(i)
-                .campos
+                .campos!
                 .elementAt(j)
                 .validarDuplicidad ==
             'TRUE') {
           _camposAValidar
-              .add(listaAgrupaciones.elementAt(i).campos.elementAt(j));
+              .add(listaAgrupaciones.elementAt(i).campos!.elementAt(j));
         }
         if (_camposCalendario.containsKey(nombreCampo)) {
           String fecha =
-              "${camposCalendario[nombreCampo].day.toString().padLeft(2, '0')}/${camposCalendario[nombreCampo].month.toString().padLeft(2, '0')}/${camposCalendario[nombreCampo].year}";
+              "${camposCalendario[nombreCampo]!.day.toString().padLeft(2, '0')}/${camposCalendario[nombreCampo]!.month.toString().padLeft(2, '0')}/${camposCalendario[nombreCampo]!.year}";
           actualizarValor(i, j, fecha);
         }
         if (_camposHora.containsKey(nombreCampo)) {
           String hora =
-              '${camposHora[nombreCampo].hour.toString().padLeft(2, '0')}: ${camposHora[nombreCampo].minute.toString().padLeft(2, '0')}';
+              '${camposHora[nombreCampo]!.hour.toString().padLeft(2, '0')}: ${camposHora[nombreCampo]!.minute.toString().padLeft(2, '0')}';
           actualizarValor(i, j, hora);
         }
         if (_checkBox.containsKey(nombreCampo)) {
@@ -599,10 +599,10 @@ class RegistroProvider extends ChangeNotifier {
     List<String> valores = [];
     Map<String, DateTime> campoCalendario = <String, DateTime>{};
     for (Agrupaciones agrupacion in agrupaciones) {
-      for (Campos campo in agrupacion.campos) {
+      for (Campos campo in agrupacion.campos!) {
         if (campo.tipoCampo == 'CALENDARIO') {
-          listaCalendarios.add(campo.nombreCampo);
-          valores.add(campo.valor);
+          listaCalendarios.add(campo.nombreCampo!);
+          valores.add(campo.valor!);
         }
       }
     }
@@ -654,10 +654,10 @@ class RegistroProvider extends ChangeNotifier {
     List<String> valores = [];
     Map<String, TimeOfDay> horas = <String, TimeOfDay>{};
     for (Agrupaciones agrupacion in agrupaciones) {
-      for (Campos campo in agrupacion.campos) {
+      for (Campos campo in agrupacion.campos!) {
         if (campo.tipoCampo == 'HORA') {
-          listaHoras.add(campo.nombreCampo);
-          valores.add(campo.valor);
+          listaHoras.add(campo.nombreCampo!);
+          valores.add(campo.valor!);
         }
       }
     }

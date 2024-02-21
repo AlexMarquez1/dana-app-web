@@ -13,8 +13,8 @@ import 'package:provider/provider.dart';
 class MultiSeleccion extends StatefulWidget {
   List<FotoEvidencia> listaEvidenacia;
   MultiSeleccion({
-    Key key,
-    @required this.listaEvidenacia,
+    Key? key,
+    required this.listaEvidenacia,
   }) : super(key: key);
 
   @override
@@ -28,10 +28,10 @@ class _MultiSeleccionState extends State<MultiSeleccion> {
   final _formKey = GlobalKey<FormState>();
   TextEditingController _urlController = TextEditingController();
   Map<int, bool> _descripcion = Map<int, bool>();
-  int conteo;
+  late int conteo;
   List<DetallesImagen> _listaComponenteImagen = [];
   List<DetallesImagen> _listaComponenteImagenSeleccionado = [];
-  EvidenciaSeleccionadaProvider _evidenciaSeleccionada;
+  late EvidenciaSeleccionadaProvider _evidenciaSeleccionada;
   @override
   void initState() {
     conteo = 0;
@@ -218,7 +218,7 @@ class _MultiSeleccionState extends State<MultiSeleccion> {
                 decoration: InputDecoration(
                     suffixIcon: IconButton(
                         onPressed: () {
-                          if (_formKey.currentState.validate()) {
+                          if (_formKey.currentState!.validate()) {
                             print('Url valido');
 
                             _evidenciaSeleccionada.add(FotoEvidencia(
@@ -249,13 +249,13 @@ class _MultiSeleccionState extends State<MultiSeleccion> {
                         )),
                     border: OutlineInputBorder(),
                     hintText: 'Url magen'),
-                validator: (String validar) {
+                validator: (String? validar) {
                   String respuesta;
-                  if (validar.isEmpty) {
+                  if (validar!.isEmpty) {
                     respuesta = 'Ingresa un url valido';
                   } else {
                     if (Uri.tryParse(validar)?.hasAbsolutePath ?? false) {
-                      respuesta = null;
+                      return null;
                     } else {
                       respuesta = 'Ingresa un url valido';
                     }

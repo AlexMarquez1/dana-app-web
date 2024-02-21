@@ -17,7 +17,7 @@ import '../models/Perfil.dart';
 import '../models/Usuario.dart';
 
 class AsistenciaPage extends StatefulWidget {
-  AsistenciaPage({Key key}) : super(key: key);
+  AsistenciaPage({Key? key}) : super(key: key);
 
   @override
   _AsistenciaPageState createState() => _AsistenciaPageState();
@@ -33,7 +33,7 @@ class _AsistenciaPageState extends State<AsistenciaPage> {
   List<Usuario> _listaUsuarios = [];
   List<Usuario> _listaAMostrar = [];
   List<Perfil> _listaPerfiles = [];
-  Usuario _usuarioSeleccionado;
+  Usuario? _usuarioSeleccionado;
   bool filtro = false;
 
   @override
@@ -131,11 +131,11 @@ class _AsistenciaPageState extends State<AsistenciaPage> {
                                 ApiDefinition.ipServer,
                                 '${_diaSeleccionadoInicio.year}-${_diaSeleccionadoInicio.month}-${_diaSeleccionadoInicio.day}',
                                 '${_diaSeleccionadoFinal.year}-${_diaSeleccionadoFinal.month}-${_diaSeleccionadoFinal.day}');
-                            print(VariablesGlobales.usuario.perfil.idperfil);
-                            if (VariablesGlobales.usuario.perfil.idperfil ==
+                            print(VariablesGlobales.usuario.perfil!.idperfil);
+                            if (VariablesGlobales.usuario.perfil!.idperfil ==
                                 '3') {
                               for (Usuario usuario in listaAux) {
-                                if (usuario.perfil.idperfil == '6') {
+                                if (usuario.perfil!.idperfil == '6') {
                                   _listaUsuarios.add(usuario);
                                 }
                               }
@@ -214,11 +214,11 @@ class _AsistenciaPageState extends State<AsistenciaPage> {
                 child: Column(
                   children: [
                     for (Usuario usuario in _listaUsuarios)
-                      usuario.perfil.perfil == perfil.perfil
+                      usuario.perfil!.perfil == perfil.perfil
                           ? Container(
                               width: 250,
                               color: Colors.blue,
-                              child: Text(usuario.usuario),
+                              child: Text(usuario.usuario!),
                             )
                           : Container()
                   ],
@@ -255,7 +255,7 @@ class _AsistenciaPageState extends State<AsistenciaPage> {
                             usuarioSeleccionadoAccion: (BuildContext context,
                                 Usuario usuarioSeleccionado,
                                 StateSetter actualizar) {
-                              Usuario usuarioAIngresar;
+                              Usuario? usuarioAIngresar;
                               _listaAMostrar.forEach((usuario) {
                                 if (usuario.nombre !=
                                     usuarioSeleccionado.nombre) {
@@ -317,7 +317,7 @@ class _AsistenciaPageState extends State<AsistenciaPage> {
                             _usuarioSeleccionadoDialogo(asistencia);
                           },
                           cells: [
-                            DataCell(Text(usuario.nombre.toUpperCase())),
+                            DataCell(Text(usuario.nombre!.toUpperCase())),
                           ]))
                   .toList(),
             ),
@@ -342,7 +342,7 @@ class _AsistenciaPageState extends State<AsistenciaPage> {
                 children: [
                   Container(
                       child: Text(
-                          "Usuario: ${asistenciaUsuario.elementAt(0).usuario.nombre}")),
+                          "Usuario: ${asistenciaUsuario.elementAt(0).usuario!.nombre}")),
                   Expanded(child: Container()),
                   IconButton(
                       onPressed: () {
@@ -389,18 +389,18 @@ class _AsistenciaPageState extends State<AsistenciaPage> {
               ],
               rows: asistenciaUsuario.map((asistencia) {
                 DateTime dia = DateTime.utc(
-                    int.parse(asistencia.dia.split('-')[0]),
-                    int.parse(asistencia.dia.split('-')[1]),
-                    int.parse(asistencia.dia.split('-')[2]));
+                    int.parse(asistencia.dia!.split('-')[0]),
+                    int.parse(asistencia.dia!.split('-')[1]),
+                    int.parse(asistencia.dia!.split('-')[2]));
                 return DataRow(onSelectChanged: (seleccion) async {}, cells: [
                   DataCell(Text(
                       DateFormat.yMMMMEEEEd('es').format(dia).toUpperCase())),
                   DataCell(Text(asistencia.horaDeEntrada == null
                       ? '-'
-                      : asistencia.horaDeEntrada)),
+                      : asistencia.horaDeEntrada!)),
                   DataCell(Text(asistencia.horaDeSalida == null
                       ? '-'
-                      : asistencia.horaDeSalida)),
+                      : asistencia.horaDeSalida!)),
                   DataCell(IconButton(
                     icon: Icon(Icons.photo),
                     onPressed: () {
@@ -420,7 +420,7 @@ class _AsistenciaPageState extends State<AsistenciaPage> {
                                   children: [
                                     Container(
                                         child: Text(
-                                            "Usuario: ${asistencia.usuario.nombre}")),
+                                            "Usuario: ${asistencia.usuario!.nombre}")),
                                     Expanded(child: Container()),
                                     IconButton(
                                         onPressed: () {
@@ -436,7 +436,7 @@ class _AsistenciaPageState extends State<AsistenciaPage> {
                                 Container(
                                   height: 200.0,
                                   child: Image.network(
-                                    asistencia.urlFoto,
+                                    asistencia.urlFoto!,
                                   ),
                                 ),
                               ],
@@ -448,7 +448,7 @@ class _AsistenciaPageState extends State<AsistenciaPage> {
                     icon: Icon(Icons.location_on),
                     onPressed: () {
                       String url =
-                          'https://www.google.es/maps?q=${asistencia.coordenadasFoto.replaceAll('LatLng(', '').replaceAll(')', '')}';
+                          'https://www.google.es/maps?q=${asistencia.coordenadasFoto!.replaceAll('LatLng(', '').replaceAll(')', '')}';
                       html.window.open(url, 'Foto');
                     },
                   )),
@@ -492,7 +492,7 @@ class _AsistenciaPageState extends State<AsistenciaPage> {
   }
 
   Future<void> _seleccionarDia(String opc) async {
-    final DateTime picked = await showDatePicker(
+    final DateTime? picked = await showDatePicker(
         locale: Locale('es', 'ES'),
         context: context,
         initialDate:

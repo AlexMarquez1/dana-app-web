@@ -12,9 +12,9 @@ class ValoresCampo {
     this.idInventario,
   });
 
-  String valor;
-  int idCampo;
-  int idInventario;
+  String? valor;
+  int? idCampo;
+  int? idInventario;
 
   factory ValoresCampo.fromJson(Map<String, dynamic> json) => ValoresCampo(
         valor: json["valor"],

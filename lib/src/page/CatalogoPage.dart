@@ -37,11 +37,12 @@ class _CatalogoPageState extends State<CatalogoPage> {
   Map<String, bool> _contenidoSeleccionadoHijo = new Map<String, bool>();
 
   TextEditingController _contenidoController = new TextEditingController();
+  ScrollController _scrollCatalogo1 = ScrollController();
   ScrollController _scrollCatalogo2 = ScrollController();
 
-  String _catalogoProyectoSeleccionado;
-  String _catalogoPadreSeleccionado;
-  String _catalogoHijoSeleccionado;
+  String? _catalogoProyectoSeleccionado;
+  String? _catalogoPadreSeleccionado;
+  String? _catalogoHijoSeleccionado;
   Proyecto _proyectoSeleccionado = Proyecto();
 
   bool _bloquearCheckBox = true;
@@ -121,11 +122,14 @@ class _CatalogoPageState extends State<CatalogoPage> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      Column(
-                        children: [
-                          for (String item in _listaContenidoCatalogoPadre)
-                            _datosCheck(item, 'padre'),
-                        ],
+                      SingleChildScrollView(
+                        controller: _scrollCatalogo1,
+                        child: Column(
+                          children: [
+                            for (String item in _listaContenidoCatalogoPadre)
+                              _datosCheck(item, 'padre'),
+                          ],
+                        ),
                       ),
                       SingleChildScrollView(
                         controller: _scrollCatalogo2,
@@ -144,15 +148,15 @@ class _CatalogoPageState extends State<CatalogoPage> {
                   onPressed: () {
                     if (_contenidoSeleccionadoPadre.containsValue(true)) {
                       if (_contenidoSeleccionadoHijo.containsValue(true)) {
-                        String catalogoPadre;
+                        String? catalogoPadre;
                         List<String> catalogoHijo = [];
                         for (String item in _listaContenidoCatalogoPadre) {
-                          if (_contenidoSeleccionadoPadre[item]) {
+                          if (_contenidoSeleccionadoPadre[item]!) {
                             catalogoPadre = item;
                           }
                         }
                         for (String item in _listaContenidoCatalogoHijo) {
-                          if (_contenidoSeleccionadoHijo[item]) {
+                          if (_contenidoSeleccionadoHijo[item]!) {
                             catalogoHijo.add(item);
                           }
                         }
@@ -170,7 +174,7 @@ class _CatalogoPageState extends State<CatalogoPage> {
                           await crearCatalogoRelacionado(
                               ApiDefinition.ipServer,
                               catalogoRelacionado,
-                              _proyectoSeleccionado.idproyecto);
+                              _proyectoSeleccionado.idproyecto!);
                           PantallaDeCarga.loadingI(context, false);
                           Navigator.pop(context);
                         });
@@ -206,17 +210,17 @@ class _CatalogoPageState extends State<CatalogoPage> {
                 switch (tipo) {
                   case 'padre':
                     PantallaDeCarga.loadingI(context, true);
-                    CatalogoRelacionado catalogo;
+                    CatalogoRelacionado? catalogo;
                     for (String item in _listaContenidoCatalogoPadre) {
                       if (item == etiqueta) {
-                        _contenidoSeleccionadoPadre[item] = value;
+                        _contenidoSeleccionadoPadre[item] = value!;
                         catalogo = await obtenerCatalogoRelacionado(
                             ApiDefinition.ipServer,
                             CatalogoRelacionado(
                                 tipoCatalogoPadre: _catalogoPadreSeleccionado,
                                 catalogoPadre: item,
                                 catalogoHijo: []),
-                            _proyectoSeleccionado.idproyecto);
+                            _proyectoSeleccionado.idproyecto!);
                       } else {
                         _contenidoSeleccionadoPadre[item] = false;
                       }
@@ -225,13 +229,13 @@ class _CatalogoPageState extends State<CatalogoPage> {
                       _contenidoSeleccionadoHijo[item] = false;
                     }
 
-                    for (String item in catalogo.catalogoHijo) {
+                    for (String item in catalogo!.catalogoHijo!) {
                       _contenidoSeleccionadoHijo[item] = true;
                     }
                     PantallaDeCarga.loadingI(context, false);
                     break;
                   case 'hijo':
-                    _contenidoSeleccionadoHijo[etiqueta] = value;
+                    _contenidoSeleccionadoHijo[etiqueta] = value!;
                     break;
                 }
                 setState(() {});
@@ -332,7 +336,7 @@ class _CatalogoPageState extends State<CatalogoPage> {
   }
 
   void _accionAgregar(GlobalKey<FormState> form) {
-    if (form.currentState.validate()) {
+    if (form.currentState!.validate()) {
       bool coincidencia = false;
       if (_listaContenido == null) {
         _listaContenido = [];
@@ -439,10 +443,10 @@ class _CatalogoPageState extends State<CatalogoPage> {
         print('Catalogo a ingresar: $_listaContenido');
         PantallaDeCarga.loadingI(context, true);
         await eliminarCatalogos(ApiDefinition.ipServer, _proyectoSeleccionado,
-            _catalogoProyectoSeleccionado);
+            _catalogoProyectoSeleccionado!);
         if (_listaContenido.isNotEmpty) {
           await crearCatalogo(ApiDefinition.ipServer, _proyectoSeleccionado,
-              _listaContenido, _catalogoProyectoSeleccionado);
+              _listaContenido, _catalogoProyectoSeleccionado!);
         }
         PantallaDeCarga.loadingI(context, false);
         _listaContenido = [];
@@ -528,7 +532,7 @@ class _CatalogoPageState extends State<CatalogoPage> {
       future: _obtenerProyectos(),
       builder: (BuildContext context, AsyncSnapshot<List<Proyecto>> snapshot) {
         if (snapshot.hasData) {
-          _listaProyectos = snapshot.data;
+          _listaProyectos = snapshot.data!;
           return _seleccionProyecto(ancho);
         } else {
           return CircularProgressIndicator();
@@ -574,7 +578,7 @@ class _CatalogoPageState extends State<CatalogoPage> {
         items: _listaProyectos.map((item) {
           return DropdownMenuItem(
             value: item.proyecto,
-            child: Text(item.proyecto),
+            child: Text(item.proyecto!),
           );
         }).toList(),
       ),
@@ -591,12 +595,12 @@ class _CatalogoPageState extends State<CatalogoPage> {
           hintText: 'Catalogos',
         ),
         value: _catalogoProyectoSeleccionado,
-        onChanged: (valor) async {
+        onChanged: (String? valor) async {
           _catalogoProyectoSeleccionado = valor;
           PantallaDeCarga.loadingI(context, true);
           Catalogo catalogo = await obtenerDatosCatalogoCamposProyecto(
-              ApiDefinition.ipServer, _proyectoSeleccionado, valor);
-          _listaContenido = catalogo.catalogo;
+              ApiDefinition.ipServer, _proyectoSeleccionado, valor!);
+          _listaContenido = catalogo.catalogo!;
           PantallaDeCarga.loadingI(context, false);
           setState(() {});
         },
@@ -606,9 +610,9 @@ class _CatalogoPageState extends State<CatalogoPage> {
             child: Text(item),
           );
         }).toList(),
-        validator: (validar) {
+        validator: (String? validar) {
           if (_catalogoProyectoSeleccionado != null) {
-            if (validar.isEmpty) {
+            if (validar!.isEmpty) {
               return 'Seleccione un catalogo';
             } else {
               return null;
@@ -633,7 +637,7 @@ class _CatalogoPageState extends State<CatalogoPage> {
         value: catalogo == 'padre'
             ? _catalogoPadreSeleccionado
             : _catalogoHijoSeleccionado,
-        onChanged: (valor) async {
+        onChanged: (String? valor) async {
           switch (catalogo) {
             case 'padre':
               _catalogoPadreSeleccionado = valor;
@@ -644,8 +648,8 @@ class _CatalogoPageState extends State<CatalogoPage> {
                 }
               }
               Catalogo catalogo = await obtenerDatosCatalogoCamposProyecto(
-                  ApiDefinition.ipServer, _proyectoSeleccionado, valor);
-              _listaContenidoCatalogoPadre = catalogo.catalogo;
+                  ApiDefinition.ipServer, _proyectoSeleccionado, valor!);
+              _listaContenidoCatalogoPadre = catalogo.catalogo!;
               _listaContenidoCatalogoHijo = [];
               _catalogoHijoSeleccionado = null;
               for (String item in _listaContenidoCatalogoPadre) {
@@ -656,8 +660,8 @@ class _CatalogoPageState extends State<CatalogoPage> {
             case 'hijo':
               _catalogoHijoSeleccionado = valor;
               Catalogo catalogo = await obtenerDatosCatalogoCamposProyecto(
-                  ApiDefinition.ipServer, _proyectoSeleccionado, valor);
-              _listaContenidoCatalogoHijo = catalogo.catalogo;
+                  ApiDefinition.ipServer, _proyectoSeleccionado, valor!);
+              _listaContenidoCatalogoHijo = catalogo.catalogo!;
               for (String item in _listaContenidoCatalogoHijo) {
                 _contenidoSeleccionadoHijo[item] = false;
               }
@@ -673,8 +677,8 @@ class _CatalogoPageState extends State<CatalogoPage> {
             child: Text(item),
           );
         }).toList(),
-        validator: (validar) {
-          if (validar.isEmpty) {
+        validator: (String? validar) {
+          if (validar!.isEmpty) {
             return 'Seleccione un catalogo';
           } else {
             return null;

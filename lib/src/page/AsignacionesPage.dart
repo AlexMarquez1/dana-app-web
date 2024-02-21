@@ -2,9 +2,7 @@ import 'dart:math';
 
 import 'package:app_isae_desarrollo/src/models/Estatus.dart';
 import 'package:app_isae_desarrollo/src/models/Inventario.dart';
-import 'package:app_isae_desarrollo/src/models/Perfil.dart';
 import 'package:app_isae_desarrollo/src/models/Proyecto.dart';
-import 'package:app_isae_desarrollo/src/models/TotalDatos.dart';
 import 'package:app_isae_desarrollo/src/models/Usuario.dart';
 import 'package:app_isae_desarrollo/src/page/widgets/Dialogos.dart';
 import 'package:app_isae_desarrollo/src/page/widgets/DrawerWidget.dart';
@@ -15,7 +13,6 @@ import 'package:app_isae_desarrollo/src/page/widgets/appBar.dart';
 import 'package:app_isae_desarrollo/src/services/APIWebService/ApiDefinitions.dart';
 import 'package:app_isae_desarrollo/src/services/APIWebService/Consultas.dart';
 import 'package:app_isae_desarrollo/src/utils/UpperCaseTextFormatterCustom.dart';
-import 'package:firebase/firebase.dart';
 // import 'package:firebase_db_web_unofficial/DatabaseSnapshot.dart';
 // import 'package:firebase_db_web_unofficial/firebasedbwebunofficial.dart';
 import 'package:flutter/material.dart';
@@ -36,7 +33,7 @@ class _AsignacionesPageState extends State<AsignacionesPage> {
   //Lista para asignar proyecto
   List<Usuario> _listaUsuarios = [];
   List<Proyecto> _listaProyectosSinAsignar = [];
-  List<Proyecto> _listaProyectosAsignados;
+  late List<Proyecto> _listaProyectosAsignados;
 
   //Lista para asignar registro
   List<Usuario> _listaUsuarioAsignar = [];
@@ -46,11 +43,11 @@ class _AsignacionesPageState extends State<AsignacionesPage> {
   List<Inventario> _listaRegistros = [];
   List<Inventario> _listaRegistrosAsignados = [];
 
-  Usuario _usuarioSeleccionado;
-  Usuario _usuarioSeleccionadoAsignar;
-  Proyecto _proyectoSeleccionadoAsignar;
-  Proyecto _proyectoSeleccionado;
-  String _campoSeleccionado;
+  late Usuario _usuarioSeleccionado;
+  late Usuario _usuarioSeleccionadoAsignar;
+  Proyecto? _proyectoSeleccionadoAsignar;
+  Proyecto? _proyectoSeleccionado;
+  String? _campoSeleccionado;
 
   bool _habilitarBusqueda = false;
 
@@ -130,30 +127,30 @@ class _AsignacionesPageState extends State<AsignacionesPage> {
                             PantallaDeCarga.loadingI(context, true);
                             await eliminarAsignacionRegistro(
                                 ApiDefinition.ipServer,
-                                _usuarioSeleccionadoAsignar.idUsuario,
-                                registro.idinventario);
+                                _usuarioSeleccionadoAsignar.idUsuario!,
+                                registro.idinventario!);
                             _listaProyectosSinAsignar = [];
                             _listaRegistros = await obtenerRegistros(
                                 ApiDefinition.ipServer,
-                                _proyectoSeleccionado.idproyecto);
+                                _proyectoSeleccionado!.idproyecto!);
                             for (Inventario item in _listaRegistros) {
-                              _seleccionRegistro[item.folio] = false;
+                              _seleccionRegistro[item.folio!] = false;
                             }
                             await _consultarRegistros();
 
                             if (registro.estatus == 'ASIGNADO') {
-                              Database db = database();
-                              DatabaseReference ref = db.ref('TotalDatos');
+                              // Database db = database();
+                              // DatabaseReference ref = db.ref('TotalDatos');
 
-                              await ref
-                                  .child(_proyectoSeleccionado.proyecto)
-                                  .set({
-                                'NUEVO': Random().nextInt(100),
-                                'ASIGNADO': Random().nextInt(100),
-                                'PENDIENTE': Random().nextInt(100),
-                                'EN PROCESO': Random().nextInt(100),
-                                'CERRADO': Random().nextInt(100),
-                              });
+                              // await ref
+                              //     .child(_proyectoSeleccionado.proyecto)
+                              //     .set({
+                              //   'NUEVO': Random().nextInt(100),
+                              //   'ASIGNADO': Random().nextInt(100),
+                              //   'PENDIENTE': Random().nextInt(100),
+                              //   'EN PROCESO': Random().nextInt(100),
+                              //   'CERRADO': Random().nextInt(100),
+                              // });
 
                               // DatabaseSnapshot snap =
                               //     await FirebaseDatabaseWeb.instance
@@ -188,7 +185,7 @@ class _AsignacionesPageState extends State<AsignacionesPage> {
                             PantallaDeCarga.loadingI(context, false);
                             Navigator.pop(context);
                           });
-                        }),
+                        }, seleccionRegistro: {}),
                         columns: [
                           DataColumn(label: Text('Folio'.toUpperCase())),
                           DataColumn(
@@ -245,15 +242,15 @@ class _AsignacionesPageState extends State<AsignacionesPage> {
                           .map(
                             (proyecto) => DataRow(
                               onSelectChanged: (seleccion) {
-                                if (seleccion) {}
+                                if (seleccion!) {}
                               },
                               cells: [
-                                DataCell(Text(_usuarioSeleccionado.usuario)),
-                                DataCell(Text(proyecto.proyecto)),
+                                DataCell(Text(_usuarioSeleccionado.usuario!)),
+                                DataCell(Text(proyecto.proyecto!)),
                                 DataCell(Text(proyecto.descripcion == null
                                     ? ''
-                                    : proyecto.descripcion)),
-                                DataCell(Text(proyecto.fechacreacion)),
+                                    : proyecto.descripcion!)),
+                                DataCell(Text(proyecto.fechacreacion!)),
                                 DataCell(IconButton(
                                     onPressed: () {
                                       Dialogos.advertencia(context,
@@ -333,7 +330,8 @@ class _AsignacionesPageState extends State<AsignacionesPage> {
                       //     .toList(),
                       () {},
                       false,
-                      seleccionRegistro: _seleccionRegistro),
+                      seleccionRegistro: _seleccionRegistro,
+                      clickEliminar: (Inventario inv) {}),
                   columns: [
                     DataColumn(label: Text('Folio'.toUpperCase())),
                     DataColumn(label: Text('Fecha Crecion'.toUpperCase())),
@@ -441,15 +439,15 @@ class _AsignacionesPageState extends State<AsignacionesPage> {
                 ),
                 ElevatedButton(
                   onPressed: () async {
-                    if (_formKeyProyecto.currentState.validate()) {
+                    if (_formKeyProyecto.currentState!.validate()) {
                       PantallaDeCarga.loadingI(context, true);
                       print(
-                          'id Proyecto: ${_proyectoSeleccionadoAsignar.idproyecto}');
+                          'id Proyecto: ${_proyectoSeleccionadoAsignar!.idproyecto}');
                       print('id Usuario: ${_usuarioSeleccionado.idUsuario}');
                       await asignarProyecto(
                           ApiDefinition.ipServer,
-                          _usuarioSeleccionado.idUsuario,
-                          _proyectoSeleccionadoAsignar.idproyecto);
+                          _usuarioSeleccionado.idUsuario!,
+                          _proyectoSeleccionadoAsignar!.idproyecto!);
                       _proyectoSeleccionadoAsignar = null;
                       _cargarProyectosSinAsignar(_usuarioSeleccionado);
                       PantallaDeCarga.loadingI(context, false);
@@ -563,16 +561,16 @@ class _AsignacionesPageState extends State<AsignacionesPage> {
                           Container(
                             child: ElevatedButton(
                                 onPressed: () async {
-                                  if (_formKeyRegistro.currentState
+                                  if (_formKeyRegistro.currentState!
                                       .validate()) {
                                     PantallaDeCarga.loadingI(context, true);
                                     _listaRegistros =
                                         await obtenerRegistrosBusqueda(
                                             ApiDefinition.ipServer,
-                                            _proyectoSeleccionado.idproyecto,
+                                            _proyectoSeleccionado!.idproyecto!,
                                             _busquedaController.text);
                                     await _consultarRegistrosBusqueda();
-                                    _dataTable.currentState.pageTo(0);
+                                    _dataTable.currentState!.pageTo(0);
                                     setState(() {});
                                     PantallaDeCarga.loadingI(context, false);
                                   }
@@ -594,9 +592,9 @@ class _AsignacionesPageState extends State<AsignacionesPage> {
                           PantallaDeCarga.loadingI(context, true);
                           _listaRegistros = await obtenerRegistros(
                               ApiDefinition.ipServer,
-                              _proyectoSeleccionado.idproyecto);
+                              _proyectoSeleccionado!.idproyecto!);
                           for (Inventario item in _listaRegistros) {
-                            _seleccionRegistro[item.folio] = false;
+                            _seleccionRegistro[item.folio!] = false;
                           }
                           await _consultarRegistros();
                           PantallaDeCarga.loadingI(context, false);
@@ -614,23 +612,23 @@ class _AsignacionesPageState extends State<AsignacionesPage> {
                   List<String> registrosId = [];
                   List<Inventario> registrosAsignados = [];
                   for (Inventario item in _listaRegistros) {
-                    if (_seleccionRegistro[item.folio]) {
-                      registrosSeleccionados.add(item.folio);
+                    if (_seleccionRegistro[item.folio]!) {
+                      registrosSeleccionados.add(item.folio!);
                       registrosId.add(item.idinventario.toString());
                       registrosAsignados.add(item);
                     }
                   }
 
-                  Database db = database();
-                  DatabaseReference ref = db.ref('TotalDatos');
+                  // Database db = database();
+                  // DatabaseReference ref = db.ref('TotalDatos');
 
-                  await ref.child(_proyectoSeleccionado.proyecto).set({
-                    'NUEVO': Random().nextInt(100),
-                    'ASIGNADO': Random().nextInt(100),
-                    'PENDIENTE': Random().nextInt(100),
-                    'EN PROCESO': Random().nextInt(100),
-                    'CERRADO': Random().nextInt(100),
-                  });
+                  // await ref.child(_proyectoSeleccionado.proyecto).set({
+                  //   'NUEVO': Random().nextInt(100),
+                  //   'ASIGNADO': Random().nextInt(100),
+                  //   'PENDIENTE': Random().nextInt(100),
+                  //   'EN PROCESO': Random().nextInt(100),
+                  //   'CERRADO': Random().nextInt(100),
+                  // });
 
                   // DatabaseSnapshot snap = await FirebaseDatabaseWeb.instance
                   //     .reference()
@@ -669,12 +667,13 @@ class _AsignacionesPageState extends State<AsignacionesPage> {
                   //     .update(datos.toJson());
 
                   await asignarRegistro(ApiDefinition.ipServer,
-                      _usuarioSeleccionadoAsignar.idUsuario, registrosId);
+                      _usuarioSeleccionadoAsignar.idUsuario!, registrosId);
                   _listaProyectosSinAsignar = [];
                   _listaRegistros = await obtenerRegistros(
-                      ApiDefinition.ipServer, _proyectoSeleccionado.idproyecto);
+                      ApiDefinition.ipServer,
+                      _proyectoSeleccionado!.idproyecto!);
                   for (Inventario item in _listaRegistros) {
-                    _seleccionRegistro[item.folio] = false;
+                    _seleccionRegistro[item.folio!] = false;
                   }
                   await _consultarRegistros();
                   PantallaDeCarga.loadingI(context, false);
@@ -690,14 +689,14 @@ class _AsignacionesPageState extends State<AsignacionesPage> {
 
   _consultarRegistros() async {
     List<String> registrosAsignados = await obtenerRegistrosAsignados(
-        ApiDefinition.ipServer, _usuarioSeleccionadoAsignar.idUsuario);
+        ApiDefinition.ipServer, _usuarioSeleccionadoAsignar.idUsuario!);
     _listaRegistros = _eliminarAsignados(registrosAsignados, _listaRegistros);
     setState(() {});
   }
 
   _consultarRegistrosBusqueda() async {
     List<String> registrosAsignados = await obtenerRegistrosAsignados(
-        ApiDefinition.ipServer, _usuarioSeleccionadoAsignar.idUsuario);
+        ApiDefinition.ipServer, _usuarioSeleccionadoAsignar.idUsuario!);
     _listaRegistros =
         _eliminarAsignadosBusqueda(registrosAsignados, _listaRegistros);
     setState(() {});
@@ -708,7 +707,7 @@ class _AsignacionesPageState extends State<AsignacionesPage> {
       future: _obtenerUsuarios(),
       builder: (BuildContext context, AsyncSnapshot<List<Usuario>> snapshot) {
         if (snapshot.hasData) {
-          _listaUsuarios = snapshot.data;
+          _listaUsuarios = snapshot.data!;
           return _listarUsuarios();
         } else {
           return CircularProgressIndicator();
@@ -757,7 +756,7 @@ class _AsignacionesPageState extends State<AsignacionesPage> {
       actualizar: setState,
       usuarioSeleccionadoAccion: (BuildContext context,
           Usuario usuarioSeleccionado, StateSetter actualizar) {
-        _controllerBuscarUsuarioProyecto.text = usuarioSeleccionado.usuario;
+        _controllerBuscarUsuarioProyecto.text = usuarioSeleccionado.usuario!;
         _proyectoSeleccionadoAsignar = null;
         _cargarProyectosSinAsignar(usuarioSeleccionado);
       },
@@ -778,17 +777,17 @@ class _AsignacionesPageState extends State<AsignacionesPage> {
           hintText: 'Proyectos',
         ),
         value: _proyectoSeleccionadoAsignar,
-        onChanged: (valor) async {
+        onChanged: (Proyecto? valor) async {
           _proyectoSeleccionadoAsignar = valor;
           setState(() {});
         },
         items: _listaProyectosSinAsignar.map((item) {
           return DropdownMenuItem(
             value: item,
-            child: Text(item.proyecto),
+            child: Text(item.proyecto!),
           );
         }).toList(),
-        validator: (Proyecto value) {
+        validator: (Proyecto? value) {
           if (value == null) {
             return 'Selecciona un proyecto';
           } else {
@@ -809,30 +808,30 @@ class _AsignacionesPageState extends State<AsignacionesPage> {
           hintText: 'Proyectos',
         ),
         value: _proyectoSeleccionado,
-        onChanged: (valor) async {
+        onChanged: (Proyecto? valor) async {
           _campoSeleccionado = null;
           _campoSeleccionado = null;
           _busquedaController.text = '';
-          _proyectoSeleccionado = valor;
+          _proyectoSeleccionado = valor!;
           PantallaDeCarga.loadingI(context, true);
           _listaRegistros = await obtenerRegistros(
-              ApiDefinition.ipServer, _proyectoSeleccionado.idproyecto);
+              ApiDefinition.ipServer, _proyectoSeleccionado!.idproyecto!);
           for (Inventario item in _listaRegistros) {
-            _seleccionRegistro[item.folio] = false;
+            _seleccionRegistro[item.folio!] = false;
           }
           await _consultarRegistros();
           _listaCampos = await obtenerCamposProyectoBusqueda(
-              ApiDefinition.ipServer, _proyectoSeleccionado.idproyecto);
+              ApiDefinition.ipServer, _proyectoSeleccionado!.idproyecto!);
           PantallaDeCarga.loadingI(context, false);
           setState(() {});
         },
         items: _listaProyectos.map((item) {
           return DropdownMenuItem(
             value: item,
-            child: Text(item.proyecto),
+            child: Text(item.proyecto!),
           );
         }).toList(),
-        validator: (Proyecto value) {
+        validator: (Proyecto? value) {
           if (value == null) {
             return 'Selecciona un proyecto';
           } else {
@@ -910,12 +909,14 @@ class _AsignacionesPageState extends State<AsignacionesPage> {
           hintText: 'Campos',
         ),
         value: _campoSeleccionado,
-        onChanged: (valor) async {
+        onChanged: (String? valor) async {
           _campoSeleccionado = valor;
           _busquedaController.text = '';
           PantallaDeCarga.loadingI(context, true);
           _listaBusqueda = await obtenerDatosProyectoBusqueda(
-              ApiDefinition.ipServer, _proyectoSeleccionado.idproyecto, valor);
+              ApiDefinition.ipServer,
+              _proyectoSeleccionado!.idproyecto!,
+              valor!);
           PantallaDeCarga.loadingI(context, false);
           _habilitarBusqueda = true;
           setState(() {});
@@ -926,7 +927,7 @@ class _AsignacionesPageState extends State<AsignacionesPage> {
             child: Text(item),
           );
         }).toList(),
-        validator: (String value) {
+        validator: (String? value) {
           if (value == null) {
             return 'Selecciona un campo';
           } else {
@@ -942,7 +943,7 @@ class _AsignacionesPageState extends State<AsignacionesPage> {
       future: _obtenerUsuarios(),
       builder: (BuildContext context, AsyncSnapshot<List<Usuario>> snapshot) {
         if (snapshot.hasData) {
-          _listaUsuarioAsignar = snapshot.data;
+          _listaUsuarioAsignar = snapshot.data!;
           return _listarUsuariosAsignar();
         } else {
           return CircularProgressIndicator();
@@ -960,7 +961,7 @@ class _AsignacionesPageState extends State<AsignacionesPage> {
       actualizar: setState,
       usuarioSeleccionadoAccion: (BuildContext context,
           Usuario usuarioSeleccionado, StateSetter actualizar) async {
-        _controllerBuscarUsuarioRegistro.text = usuarioSeleccionado.usuario;
+        _controllerBuscarUsuarioRegistro.text = usuarioSeleccionado.usuario!;
         _usuarioSeleccionadoAsignar = usuarioSeleccionado;
         _proyectoSeleccionado = null;
         _listaRegistrosAsignados = [];
@@ -1042,7 +1043,7 @@ class _AsignacionesPageState extends State<AsignacionesPage> {
   }
 
   Widget _autoCompletarBusqueda() {
-    return Autocomplete(
+    return Autocomplete<Object>(
       fieldViewBuilder:
           (context, textEditingController, focusNode, onFieldSubmitted) {
         if (_busquedaController.text.isNotEmpty) {

@@ -13,13 +13,13 @@ class TablaRegistros extends DataTableSource {
   Map<int, bool> registroSeleccion;
 
   TablaRegistros({
-    @required this.listaInventario,
-    @required this.clickEditarAsignacion,
-    @required this.clickPdf,
-    @required this.clickVolverACargar,
-    @required this.accionSeleccionarRegistro,
-    @required this.registroSeleccion,
-    @required this.clickRegistro,
+    required this.listaInventario,
+    required this.clickEditarAsignacion,
+    required this.clickPdf,
+    required this.clickVolverACargar,
+    required this.accionSeleccionarRegistro,
+    required this.registroSeleccion,
+    required this.clickRegistro,
   });
 
   @override
@@ -29,9 +29,9 @@ class TablaRegistros extends DataTableSource {
         clickRegistro(listaInventario.elementAt(index));
       },
       cells: [
-        DataCell(Text(listaInventario.elementAt(index).folio)),
-        DataCell(Text(listaInventario.elementAt(index).estatus)),
-        DataCell(Text(listaInventario.elementAt(index).fechacreacion)),
+        DataCell(Text(listaInventario.elementAt(index).folio!)),
+        DataCell(Text(listaInventario.elementAt(index).estatus!)),
+        DataCell(Text(listaInventario.elementAt(index).fechacreacion!)),
         DataCell(IconButton(
           onPressed: () {
             clickRegistro(listaInventario.elementAt(index));
@@ -64,14 +64,14 @@ class TablaRegistros extends DataTableSource {
         // )),
       ],
       selected:
-          registroSeleccion[listaInventario.elementAt(index).idinventario],
+          registroSeleccion[listaInventario.elementAt(index).idinventario]!,
       onSelectChanged: (seleccion) {
         // if (listaInventario.elementAt(index).estatus == 'CERRADO') {
-        if (seleccion) {
-          registroSeleccion[listaInventario.elementAt(index).idinventario] =
+        if (seleccion!) {
+          registroSeleccion[listaInventario.elementAt(index).idinventario!] =
               seleccion;
         } else {
-          registroSeleccion[listaInventario.elementAt(index).idinventario] =
+          registroSeleccion[listaInventario.elementAt(index).idinventario!] =
               seleccion;
         }
         accionSeleccionarRegistro(seleccion, listaInventario.elementAt(index));

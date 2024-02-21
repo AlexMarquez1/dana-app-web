@@ -1,5 +1,4 @@
 import 'package:app_isae_desarrollo/src/models/Agrupaciones.dart';
-import 'package:firebase/firebase.dart';
 import 'package:flutter/material.dart';
 
 class TipoCampo extends StatefulWidget {
@@ -8,11 +7,11 @@ class TipoCampo extends StatefulWidget {
   List<Agrupaciones> listaAgrupaciones;
   Function actualizar;
   TipoCampo({
-    Key key,
-    @required this.tipoSeleccionado,
-    @required this.listaAgrupaciones,
-    @required this.nombreCampo,
-    @required this.actualizar,
+    Key? key,
+    required this.tipoSeleccionado,
+    required this.listaAgrupaciones,
+    required this.nombreCampo,
+    required this.actualizar,
   }) : super(key: key);
 
   @override
@@ -96,11 +95,11 @@ class _TipoCampoState extends State<TipoCampo> {
 
   Widget _clip(String label, Widget icono) {
     return InputChip(
-      selected: _opciones[label],
+      selected: _opciones[label]!,
       label: Text(label),
       tooltip: label,
       labelStyle:
-          TextStyle(color: _opciones[label] ? Colors.white : Colors.black),
+          TextStyle(color: _opciones[label]! ? Colors.white : Colors.black),
       selectedColor: Colors.blue.withOpacity(0.8),
       avatar: CircleAvatar(
         child: icono,
@@ -119,39 +118,39 @@ class _TipoCampoState extends State<TipoCampo> {
           }
           for (int i = 0; i < widget.listaAgrupaciones.length; i++) {
             for (int j = 0;
-                j < widget.listaAgrupaciones.elementAt(i).campos.length;
+                j < widget.listaAgrupaciones.elementAt(i).campos!.length;
                 j++) {
               if (widget.listaAgrupaciones
                       .elementAt(i)
-                      .campos
+                      .campos!
                       .elementAt(j)
                       .nombreCampo ==
                   widget.nombreCampo) {
                 widget.listaAgrupaciones
                     .elementAt(i)
-                    .campos
+                    .campos!
                     .elementAt(j)
                     .tipoCampo = label;
                 if (widget.listaAgrupaciones
                             .elementAt(i)
-                            .campos
+                            .campos!
                             .elementAt(j)
                             .tipoCampo ==
                         'FIRMA' ||
                     widget.listaAgrupaciones
                             .elementAt(i)
-                            .campos
+                            .campos!
                             .elementAt(j)
                             .tipoCampo ==
                         'CATALOGO') {
                   widget.listaAgrupaciones
                       .elementAt(i)
-                      .campos
+                      .campos!
                       .elementAt(j)
                       .controladorRestriccion = new TextEditingController();
                   widget.listaAgrupaciones
                       .elementAt(i)
-                      .campos
+                      .campos!
                       .elementAt(j)
                       .controladorLongitud = new TextEditingController();
                 } else {
@@ -163,12 +162,12 @@ class _TipoCampoState extends State<TipoCampo> {
                   controladorLongitud.text = '100';
                   widget.listaAgrupaciones
                       .elementAt(i)
-                      .campos
+                      .campos!
                       .elementAt(j)
                       .controladorRestriccion = controladorRestriccion;
                   widget.listaAgrupaciones
                       .elementAt(i)
-                      .campos
+                      .campos!
                       .elementAt(j)
                       .controladorLongitud = controladorLongitud;
                 }
